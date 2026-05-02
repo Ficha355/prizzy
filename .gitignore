@@ -1,0 +1,22 @@
+# Environment
+.env
+
+# Uploads
+uploads/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.eggs/
+venv/
+.venv/
+env/
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,27 @@
+{
+  "name": "Prizzy — Estimer sur Vinted",
+  "short_name": "Prizzy",
+  "description": "Prenez en photo un vêtement, obtenez instantanément le prix idéal pour le vendre sur Vinted.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#09B1BA",
+  "categories": ["shopping", "lifestyle"],
+  "icons": [
+    {
+      "src": "/static/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/static/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [],
+  "prefer_related_applications": false
+}

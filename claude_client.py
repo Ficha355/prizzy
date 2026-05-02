@@ -1,0 +1,83 @@
+import base64
+import json
+import re
+from typing import Optional
+
+import anthropic
+
+MODEL = "claude-sonnet-4-20250514"
+
+_client = anthropic.Anthropic()
+
+_SYSTEM = (
+    "Tu es un expert en mode et en vente de vêtements d'occasion sur Vinted. "
+    "Réponds UNIQUEMENT avec un objet JSON valide, sans texte supplémentaire, "
+    "sans bloc markdown, sans explication."
+)
+
+_SCHEMA = """\
+Retourne un JSON avec exactement ces clés :
+{
+  "marque": "marque du vêtement (string ou null si inconnue)",
+  "type_vetement": "type précis ex: veste en jean, t-shirt oversize, manteau laine (string)",
+  "couleur": "couleur principale (string ou null)",
+  "taille": "taille ex: S, M, L, XL, 38, 40... (string ou null)",
+  "etat_estime": "un parmi : Neuf avec étiquette | Neuf sans étiquette | Très bon état | Bon état | Satisfaisant (string ou null)",
+  "description_optimisee": "description vendeuse en français pour Vinted, 3-4 phrases percutantes qui donnent envie d'acheter (string)",
+  "query_vinted": "requête de recherche optimisée pour Vinted, inclure marque + type + taille si disponibles, ex: veste jean Levi\\'s M (string)"
+}"""
+
+
+def _build_prompt(image_count: int, description: Optional[str]) -> str:
+    if image_count > 1 and description:
+        intro = (
+            f"Voici {image_count} photos d'un même vêtement sous différents angles, "
+            f"accompagnées de cette description : « {description} »."
+        )
+    elif image_count > 1:
+        intro = f"Voici {image_count} photos d'un même vêtement vues sous différents angles."
+    elif image_count == 1 and description:
+        intro = f"Voici une photo de vêtement accompagnée de cette description : « {description} »."
+    elif image_count == 1:
+        intro = "Voici une photo de vêtement."
+    else:
+        intro = f"Voici la description d'un vêtement : « {description} »."
+    return f"{intro}\n\n{_SCHEMA}"
+
+
+def analyze_clothing(
+    images: list[tuple[bytes, str]],
+    description: Optional[str],
+) -> dict:
+    """
+    Analyze a clothing item via Prizzy IA vision + text.
+    images: list of (data_bytes, mime_type) tuples (up to 5).
+    Returns a dict with keys: marque, type_vetement, couleur, taille,
+    etat_estime, description_optimisee, query_vinted.
+    """
+    content = []
+
+    for data, mime in images:
+        b64 = base64.standard_b64encode(data).decode("utf-8")
+        content.append({
+            "type": "image",
+            "source": {
+                "type": "base64",
+                "media_type": mime,
+                "data": b64,
+            },
+        })
+
+    content.append({"type": "text", "text": _build_prompt(len(images), description)})
+
+    response = _client.messages.create(
+        model=MODEL,
+        max_tokens=1024,
+        system=_SYSTEM,
+        messages=[{"role": "user", "content": content}],
+    )
+
+    raw = next(b.text for b in response.content if b.type == "text").strip()
+    # Strip markdown code fences if the model adds them despite the system prompt
+    raw = re.sub(r"^```(?:json)?\s*|\s*```$", "", raw, flags=re.DOTALL).strip()
+    return json.loads(raw)
