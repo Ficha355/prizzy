@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paiement annulé — Prizzy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: #F7F8F9; color: #111827;
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+      -webkit-font-smoothing: antialiased;
+    }
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 0 0 1px rgba(0,0,0,.06), 0 8px 40px rgba(0,0,0,.08);
+      padding: 48px 40px;
+      max-width: 420px; width: 100%;
+      text-align: center;
+    }
+    .icon {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: #FEF3C7; color: #D97706;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px; font-size: 24px;
+    }
+    h1 { font-size: 22px; font-weight: 800; letter-spacing: -.4px; margin-bottom: 10px; }
+    p  { font-size: 15px; line-height: 1.6; color: #6B7280; margin-bottom: 28px; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 13px 24px; border-radius: 10px;
+      font-family: inherit; font-size: 15px; font-weight: 600;
+      cursor: pointer; text-decoration: none;
+      transition: all 150ms ease;
+    }
+    .btn-primary {
+      background: #09B1BA; color: white; border: none;
+      box-shadow: 0 4px 16px rgba(9,177,186,.2);
+      width: 100%; margin-bottom: 10px;
+    }
+    .btn-primary:hover { background: #0a9ea6; }
+    .btn-ghost {
+      background: transparent; color: #6B7280;
+      border: 1px solid #E5E7EB; width: 100%;
+    }
+    .btn-ghost:hover { background: #F9FAFB; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon">⚠️</div>
+    <h1>Paiement annulé</h1>
+    <p>Votre paiement n'a pas été finalisé. Aucun montant n'a été débité. Vous pouvez réessayer à tout moment.</p>
+    <a href="/#pricing" class="btn btn-primary">Réessayer</a>
+    <a href="/" class="btn btn-ghost">Retour à l'accueil</a>
+  </div>
+</body>
+</html>
