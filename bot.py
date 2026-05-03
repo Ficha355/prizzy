@@ -106,6 +106,11 @@ client = discord.Client(intents=intents)
 async def on_ready():
     print(f"[READY] Prizzy bot connecté : {client.user} (id={client.user.id})")
     print(f"[READY] Salon cible : {CHANNEL_ID}")
+    print(f"[READY] Serveurs accessibles : {len(client.guilds)}")
+    for guild in client.guilds:
+        print(f"  [GUILD] {guild.name} (id={guild.id})")
+        for channel in guild.text_channels:
+            print(f"    [CHANNEL] #{channel.name} (id={channel.id})")
 
 
 @client.event
