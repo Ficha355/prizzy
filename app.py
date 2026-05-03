@@ -91,6 +91,19 @@ def ping():
     return "pong"
 
 
+# ── Me ────────────────────────────────────────────────────
+
+@app.route("/me")
+def me():
+    email = session.get("email")
+    if not email:
+        return jsonify({"error": "Non connecté"}), 401
+    sub = get_subscriber(email)
+    if not sub or sub["status"] != "active":
+        return jsonify({"error": "Pas d'abonnement actif"}), 403
+    return jsonify({"email": email, "plan": sub.get("plan", "starter")})
+
+
 # ── Admin ─────────────────────────────────────────────────
 
 @app.route("/admin/add-elite", methods=["POST"])

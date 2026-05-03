@@ -733,6 +733,105 @@
     }
     .picker-cancel:active { background: var(--gray-200); }
 
+    /* ── Legit Check ────────────────────────────────────── */
+    .btn-legit {
+      display: none;
+      align-items: center; gap: 5px;
+      padding: 5px 11px; border-radius: 8px;
+      border: 1.5px solid rgba(124,58,237,.3);
+      background: rgba(124,58,237,.06);
+      font-family: inherit; font-size: 12px; font-weight: 700;
+      color: #7C3AED; cursor: pointer; white-space: nowrap;
+      transition: all var(--transition);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-legit:hover { background: rgba(124,58,237,.12); border-color: rgba(124,58,237,.5); }
+    .btn-legit.visible { display: flex; }
+
+    #screen-legit { background: var(--bg); }
+    #screen-legit-results { background: var(--bg); }
+
+    .verdict-card {
+      border-radius: var(--radius-lg);
+      padding: 28px 24px 24px;
+      margin-bottom: 12px;
+      position: relative; overflow: hidden;
+      text-align: center;
+    }
+    .verdict-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 4px;
+    }
+    .verdict-card.authentic  { background: #F0FDF4; }
+    .verdict-card.authentic::before  { background: #16A34A; }
+    .verdict-card.suspect    { background: #FFFBEB; }
+    .verdict-card.suspect::before    { background: #D97706; }
+    .verdict-card.fake       { background: #FEF2F2; }
+    .verdict-card.fake::before       { background: #DC2626; }
+
+    .verdict-icon { font-size: 40px; margin-bottom: 12px; }
+    .verdict-label {
+      font-size: 22px; font-weight: 800; letter-spacing: -.5px;
+      margin-bottom: 6px;
+    }
+    .verdict-card.authentic .verdict-label { color: #15803D; }
+    .verdict-card.suspect   .verdict-label { color: #B45309; }
+    .verdict-card.fake      .verdict-label { color: #B91C1C; }
+
+    .confidence-bar-wrap {
+      margin: 14px 0 4px;
+    }
+    .confidence-bar-bg {
+      height: 8px; border-radius: 4px; background: rgba(0,0,0,.08);
+      overflow: hidden;
+    }
+    .confidence-bar-fill {
+      height: 100%; border-radius: 4px;
+      transition: width .6s cubic-bezier(.4,0,.2,1);
+    }
+    .verdict-card.authentic .confidence-bar-fill { background: #16A34A; }
+    .verdict-card.suspect   .confidence-bar-fill { background: #D97706; }
+    .verdict-card.fake      .confidence-bar-fill { background: #DC2626; }
+    .confidence-pct {
+      font-size: 28px; font-weight: 800; letter-spacing: -1px;
+      margin-bottom: 2px;
+    }
+    .confidence-sub { font-size: 12px; color: var(--text-3); font-weight: 500; }
+
+    .legit-details-card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      padding: 20px;
+      margin-bottom: 12px;
+    }
+    .legit-details-title {
+      font-size: 12px; font-weight: 700; color: var(--text-3);
+      text-transform: uppercase; letter-spacing: .6px;
+      margin-bottom: 14px;
+    }
+    .legit-detail-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 13px; color: var(--text); line-height: 1.55;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .legit-detail-item:last-child { border-bottom: none; }
+    .legit-detail-dot {
+      flex-shrink: 0; margin-top: 5px;
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--text-3);
+    }
+    .legit-resume {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      font-size: 14px; line-height: 1.65; color: var(--text-2);
+      font-style: italic;
+    }
+
     /* ── Responsive ──────────────────────────────────────── */
     @media (min-width: 600px) {
       .hero { padding: 72px 0 52px; }
@@ -759,6 +858,9 @@
         <span class="logo-name">Prizzy</span>
       </a>
       <div class="topbar-right">
+        <button class="btn-legit" id="btn-open-legit" type="button">
+          🔍 Legit Check
+        </button>
         <span class="topbar-badge">Vinted · IA</span>
         <form method="POST" action="/portal" style="display:contents">
           <button type="submit" class="btn-topbar" title="Gérer l'abonnement">
@@ -918,6 +1020,102 @@
 </div>
 
 
+<!-- ══════════ LEGIT CHECK FORM ══════════ -->
+<div id="screen-legit" class="screen">
+
+  <div class="results-topbar">
+    <div class="results-topbar-inner">
+      <button class="btn-back" id="btn-back-legit" aria-label="Retour">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div style="flex:1;min-width:0">
+        <p class="results-title">Legit Check IA</p>
+        <p class="results-subtitle">Authentification de marque</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="container" style="padding-top:24px">
+    <input type="file" id="legit-camera-input" accept="image/*" capture="environment" hidden>
+    <input type="file" id="legit-add-input" accept="image/*" hidden>
+
+    <div class="form-card">
+      <div class="upload-zone" id="legit-upload-zone">
+        <div class="upload-empty" id="legit-upload-empty">
+          <div class="upload-icon-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/>
+            </svg>
+          </div>
+          <div>
+            <p class="upload-label">Photographier l'article</p>
+            <p class="upload-hint">Coutures, logos, étiquettes — plusieurs angles</p>
+          </div>
+        </div>
+        <div class="photos-grid" id="legit-photos-grid"></div>
+        <button class="btn-add-photo" id="legit-btn-add-photo" type="button" style="color:#7C3AED">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Ajouter une autre photo
+        </button>
+        <p class="photo-count" id="legit-photo-count"></p>
+      </div>
+    </div>
+
+    <button id="btn-legit-analyze" class="btn-primary" disabled
+            style="background:linear-gradient(135deg,#7C3AED,#A855F7);box-shadow:0 4px 24px rgba(124,58,237,.3);margin-bottom:calc(32px + var(--safe-b))">
+      Analyser l'authenticité
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+    </button>
+  </div>
+</div>
+
+
+<!-- ══════════ LEGIT RESULTS ══════════ -->
+<div id="screen-legit-results" class="screen">
+
+  <div class="results-topbar">
+    <div class="results-topbar-inner">
+      <button class="btn-back" id="btn-back-legit-results" aria-label="Retour">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div style="flex:1;min-width:0">
+        <p class="results-title">Résultat Legit Check</p>
+        <p class="results-subtitle" id="legit-subtitle"></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="results-body">
+
+    <div class="verdict-card" id="verdict-card">
+      <div class="verdict-icon" id="verdict-icon"></div>
+      <div class="confidence-pct" id="confidence-pct"></div>
+      <div class="confidence-sub">Niveau de confiance</div>
+      <div class="confidence-bar-wrap">
+        <div class="confidence-bar-bg">
+          <div class="confidence-bar-fill" id="confidence-bar" style="width:0%"></div>
+        </div>
+      </div>
+      <div class="verdict-label" id="verdict-label"></div>
+    </div>
+
+    <div class="legit-resume" id="legit-resume"></div>
+
+    <div class="legit-details-card">
+      <p class="legit-details-title">Détails observés</p>
+      <div id="legit-details-list"></div>
+    </div>
+
+    <button class="btn-new-analysis" id="btn-new-legit"
+            style="border-color:rgba(124,58,237,.3);color:#7C3AED">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Nouveau Legit Check
+    </button>
+
+  </div>
+</div>
+
+
 <!-- Photo source picker -->
 <div class="photo-picker" id="photo-picker" role="dialog" aria-modal="true">
   <div class="picker-backdrop" id="picker-backdrop"></div>
@@ -1004,6 +1202,7 @@ const textarea    = document.getElementById('description');
 const btnAnalyze  = document.getElementById('btn-analyze');
 
 let photos = []; // [{file, url}]
+let legitPickerTarget = false;
 
 /* ── Photo source picker ─────────────────────────────── */
 const photoPicker  = document.getElementById('photo-picker');
@@ -1029,12 +1228,14 @@ document.getElementById('picker-cancel').addEventListener('click', () => closePi
 
 // Camera: click input immediately (required for iOS Safari gesture trust), then close
 document.getElementById('picker-camera').addEventListener('click', () => {
+  if (legitPickerTarget) return; // handled by legit flow
   cameraInput.click();
   closePicker();
 });
 
 // Gallery: same — synchronous click before closing
 document.getElementById('picker-gallery').addEventListener('click', () => {
+  if (legitPickerTarget) return; // handled by legit flow
   addInput.click();
   closePicker();
 });
@@ -1221,6 +1422,160 @@ function resetHome() {
 }
 document.getElementById('btn-back').onclick = resetHome;
 document.getElementById('btn-new-analysis').onclick = resetHome;
+
+/* ── Me / Elite gate ─────────────────────────────────── */
+(async () => {
+  try {
+    const res = await fetch('/me');
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data.plan === 'elite') {
+      document.getElementById('btn-open-legit').classList.add('visible');
+    }
+  } catch {}
+})();
+
+/* ── Legit Check flow ────────────────────────────────── */
+const legitCameraInput  = document.getElementById('legit-camera-input');
+const legitAddInput     = document.getElementById('legit-add-input');
+const legitUploadZone   = document.getElementById('legit-upload-zone');
+const legitUploadEmpty  = document.getElementById('legit-upload-empty');
+const legitPhotosGrid   = document.getElementById('legit-photos-grid');
+const legitAddPhotoBtn  = document.getElementById('legit-btn-add-photo');
+const legitPhotoCount   = document.getElementById('legit-photo-count');
+const btnLegitAnalyze   = document.getElementById('btn-legit-analyze');
+
+let legitPhotos = [];
+
+document.getElementById('btn-open-legit').addEventListener('click', () => {
+  showScreen('legit');
+});
+document.getElementById('btn-back-legit').addEventListener('click', () => showScreen('home'));
+document.getElementById('btn-back-legit-results').addEventListener('click', () => showScreen('legit'));
+document.getElementById('btn-new-legit').addEventListener('click', resetLegit);
+
+legitUploadZone.addEventListener('click', () => {
+  if (legitPhotos.length === 0) { legitPickerTarget = true; openPicker(); }
+});
+legitAddPhotoBtn.addEventListener('click', e => {
+  e.stopPropagation(); legitPickerTarget = true; openPicker();
+});
+
+// Route camera/gallery clicks to legit when needed
+const origCameraClick = document.getElementById('picker-camera').onclick;
+document.getElementById('picker-camera').addEventListener('click', () => {
+  if (legitPickerTarget) { legitCameraInput.click(); closePicker(); legitPickerTarget = false; }
+});
+document.getElementById('picker-gallery').addEventListener('click', () => {
+  if (legitPickerTarget) { legitAddInput.click(); closePicker(); legitPickerTarget = false; }
+});
+document.getElementById('picker-backdrop').addEventListener('click', () => { legitPickerTarget = false; });
+document.getElementById('picker-cancel').addEventListener('click', () => { legitPickerTarget = false; });
+
+legitCameraInput.addEventListener('change', e => {
+  const file = e.target.files[0]; if (file) addLegitPhoto(file); e.target.value = '';
+});
+legitAddInput.addEventListener('change', e => {
+  const file = e.target.files[0]; if (file) addLegitPhoto(file); e.target.value = '';
+});
+
+function addLegitPhoto(file) {
+  if (legitPhotos.length >= 5) return;
+  legitPhotos.push({ file, url: URL.createObjectURL(file) });
+  renderLegitPhotos();
+}
+
+function removeLegitiPhoto(idx) {
+  URL.revokeObjectURL(legitPhotos[idx].url);
+  legitPhotos.splice(idx, 1);
+  renderLegitPhotos();
+}
+
+function renderLegitPhotos() {
+  if (legitPhotos.length === 0) {
+    legitUploadEmpty.style.display = 'flex';
+    legitPhotosGrid.style.display = 'none';
+    legitAddPhotoBtn.style.display = 'none';
+    legitPhotoCount.style.display = 'none';
+    btnLegitAnalyze.disabled = true;
+    return;
+  }
+  legitUploadEmpty.style.display = 'none';
+  legitPhotosGrid.style.display = 'grid';
+  legitPhotosGrid.innerHTML = legitPhotos.map((p, i) => `
+    <div class="photo-thumb">
+      <img src="${p.url}" alt="Photo ${i + 1}">
+      <button class="photo-remove" data-idx="${i}" type="button" aria-label="Supprimer">×</button>
+    </div>`).join('');
+  legitPhotosGrid.onclick = e => {
+    const btn = e.target.closest('.photo-remove');
+    if (btn) removeLegitiPhoto(parseInt(btn.dataset.idx, 10));
+  };
+  if (legitPhotos.length < 5) {
+    legitAddPhotoBtn.style.display = 'flex';
+    legitPhotoCount.style.display = 'block';
+    legitPhotoCount.textContent = `${legitPhotos.length}/5 photo${legitPhotos.length > 1 ? 's' : ''}`;
+  } else {
+    legitAddPhotoBtn.style.display = 'none';
+    legitPhotoCount.style.display = 'block';
+    legitPhotoCount.textContent = '5/5 — maximum atteint';
+  }
+  btnLegitAnalyze.disabled = false;
+}
+
+function resetLegit() {
+  legitPhotos.forEach(p => URL.revokeObjectURL(p.url));
+  legitPhotos = [];
+  renderLegitPhotos();
+  showScreen('legit');
+}
+
+btnLegitAnalyze.addEventListener('click', async () => {
+  const fd = new FormData();
+  legitPhotos.forEach(p => fd.append('images', p.file));
+  showScreen('loading');
+  try {
+    const res = await fetch('/legit-check', { method: 'POST', body: fd });
+    if (res.status === 403) { showScreen('legit'); showToast('Plan Elite requis'); return; }
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    renderLegitResults(data);
+    showScreen('legit-results');
+  } catch (err) {
+    showScreen('legit');
+    showToast(err.message);
+  }
+});
+
+function renderLegitResults(data) {
+  const verdictMap = {
+    'Authentique':          { cls: 'authentic', icon: '✅' },
+    'Suspect':              { cls: 'suspect',   icon: '⚠️' },
+    'Contrefaçon probable': { cls: 'fake',      icon: '❌' },
+  };
+  const v = verdictMap[data.verdict] || { cls: 'suspect', icon: '❓' };
+
+  const card = document.getElementById('verdict-card');
+  card.className = 'verdict-card ' + v.cls;
+  document.getElementById('verdict-icon').textContent = v.icon;
+  document.getElementById('verdict-label').textContent = data.verdict;
+  document.getElementById('confidence-pct').textContent = (data.confiance ?? '—') + '%';
+  document.getElementById('confidence-bar').style.width = (data.confiance ?? 0) + '%';
+
+  const subtitle = data.marque_detectee
+    ? `${data.marque_detectee} · ${data.verdict}`
+    : data.verdict;
+  document.getElementById('legit-subtitle').textContent = subtitle;
+
+  document.getElementById('legit-resume').textContent = data.resume || '';
+
+  const details = data.details || [];
+  document.getElementById('legit-details-list').innerHTML = details.map(d => `
+    <div class="legit-detail-item">
+      <div class="legit-detail-dot"></div>
+      <span>${esc(d)}</span>
+    </div>`).join('');
+}
 
 /* ── Helpers ─────────────────────────────────────────── */
 function showToast(msg) {
