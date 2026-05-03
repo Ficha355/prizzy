@@ -91,6 +91,24 @@ def ping():
     return "pong"
 
 
+# ── Admin ─────────────────────────────────────────────────
+
+@app.route("/admin/add-elite", methods=["POST"])
+def admin_add_elite():
+    token = request.headers.get("X-Admin-Token") or request.form.get("token")
+    expected = os.environ.get("ADMIN_TOKEN", "")
+    if not expected or token != expected:
+        return jsonify({"error": "Non autorisé"}), 401
+
+    email = (request.form.get("email") or "").strip().lower()
+    if not email:
+        return jsonify({"error": "Paramètre 'email' manquant"}), 400
+
+    upsert_subscriber(email=email, status="active", plan="elite")
+    sub = get_subscriber(email)
+    return jsonify({"ok": True, "subscriber": dict(sub)})
+
+
 # ── Static / PWA ──────────────────────────────────────────
 
 @app.route("/sw.js")
