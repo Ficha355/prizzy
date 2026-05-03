@@ -137,6 +137,15 @@ async def on_message(message: discord.Message):
         print("[SKIP] aucune image valide dans les pièces jointes")
         return
 
+    oversized = [a for a in images_attachments if a.size > 5_242_880]
+    if oversized:
+        names = ", ".join(a.filename for a in oversized)
+        await message.reply(
+            f"⚠️ Image trop lourde ({names}). Merci d'envoyer une photo de moins de 5 MB.",
+            mention_author=False,
+        )
+        return
+
     print(f"[OK] {len(images_attachments)} image(s) détectée(s), lancement de l'analyse")
 
     status_msg = await message.reply("⏳ Analyse en cours…", mention_author=False)
