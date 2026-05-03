@@ -22,7 +22,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp"}
 
-stripe.api_key = os.environ.get("STRIPE_SECRET_KEY")
+stripe.api_key = (os.environ.get("STRIPE_SECRET_KEY") or "").strip()
 
 init_db()
 
