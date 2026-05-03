@@ -1,5 +1,5 @@
 #!/bin/bash
 set -e
 
-python3 bot.py &
-gunicorn app:app
+gunicorn app:app &
+python3 run_bot.py

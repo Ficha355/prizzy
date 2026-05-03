@@ -225,8 +225,3 @@ async def on_message(message: discord.Message):
         await status_msg.edit(content=f"❌ Erreur : {exc}")
 
 
-if __name__ == "__main__":
-    token = os.environ.get("DISCORD_BOT_TOKEN")
-    if not token:
-        raise RuntimeError("DISCORD_BOT_TOKEN manquant dans le .env")
-    client.run(token)
