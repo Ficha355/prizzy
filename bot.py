@@ -102,6 +102,11 @@ client = discord.Client(intents=intents)
 
 @client.event
 async def on_ready():
+    try:
+        await client.user.edit(username="Resell Elite™ x Prizzy")
+        print("[READY] Nom du bot mis à jour : Resell Elite™ x Prizzy")
+    except Exception as exc:
+        print(f"[READY] Impossible de changer le nom : {exc}")
     print(f"[READY] Prizzy bot connecté : {client.user} (id={client.user.id})")
     print(f"[READY] Serveurs accessibles : {len(client.guilds)}")
     for guild in client.guilds:
