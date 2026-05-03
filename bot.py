@@ -10,8 +10,6 @@ import discord
 from claude_client import analyze_clothing
 from vinted_client import search_items
 
-CHANNEL_ID = 1500445953843400805
-
 ALLOWED_MIME = {"image/jpeg", "image/png", "image/webp", "image/gif"}
 
 _SCORE_LABELS = [
@@ -105,7 +103,6 @@ client = discord.Client(intents=intents)
 @client.event
 async def on_ready():
     print(f"[READY] Prizzy bot connecté : {client.user} (id={client.user.id})")
-    print(f"[READY] Salon cible : {CHANNEL_ID}")
     print(f"[READY] Serveurs accessibles : {len(client.guilds)}")
     for guild in client.guilds:
         print(f"  [GUILD] {guild.name} (id={guild.id})")
@@ -117,15 +114,11 @@ async def on_ready():
 async def on_message(message: discord.Message):
     print(
         f"[MSG] auteur={message.author} bot={message.author.bot} "
-        f"salon={message.channel.id} attendu={CHANNEL_ID} "
-        f"pièces_jointes={len(message.attachments)}"
+        f"salon={message.channel.id} pièces_jointes={len(message.attachments)}"
     )
 
     if message.author.bot:
         print("[SKIP] message d'un bot")
-        return
-    if message.channel.id != CHANNEL_ID:
-        print(f"[SKIP] mauvais salon ({message.channel.id} != {CHANNEL_ID})")
         return
 
     for att in message.attachments:
