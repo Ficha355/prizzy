@@ -152,17 +152,52 @@
       font-size: clamp(24px, 4vw, 36px); font-weight: 800;
       letter-spacing: -.8px; margin-bottom: 40px; color: var(--text);
     }
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      max-width: 860px;
+      margin: 0 auto;
+    }
     .pricing-card {
       background: var(--surface);
       border-radius: 20px;
       box-shadow: var(--shadow-lg);
-      max-width: 420px; margin: 0 auto;
       overflow: hidden;
       position: relative;
     }
     .pricing-card::before {
       content: ''; position: absolute; top: 0; left: 0; right: 0;
       height: 4px; background: var(--teal);
+    }
+    .pricing-card.elite::before {
+      background: linear-gradient(90deg, #7C3AED, #A855F7);
+    }
+    .pricing-card.elite {
+      border: 2px solid rgba(124,58,237,.2);
+    }
+    .plan-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: linear-gradient(135deg, #7C3AED, #A855F7);
+      color: white; font-size: 10px; font-weight: 700;
+      letter-spacing: .5px; text-transform: uppercase;
+      padding: 3px 10px; border-radius: 100px;
+      margin-bottom: 10px;
+    }
+    .plan-name.elite { color: #7C3AED; }
+    .btn-subscribe.elite {
+      background: linear-gradient(135deg, #7C3AED, #A855F7);
+      box-shadow: 0 4px 20px rgba(124,58,237,.3);
+    }
+    .btn-subscribe.elite:hover {
+      background: linear-gradient(135deg, #6D28D9, #9333EA);
+      box-shadow: 0 6px 28px rgba(124,58,237,.4);
+    }
+    .feature-divider {
+      font-size: 11px; font-weight: 700; color: var(--text-3);
+      text-transform: uppercase; letter-spacing: .6px;
+      padding: 8px 0 4px; margin-top: 4px;
+      border-top: 1px solid var(--border);
     }
     .pricing-head {
       padding: 36px 36px 24px;
@@ -272,9 +307,10 @@
     }
 
     /* ── Responsive ── */
-    @media (max-width: 640px) {
+    @media (max-width: 720px) {
       .hero { padding: 48px 0 40px; }
       .steps-grid { grid-template-columns: 1fr; }
+      .pricing-grid { grid-template-columns: 1fr; max-width: 420px; }
       .pricing-head, .pricing-body { padding-left: 24px; padding-right: 24px; }
       .login-form { flex-direction: column; }
       .btn-login { width: 100%; }
@@ -355,56 +391,117 @@
 <!-- ── Pricing ── -->
 <section class="pricing" id="pricing">
   <div class="container">
-    <p class="section-eyebrow">Tarif</p>
+    <p class="section-eyebrow">Tarifs</p>
     <h2 class="section-title">Simple et sans surprise</h2>
 
-    <div class="pricing-card">
-      <div class="pricing-head">
-        <p class="plan-name">Prizzy Pro</p>
-        <div class="plan-price">
-          <span class="plan-amount">7,99€</span>
-          <span class="plan-period">/mois</span>
+    <div class="pricing-grid">
+
+      <!-- Plan Starter -->
+      <div class="pricing-card">
+        <div class="pricing-head">
+          <p class="plan-name">Prizzy Starter</p>
+          <div class="plan-price">
+            <span class="plan-amount">7,99€</span>
+            <span class="plan-period">/mois</span>
+          </div>
+          <p class="plan-note">Sans engagement · Résiliable à tout moment</p>
         </div>
-        <p class="plan-note">Sans engagement · Résiliable à tout moment</p>
+        <div class="pricing-body">
+          <ul class="feature-list">
+            <li>
+              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#09B1BA" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              Analyses illimitées
+            </li>
+            <li>
+              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#09B1BA" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              Vision IA multi-photos (jusqu'à 5)
+            </li>
+            <li>
+              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#09B1BA" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              Prix du marché sur 50 annonces Vinted
+            </li>
+            <li>
+              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#09B1BA" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              Score de vente /10 avec explication
+            </li>
+            <li>
+              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#09B1BA" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              Meilleur moment pour publier
+            </li>
+            <li>
+              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#09B1BA" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              Description Vinted auto-générée + copie
+            </li>
+          </ul>
+          <form method="POST" action="/subscribe">
+            <button type="submit" class="btn-subscribe">
+              S'abonner — 7,99€/mois
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
+          </form>
+          <p class="stripe-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            Paiement sécurisé par Stripe
+          </p>
+        </div>
       </div>
-      <div class="pricing-body">
-        <ul class="feature-list">
-          <li>
-            <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#09B1BA" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-            Analyses illimitées
-          </li>
-          <li>
-            <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#09B1BA" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-            Vision IA multi-photos (jusqu'à 5)
-          </li>
-          <li>
-            <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#09B1BA" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-            Prix du marché sur 50 annonces Vinted
-          </li>
-          <li>
-            <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#09B1BA" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-            Score de vente /10 avec explication
-          </li>
-          <li>
-            <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#09B1BA" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-            Meilleur moment pour publier
-          </li>
-          <li>
-            <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#09B1BA" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-            Description Vinted auto-générée + copie
-          </li>
-        </ul>
-        <form method="POST" action="/subscribe">
-          <button type="submit" class="btn-subscribe">
-            S'abonner — 7,99€/mois
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-          </button>
-        </form>
-        <p class="stripe-badge">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-          Paiement sécurisé par Stripe
-        </p>
+
+      <!-- Plan Elite -->
+      <div class="pricing-card elite">
+        <div class="pricing-head">
+          <div class="plan-badge">✦ Meilleure offre</div>
+          <p class="plan-name elite">Prizzy Elite</p>
+          <div class="plan-price">
+            <span class="plan-amount">21,99€</span>
+            <span class="plan-period">/mois</span>
+          </div>
+          <p class="plan-note">Sans engagement · Résiliable à tout moment</p>
+        </div>
+        <div class="pricing-body">
+          <ul class="feature-list">
+            <li>
+              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#09B1BA" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              Tout le plan Starter inclus
+            </li>
+            <li>
+              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#09B1BA" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              Analyses illimitées
+            </li>
+            <li>
+              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#09B1BA" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              Vision IA multi-photos (jusqu'à 5)
+            </li>
+            <p class="feature-divider">🔍 Legit Check IA exclusif</p>
+            <li>
+              <div class="check" style="background:rgba(124,58,237,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              Verdict : Authentique / Suspect / Contrefaçon
+            </li>
+            <li>
+              <div class="check" style="background:rgba(124,58,237,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              Score de confiance en %
+            </li>
+            <li>
+              <div class="check" style="background:rgba(124,58,237,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              Analyse détaillée coutures, logos, étiquettes
+            </li>
+            <li>
+              <div class="check" style="background:rgba(124,58,237,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              Nike, Jordan, Supreme, LV, Gucci, Balenciaga…
+            </li>
+          </ul>
+          <form method="POST" action="/subscribe-elite">
+            <button type="submit" class="btn-subscribe elite">
+              S'abonner — 21,99€/mois
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
+          </form>
+          <p class="stripe-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            Paiement sécurisé par Stripe
+          </p>
+        </div>
       </div>
+
     </div>
   </div>
 </section>

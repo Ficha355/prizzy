@@ -45,6 +45,57 @@ def _build_prompt(image_count: int, description: Optional[str]) -> str:
     return f"{intro}\n\n{_SCHEMA}"
 
 
+_LEGIT_SYSTEM = (
+    "Tu es un expert en authentification de vêtements et maroquinerie de luxe. "
+    "Tu as une connaissance approfondie des détails de fabrication : coutures, étiquettes, "
+    "logos, polices, finitions, hardware, pour des marques comme Nike, Jordan, Supreme, "
+    "Louis Vuitton, Gucci, Balenciaga, Off-White, Yeezy, Stone Island, Moncler, etc. "
+    "Réponds UNIQUEMENT avec un objet JSON valide, sans texte supplémentaire, "
+    "sans bloc markdown, sans explication."
+)
+
+_LEGIT_SCHEMA = """\
+Analyse ces photos et retourne un JSON avec exactement ces clés :
+{
+  "marque_detectee": "marque identifiée (string ou null)",
+  "verdict": "un parmi : Authentique | Suspect | Contrefaçon probable",
+  "confiance": nombre entier entre 0 et 100,
+  "details": [
+    "observation précise 1 (ex: coutures irrégulières, police du logo incorrecte…)",
+    "observation précise 2",
+    "observation précise 3"
+  ],
+  "resume": "synthèse en 1-2 phrases du verdict avec les éléments clés observés"
+}"""
+
+
+def legit_check(images: list[tuple[bytes, str]]) -> dict:
+    """
+    Authenticate a clothing/luxury item via Claude vision.
+    images: list of (data_bytes, mime_type) tuples (up to 5).
+    Returns a dict with keys: marque_detectee, verdict, confiance, details, resume.
+    """
+    content = []
+    for data, mime in images:
+        b64 = base64.standard_b64encode(data).decode("utf-8")
+        content.append({
+            "type": "image",
+            "source": {"type": "base64", "media_type": mime, "data": b64},
+        })
+    content.append({"type": "text", "text": _LEGIT_SCHEMA})
+
+    response = _client.messages.create(
+        model=MODEL,
+        max_tokens=1024,
+        system=_LEGIT_SYSTEM,
+        messages=[{"role": "user", "content": content}],
+    )
+
+    raw = next(b.text for b in response.content if b.type == "text").strip()
+    raw = re.sub(r"^```(?:json)?\s*|\s*```$", "", raw, flags=re.DOTALL).strip()
+    return json.loads(raw)
+
+
 def analyze_clothing(
     images: list[tuple[bytes, str]],
     description: Optional[str],

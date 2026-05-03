@@ -10,8 +10,8 @@ import uuid
 import statistics
 
 from vinted_client import search_items
-from claude_client import analyze_clothing
-from db import init_db, upsert_subscriber, has_active_subscription, get_subscriber
+from claude_client import analyze_clothing, legit_check
+from db import init_db, upsert_subscriber, has_active_subscription, has_elite_subscription, get_subscriber
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024  # 50 MB (up to 5 photos)
@@ -127,6 +127,24 @@ def subscribe():
             payment_method_types=["card"],
             line_items=[{"price": os.environ.get("STRIPE_PRICE_ID"), "quantity": 1}],
             mode="subscription",
+            metadata={"plan": "starter"},
+            success_url=request.url_root + "success?session_id={CHECKOUT_SESSION_ID}",
+            cancel_url=request.url_root + "cancel",
+            locale="fr",
+        )
+        return redirect(checkout.url, code=303)
+    except Exception as exc:
+        return render_template("landing.html", error=str(exc))
+
+
+@app.route("/subscribe-elite", methods=["POST"])
+def subscribe_elite():
+    try:
+        checkout = stripe.checkout.Session.create(
+            payment_method_types=["card"],
+            line_items=[{"price": os.environ.get("STRIPE_PRICE_ID_ELITE"), "quantity": 1}],
+            mode="subscription",
+            metadata={"plan": "elite"},
             success_url=request.url_root + "success?session_id={CHECKOUT_SESSION_ID}",
             cancel_url=request.url_root + "cancel",
             locale="fr",
@@ -144,11 +162,13 @@ def success():
     try:
         checkout = stripe.checkout.Session.retrieve(session_id)
         email = checkout.customer_details.email
+        plan = checkout.metadata.get("plan", "starter")
         upsert_subscriber(
             email=email,
             stripe_customer_id=checkout.customer,
             stripe_subscription_id=checkout.subscription,
             status="active",
+            plan=plan,
         )
         session["email"] = email
     except Exception:
@@ -233,6 +253,35 @@ def _deactivate_customer(customer_id: str):
             upsert_subscriber(c.email, status="inactive")
     except Exception:
         pass
+
+
+# ── Legit Check (Elite) ───────────────────────────────────
+
+@app.route("/legit-check", methods=["POST"])
+def legit_check_route():
+    email = session.get("email")
+    if not email or not has_elite_subscription(email):
+        return jsonify({"error": "Plan Prizzy Elite requis.", "redirect": "/"}), 403
+
+    mime_map = {
+        "jpg": "image/jpeg", "jpeg": "image/jpeg",
+        "png": "image/png",  "webp": "image/webp",
+    }
+    images = []
+    for file in request.files.getlist("images"):
+        if file and file.filename and _allowed_file(file.filename):
+            ext = file.filename.rsplit(".", 1)[1].lower()
+            images.append((file.read(), mime_map.get(ext, "image/jpeg")))
+
+    if not images:
+        return jsonify({"error": "Fournissez au moins une image."}), 400
+
+    try:
+        result = legit_check(images)
+    except Exception as exc:
+        return jsonify({"error": f"Erreur Legit Check IA : {exc}"}), 502
+
+    return jsonify(result)
 
 
 # ── Search ────────────────────────────────────────────────
