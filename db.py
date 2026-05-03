@@ -1,38 +1,65 @@
 import os
+import sqlite3
 from typing import Optional
 
-import psycopg2
-import psycopg2.extras
+DATABASE_URL = os.environ.get("DATABASE_URL", "")
+
+# Render fournit postgres://, psycopg2 attend postgresql://
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = "postgresql://" + DATABASE_URL[len("postgres://"):]
+
+USE_PG = bool(DATABASE_URL)
+
+if USE_PG:
+    import psycopg2
+    import psycopg2.extras
+
+DB_PATH = os.path.join(os.path.dirname(__file__), "prizzy.db")
 
 
-def _db_url() -> str:
-    url = os.environ.get("DATABASE_URL", "")
-    # Render fournit postgres://, psycopg2 attend postgresql://
-    if url.startswith("postgres://"):
-        url = "postgresql://" + url[len("postgres://"):]
-    return url
-
-
-def get_db() -> psycopg2.extensions.connection:
-    return psycopg2.connect(_db_url(), cursor_factory=psycopg2.extras.RealDictCursor)
+def get_db():
+    if USE_PG:
+        return psycopg2.connect(DATABASE_URL, cursor_factory=psycopg2.extras.RealDictCursor)
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
 
 
 def init_db():
     conn = get_db()
-    with conn.cursor() as cur:
-        cur.execute("""
+    if USE_PG:
+        with conn.cursor() as cur:
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS subscribers (
+                    id                     SERIAL PRIMARY KEY,
+                    email                  TEXT UNIQUE NOT NULL,
+                    stripe_customer_id     TEXT,
+                    stripe_subscription_id TEXT,
+                    status                 TEXT NOT NULL DEFAULT 'inactive',
+                    plan                   TEXT NOT NULL DEFAULT 'starter',
+                    created_at             TIMESTAMPTZ DEFAULT NOW(),
+                    updated_at             TIMESTAMPTZ DEFAULT NOW()
+                )
+            """)
+        conn.commit()
+    else:
+        conn.execute("""
             CREATE TABLE IF NOT EXISTS subscribers (
-                id                     SERIAL PRIMARY KEY,
+                id                     INTEGER PRIMARY KEY AUTOINCREMENT,
                 email                  TEXT UNIQUE NOT NULL,
                 stripe_customer_id     TEXT,
                 stripe_subscription_id TEXT,
                 status                 TEXT NOT NULL DEFAULT 'inactive',
                 plan                   TEXT NOT NULL DEFAULT 'starter',
-                created_at             TIMESTAMPTZ DEFAULT NOW(),
-                updated_at             TIMESTAMPTZ DEFAULT NOW()
+                created_at             TEXT DEFAULT (datetime('now')),
+                updated_at             TEXT DEFAULT (datetime('now'))
             )
         """)
-    conn.commit()
+        try:
+            conn.execute("ALTER TABLE subscribers ADD COLUMN plan TEXT NOT NULL DEFAULT 'starter'")
+        except Exception:
+            pass
+        conn.commit()
     conn.close()
 
 
@@ -44,18 +71,34 @@ def upsert_subscriber(
     plan: Optional[str] = None,
 ):
     conn = get_db()
-    with conn.cursor() as cur:
-        cur.execute(
+    if USE_PG:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                INSERT INTO subscribers
+                    (email, stripe_customer_id, stripe_subscription_id, status, plan, updated_at)
+                VALUES (%s, %s, %s, %s, COALESCE(%s, 'starter'), NOW())
+                ON CONFLICT (email) DO UPDATE SET
+                    stripe_customer_id     = COALESCE(EXCLUDED.stripe_customer_id,     subscribers.stripe_customer_id),
+                    stripe_subscription_id = COALESCE(EXCLUDED.stripe_subscription_id, subscribers.stripe_subscription_id),
+                    status                 = EXCLUDED.status,
+                    plan                   = COALESCE(EXCLUDED.plan, subscribers.plan),
+                    updated_at             = NOW()
+                """,
+                (email, stripe_customer_id, stripe_subscription_id, status, plan),
+            )
+    else:
+        conn.execute(
             """
             INSERT INTO subscribers
                 (email, stripe_customer_id, stripe_subscription_id, status, plan, updated_at)
-            VALUES (%s, %s, %s, %s, COALESCE(%s, 'starter'), NOW())
+            VALUES (?, ?, ?, ?, COALESCE(?, 'starter'), datetime('now'))
             ON CONFLICT (email) DO UPDATE SET
-                stripe_customer_id     = COALESCE(EXCLUDED.stripe_customer_id,     subscribers.stripe_customer_id),
-                stripe_subscription_id = COALESCE(EXCLUDED.stripe_subscription_id, subscribers.stripe_subscription_id),
-                status                 = EXCLUDED.status,
-                plan                   = COALESCE(EXCLUDED.plan, subscribers.plan),
-                updated_at             = NOW()
+                stripe_customer_id     = COALESCE(excluded.stripe_customer_id,     stripe_customer_id),
+                stripe_subscription_id = COALESCE(excluded.stripe_subscription_id, stripe_subscription_id),
+                status                 = excluded.status,
+                plan                   = COALESCE(excluded.plan, plan),
+                updated_at             = datetime('now')
             """,
             (email, stripe_customer_id, stripe_subscription_id, status, plan),
         )
@@ -65,9 +108,14 @@ def upsert_subscriber(
 
 def get_subscriber(email: str) -> Optional[dict]:
     conn = get_db()
-    with conn.cursor() as cur:
-        cur.execute("SELECT * FROM subscribers WHERE email = %s", (email,))
-        row = cur.fetchone()
+    if USE_PG:
+        with conn.cursor() as cur:
+            cur.execute("SELECT * FROM subscribers WHERE email = %s", (email,))
+            row = cur.fetchone()
+    else:
+        row = conn.execute(
+            "SELECT * FROM subscribers WHERE email = ?", (email,)
+        ).fetchone()
     conn.close()
     return dict(row) if row else None
 
