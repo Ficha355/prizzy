@@ -124,9 +124,10 @@ async def on_message(message: discord.Message):
     if message.author.bot:
         print("[SKIP] message d'un bot")
         return
-    if message.channel.id != CHANNEL_ID:
-        print(f"[SKIP] mauvais salon ({message.channel.id} != {CHANNEL_ID})")
-        return
+    # DEBUG: restriction salon désactivée temporairement
+    # if message.channel.id != CHANNEL_ID:
+    #     print(f"[SKIP] mauvais salon ({message.channel.id} != {CHANNEL_ID})")
+    #     return
 
     for att in message.attachments:
         print(f"[ATT] nom={att.filename} content_type={att.content_type} url={att.url}")
