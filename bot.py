@@ -104,22 +104,37 @@ client = discord.Client(intents=intents)
 
 @client.event
 async def on_ready():
-    print(f"Prizzy bot connecté : {client.user}")
+    print(f"[READY] Prizzy bot connecté : {client.user} (id={client.user.id})")
+    print(f"[READY] Salon cible : {CHANNEL_ID}")
 
 
 @client.event
 async def on_message(message: discord.Message):
+    print(
+        f"[MSG] auteur={message.author} bot={message.author.bot} "
+        f"salon={message.channel.id} attendu={CHANNEL_ID} "
+        f"pièces_jointes={len(message.attachments)}"
+    )
+
     if message.author.bot:
+        print("[SKIP] message d'un bot")
         return
     if message.channel.id != CHANNEL_ID:
+        print(f"[SKIP] mauvais salon ({message.channel.id} != {CHANNEL_ID})")
         return
+
+    for att in message.attachments:
+        print(f"[ATT] nom={att.filename} content_type={att.content_type} url={att.url}")
 
     images_attachments = [
         a for a in message.attachments
         if (a.content_type or "").split(";")[0].strip() in ALLOWED_MIME
     ]
     if not images_attachments:
+        print("[SKIP] aucune image valide dans les pièces jointes")
         return
+
+    print(f"[OK] {len(images_attachments)} image(s) détectée(s), lancement de l'analyse")
 
     status_msg = await message.reply("⏳ Analyse en cours…", mention_author=False)
 
