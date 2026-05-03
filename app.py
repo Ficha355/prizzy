@@ -84,6 +84,13 @@ def _best_publish_time(price_stats: dict) -> dict:
         return {"jour": "Samedi", "creneau": "10h – 12h"}
 
 
+# ── Health check ─────────────────────────────────────────
+
+@app.route("/ping")
+def ping():
+    return "pong"
+
+
 # ── Static / PWA ──────────────────────────────────────────
 
 @app.route("/sw.js")
