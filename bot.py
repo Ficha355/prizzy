@@ -151,18 +151,11 @@ async def on_message(message: discord.Message):
     status_msg = await message.reply("⏳ Analyse en cours…", mention_author=False)
 
     try:
-        mime_map = {
-            "image/jpeg": "image/jpeg",
-            "image/png": "image/png",
-            "image/webp": "image/webp",
-            "image/gif": "image/jpeg",
-        }
-
         images: list[tuple[bytes, str]] = []
         for att in images_attachments[:5]:
             mime = (att.content_type or "image/jpeg").split(";")[0].strip()
             data = await _download(att.url)
-            images.append((data, mime_map.get(mime, "image/jpeg")))
+            images.append((data, mime))
 
         description = message.content.strip() or None
 
