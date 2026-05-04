@@ -7,7 +7,7 @@ import statistics
 import aiohttp
 import discord
 
-from claude_client import analyze_clothing
+from claude_client import analyze_clothing, legit_check
 from vinted_client import search_items
 
 ALLOWED_MIME = {"image/jpeg", "image/png", "image/webp", "image/gif"}
@@ -98,10 +98,88 @@ async def _download(url: str) -> bytes:
 intents = discord.Intents.default()
 intents.message_content = True
 client = discord.Client(intents=intents)
+tree = discord.app_commands.CommandTree(client)
+
+
+@tree.command(name="legitcheck", description="Vérifie l'authenticité d'un article de luxe via IA")
+async def legitcheck(
+    interaction: discord.Interaction,
+    photo: discord.Attachment,
+    photo2: discord.Attachment = None,
+    photo3: discord.Attachment = None,
+):
+    await interaction.response.defer(thinking=True)
+
+    attachments = [a for a in [photo, photo2, photo3] if a is not None]
+    invalid = [a for a in attachments if (a.content_type or "").split(";")[0].strip() not in ALLOWED_MIME]
+    if invalid:
+        await interaction.followup.send("⚠️ Formats acceptés : JPEG, PNG, WebP, GIF.")
+        return
+    oversized = [a for a in attachments if a.size > 5_242_880]
+    if oversized:
+        await interaction.followup.send("⚠️ Chaque photo doit faire moins de 5 MB.")
+        return
+
+    try:
+        images: list[tuple[bytes, str]] = []
+        for att in attachments:
+            mime = (att.content_type or "image/jpeg").split(";")[0].strip()
+            data = await _download(att.url)
+            images.append((data, mime))
+
+        loop = asyncio.get_running_loop()
+        result = await loop.run_in_executor(None, legit_check, images)
+
+        verdict = result.get("verdict", "Inconnu")
+        confiance = result.get("confiance", 0)
+        marque = result.get("marque_detectee") or "Non identifiée"
+        details = result.get("details", [])
+        resume = result.get("resume", "")
+
+        if verdict == "Authentique":
+            color = discord.Color.green()
+            verdict_emoji = "✅"
+        elif verdict == "Suspect":
+            color = discord.Color.orange()
+            verdict_emoji = "⚠️"
+        else:
+            color = discord.Color.red()
+            verdict_emoji = "❌"
+
+        confiance_dot = "🟢" if confiance >= 80 else ("🟠" if confiance >= 50 else "🔴")
+
+        embed = discord.Embed(
+            title=f"{verdict_emoji} Legit Check — {marque}",
+            description=resume,
+            color=color,
+        )
+        embed.add_field(name="Verdict", value=f"**{verdict}**", inline=True)
+        embed.add_field(
+            name="Score de confiance",
+            value=f"{confiance_dot} **{confiance}/100**",
+            inline=True,
+        )
+        if details:
+            embed.add_field(
+                name="Observations",
+                value="\n".join(f"• {d}" for d in details[:5]),
+                inline=False,
+            )
+        embed.set_footer(text="Prizzy Legit Check IA")
+
+        await interaction.followup.send(embed=embed)
+
+    except Exception as exc:
+        await interaction.followup.send(f"❌ Erreur lors de l'analyse : {exc}")
 
 
 @client.event
 async def on_ready():
+    try:
+        await tree.sync()
+        print("[READY] Slash commands synchronisées")
+    except Exception as exc:
+        print(f"[READY] Erreur sync slash commands : {exc}")
     try:
         await client.user.edit(username="Resell Elite™ x Prizzy")
         print("[READY] Nom du bot mis à jour : Resell Elite™ x Prizzy")
