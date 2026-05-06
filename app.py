@@ -361,9 +361,12 @@ def serve_upload(filename):
 
 @app.route("/photo-ia", methods=["POST"])
 def photo_ia():
-    email = session.get("email")
-    if not email or not has_premium_subscription(email):
-        return jsonify({"error": "Plan Prizzy Elite ou Ultimate requis.", "redirect": "/"}), 403
+    bot_token  = request.headers.get("X-Bot-Token", "")
+    admin_token = os.environ.get("ADMIN_TOKEN", "")
+    if not (bot_token and admin_token and bot_token == admin_token):
+        email = session.get("email")
+        if not email or not has_premium_subscription(email):
+            return jsonify({"error": "Plan Prizzy Elite ou Ultimate requis.", "redirect": "/"}), 403
 
     mime_map = {
         "jpg": "image/jpeg", "jpeg": "image/jpeg",
