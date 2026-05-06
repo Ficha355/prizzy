@@ -96,6 +96,47 @@ def legit_check(images: list[tuple[bytes, str]]) -> dict:
     return json.loads(raw)
 
 
+_PHOTO_IA_SYSTEM = (
+    "You are a fashion expert and professional product photographer. "
+    "Analyze clothing photos to create precise DALL-E 3 prompts for professional product shots. "
+    "Respond ONLY with a valid JSON object, no extra text, no markdown blocks."
+)
+
+_PHOTO_IA_SCHEMA = """\
+Analyze this clothing photo and return a JSON with exactly these keys:
+{
+  "description_fr": "description précise en français de l'article : type de vêtement, couleur principale, matière apparente, marque si visible, détails notables (boutons, broderies, motifs, coupe...)",
+  "dalle_prompt": "Professional e-commerce product photo of a [describe the exact garment: type, color, fabric, visible brand, key details such as buttons/zippers/patterns/cut], displayed on a pure white background, studio lighting, sharp focus, high resolution, no model, ghost mannequin or flat lay presentation, Vinted-style product photo"
+}"""
+
+
+def describe_for_dalle(images: list[tuple[bytes, str]]) -> dict:
+    """
+    Analyze a clothing photo with Claude and return a description + DALL-E 3 prompt.
+    images: list of (data_bytes, mime_type) tuples (1 image expected).
+    Returns a dict with keys: description_fr, dalle_prompt.
+    """
+    content = []
+    for data, mime in images:
+        b64 = base64.standard_b64encode(data).decode("utf-8")
+        content.append({
+            "type": "image",
+            "source": {"type": "base64", "media_type": mime, "data": b64},
+        })
+    content.append({"type": "text", "text": _PHOTO_IA_SCHEMA})
+
+    response = _client.messages.create(
+        model=MODEL,
+        max_tokens=512,
+        system=_PHOTO_IA_SYSTEM,
+        messages=[{"role": "user", "content": content}],
+    )
+
+    raw = next(b.text for b in response.content if b.type == "text").strip()
+    raw = re.sub(r"^```(?:json)?\s*|\s*```$", "", raw, flags=re.DOTALL).strip()
+    return json.loads(raw)
+
+
 def analyze_clothing(
     images: list[tuple[bytes, str]],
     description: Optional[str],

@@ -39,6 +39,13 @@ def init_db():
                     updated_at             TIMESTAMPTZ DEFAULT NOW()
                 )
             """)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS discord_users (
+                    discord_id TEXT PRIMARY KEY,
+                    email      TEXT NOT NULL,
+                    created_at TIMESTAMPTZ DEFAULT NOW()
+                )
+            """)
         conn.commit()
     else:
         conn.execute("""
@@ -57,6 +64,13 @@ def init_db():
             conn.execute("ALTER TABLE subscribers ADD COLUMN plan TEXT NOT NULL DEFAULT 'starter'")
         except Exception:
             pass
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS discord_users (
+                discord_id TEXT PRIMARY KEY,
+                email      TEXT NOT NULL,
+                created_at TEXT DEFAULT (datetime('now'))
+            )
+        """)
         conn.commit()
     conn.close()
 
@@ -126,3 +140,42 @@ def has_active_subscription(email: str) -> bool:
 def has_elite_subscription(email: str) -> bool:
     sub = get_subscriber(email)
     return sub is not None and sub["status"] == "active" and sub.get("plan") == "elite"
+
+
+def get_discord_user_email(discord_id: str) -> Optional[str]:
+    conn = get_db()
+    if USE_PG:
+        with conn.cursor() as cur:
+            cur.execute("SELECT email FROM discord_users WHERE discord_id = %s", (discord_id,))
+            row = cur.fetchone()
+    else:
+        row = conn.execute(
+            "SELECT email FROM discord_users WHERE discord_id = ?", (discord_id,)
+        ).fetchone()
+    conn.close()
+    return row["email"] if row else None
+
+
+def link_discord_user(discord_id: str, email: str) -> None:
+    conn = get_db()
+    if USE_PG:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                INSERT INTO discord_users (discord_id, email)
+                VALUES (%s, %s)
+                ON CONFLICT (discord_id) DO UPDATE SET email = EXCLUDED.email
+                """,
+                (discord_id, email),
+            )
+    else:
+        conn.execute(
+            """
+            INSERT INTO discord_users (discord_id, email)
+            VALUES (?, ?)
+            ON CONFLICT (discord_id) DO UPDATE SET email = excluded.email
+            """,
+            (discord_id, email),
+        )
+    conn.commit()
+    conn.close()

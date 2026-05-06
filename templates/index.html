@@ -733,6 +733,58 @@
     }
     .picker-cancel:active { background: var(--gray-200); }
 
+    /* ── Photo IA button ────────────────────────────────── */
+    .btn-photo-ia {
+      display: none;
+      align-items: center; gap: 5px;
+      padding: 5px 11px; border-radius: 8px;
+      border: 1.5px solid rgba(234,88,12,.3);
+      background: rgba(234,88,12,.06);
+      font-family: inherit; font-size: 12px; font-weight: 700;
+      color: #EA580C; cursor: pointer; white-space: nowrap;
+      transition: all var(--transition);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-photo-ia:hover { background: rgba(234,88,12,.12); border-color: rgba(234,88,12,.5); }
+    .btn-photo-ia.visible { display: flex; }
+
+    /* ── Photo IA screens ───────────────────────────────── */
+    #screen-photo-ia { background: var(--bg); }
+    #screen-photo-ia-result { background: var(--bg); }
+
+    .photo-ia-result-img {
+      width: 100%; border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      display: block;
+      margin-bottom: 12px;
+    }
+    .photo-ia-desc {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      font-size: 14px; line-height: 1.65; color: var(--text-2);
+    }
+    .photo-ia-desc strong {
+      display: block; font-size: 11px; font-weight: 700;
+      color: var(--text-3); text-transform: uppercase;
+      letter-spacing: .6px; margin-bottom: 6px;
+    }
+    .btn-download {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; padding: 14px;
+      background: #EA580C; color: white;
+      border: none; border-radius: var(--radius-lg);
+      font-family: inherit; font-size: 15px; font-weight: 600;
+      cursor: pointer; text-decoration: none;
+      box-shadow: 0 4px 24px rgba(234,88,12,.3);
+      transition: all var(--transition);
+      -webkit-tap-highlight-color: transparent;
+      margin-bottom: 8px;
+    }
+    .btn-download:hover { background: #C2410C; transform: translateY(-1px); }
+
     /* ── Legit Check ────────────────────────────────────── */
     .btn-legit {
       display: none;
@@ -858,6 +910,9 @@
         <span class="logo-name">Prizzy</span>
       </a>
       <div class="topbar-right">
+        <button class="btn-photo-ia" id="btn-open-photo-ia" type="button">
+          ✨ Photo IA
+        </button>
         <button class="btn-legit" id="btn-open-legit" type="button">
           🔍 Legit Check
         </button>
@@ -1014,6 +1069,95 @@
     <button class="btn-new-analysis" id="btn-new-analysis">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       Nouvelle analyse
+    </button>
+
+  </div>
+</div>
+
+
+<!-- ══════════ PHOTO IA FORM ══════════ -->
+<div id="screen-photo-ia" class="screen">
+
+  <div class="results-topbar">
+    <div class="results-topbar-inner">
+      <button class="btn-back" id="btn-back-photo-ia" aria-label="Retour">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div style="flex:1;min-width:0">
+        <p class="results-title">Photo IA</p>
+        <p class="results-subtitle">Génération photo produit professionnelle</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="container" style="padding-top:24px">
+    <input type="file" id="photo-ia-input" accept="image/*" hidden>
+
+    <div class="form-card">
+      <div class="upload-zone" id="photo-ia-zone">
+        <div class="upload-empty" id="photo-ia-empty">
+          <div class="upload-icon-wrap" style="border-color:rgba(234,88,12,.35);background:rgba(234,88,12,.06)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EA580C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/>
+            </svg>
+          </div>
+          <div>
+            <p class="upload-label">Uploader une photo</p>
+            <p class="upload-hint">Même floue, froissée ou mal cadrée</p>
+          </div>
+        </div>
+        <div id="photo-ia-preview" style="display:none;padding:16px 16px 0">
+          <img id="photo-ia-preview-img" src="" alt="Aperçu" style="width:100%;border-radius:var(--radius-sm);aspect-ratio:1;object-fit:cover;display:block">
+          <button class="btn-add-photo" id="photo-ia-change" type="button" style="color:#EA580C;border-top:1px solid var(--border);margin-top:12px">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            Changer la photo
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <button id="btn-photo-ia-generate" class="btn-primary" disabled
+            style="background:linear-gradient(135deg,#EA580C,#F97316);box-shadow:0 4px 24px rgba(234,88,12,.3);margin-bottom:calc(32px + var(--safe-b))">
+      Générer la photo produit
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+    </button>
+  </div>
+</div>
+
+
+<!-- ══════════ PHOTO IA RESULT ══════════ -->
+<div id="screen-photo-ia-result" class="screen">
+
+  <div class="results-topbar">
+    <div class="results-topbar-inner">
+      <button class="btn-back" id="btn-back-photo-ia-result" aria-label="Retour">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div style="flex:1;min-width:0">
+        <p class="results-title">Photo générée</p>
+        <p class="results-subtitle" id="photo-ia-subtitle">Style photo produit Vinted</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="results-body">
+
+    <img id="photo-ia-result-img" src="" alt="Photo générée" class="photo-ia-result-img">
+
+    <div class="photo-ia-desc">
+      <strong>Article détecté</strong>
+      <span id="photo-ia-desc-text"></span>
+    </div>
+
+    <a id="btn-photo-ia-download" href="#" download="photo-produit-prizzy.png" class="btn-download">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Télécharger la photo
+    </a>
+
+    <button class="btn-new-analysis" id="btn-new-photo-ia"
+            style="border-color:rgba(234,88,12,.3);color:#EA580C">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Nouvelle photo IA
     </button>
 
   </div>
@@ -1188,6 +1332,8 @@ function showScreen(id) {
     s.classList.toggle('active', s.id === 'screen-' + id)
   );
   if (id === 'results') document.getElementById('screen-results').scrollTop = 0;
+  if (id === 'photo-ia-result') document.getElementById('screen-photo-ia-result').scrollTop = 0;
+  if (id === 'legit-results') document.getElementById('screen-legit-results').scrollTop = 0;
 }
 
 /* ── Upload / photos ─────────────────────────────────── */
@@ -1431,6 +1577,7 @@ document.getElementById('btn-new-analysis').onclick = resetHome;
     const data = await res.json();
     if (data.plan === 'elite') {
       document.getElementById('btn-open-legit').classList.add('visible');
+      document.getElementById('btn-open-photo-ia').classList.add('visible');
     }
   } catch {}
 })();
@@ -1575,6 +1722,78 @@ function renderLegitResults(data) {
       <div class="legit-detail-dot"></div>
       <span>${esc(d)}</span>
     </div>`).join('');
+}
+
+/* ── Photo IA flow ───────────────────────────────────── */
+const photoIaInput   = document.getElementById('photo-ia-input');
+const photoIaZone    = document.getElementById('photo-ia-zone');
+const photoIaEmpty   = document.getElementById('photo-ia-empty');
+const photoIaPreview = document.getElementById('photo-ia-preview');
+const photoIaImg     = document.getElementById('photo-ia-preview-img');
+const btnPhotoIaGen  = document.getElementById('btn-photo-ia-generate');
+let photoIaFile      = null;
+let photoIaPreviewUrl = null;
+
+document.getElementById('btn-open-photo-ia').addEventListener('click', () => showScreen('photo-ia'));
+document.getElementById('btn-back-photo-ia').addEventListener('click', () => showScreen('home'));
+document.getElementById('btn-back-photo-ia-result').addEventListener('click', () => showScreen('photo-ia'));
+document.getElementById('btn-new-photo-ia').addEventListener('click', resetPhotoIa);
+
+photoIaZone.addEventListener('click', () => { if (!photoIaFile) photoIaInput.click(); });
+document.getElementById('photo-ia-change').addEventListener('click', e => {
+  e.stopPropagation(); photoIaInput.click();
+});
+
+photoIaInput.addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (photoIaPreviewUrl) URL.revokeObjectURL(photoIaPreviewUrl);
+  photoIaFile = file;
+  photoIaPreviewUrl = URL.createObjectURL(file);
+  photoIaImg.src = photoIaPreviewUrl;
+  photoIaEmpty.style.display = 'none';
+  photoIaPreview.style.display = 'block';
+  btnPhotoIaGen.disabled = false;
+  e.target.value = '';
+});
+
+btnPhotoIaGen.addEventListener('click', async () => {
+  if (!photoIaFile) return;
+  const fd = new FormData();
+  fd.append('image', photoIaFile);
+  showScreen('loading');
+  document.querySelector('#screen-loading .loading-sub').textContent =
+    'Claude analyse · DALL-E 3 génère…';
+  try {
+    const res = await fetch('/photo-ia', { method: 'POST', body: fd });
+    if (res.status === 403) { showScreen('photo-ia'); showToast('Plan Elite requis'); return; }
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    document.getElementById('photo-ia-result-img').src = data.image_url;
+    document.getElementById('photo-ia-desc-text').textContent = data.description || '';
+    document.getElementById('photo-ia-subtitle').textContent = data.description
+      ? data.description.split(',')[0] : 'Style photo produit Vinted';
+    const dl = document.getElementById('btn-photo-ia-download');
+    dl.href = data.image_url;
+    showScreen('photo-ia-result');
+  } catch (err) {
+    showScreen('photo-ia');
+    showToast(err.message);
+  } finally {
+    document.querySelector('#screen-loading .loading-sub').textContent =
+      'Analyse en cours avec Prizzy IA';
+  }
+});
+
+function resetPhotoIa() {
+  if (photoIaPreviewUrl) { URL.revokeObjectURL(photoIaPreviewUrl); photoIaPreviewUrl = null; }
+  photoIaFile = null;
+  photoIaImg.src = '';
+  photoIaEmpty.style.display = 'flex';
+  photoIaPreview.style.display = 'none';
+  btnPhotoIaGen.disabled = true;
+  photoIaInput.value = '';
+  showScreen('photo-ia');
 }
 
 /* ── Helpers ─────────────────────────────────────────── */

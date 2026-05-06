@@ -9,8 +9,10 @@ import os
 import uuid
 import statistics
 
+import urllib.request
+
 from vinted_client import search_items
-from claude_client import analyze_clothing, legit_check
+from claude_client import analyze_clothing, legit_check, describe_for_dalle
 from db import init_db, upsert_subscriber, has_active_subscription, has_elite_subscription, get_subscriber
 
 app = Flask(__name__)
@@ -313,6 +315,74 @@ def legit_check_route():
         return jsonify({"error": f"Erreur Legit Check IA : {exc}"}), 502
 
     return jsonify(result)
+
+
+# ── Uploads (serve saved generated images) ───────────────
+
+@app.route("/uploads/<path:filename>")
+def serve_upload(filename):
+    return send_from_directory(UPLOAD_FOLDER, filename)
+
+
+# ── Photo IA (Elite) ──────────────────────────────────────
+
+@app.route("/photo-ia", methods=["POST"])
+def photo_ia():
+    email = session.get("email")
+    if not email or not has_elite_subscription(email):
+        return jsonify({"error": "Plan Prizzy Elite requis.", "redirect": "/"}), 403
+
+    mime_map = {
+        "jpg": "image/jpeg", "jpeg": "image/jpeg",
+        "png": "image/png",  "webp": "image/webp",
+    }
+
+    file = request.files.get("image")
+    if not file or not file.filename or not _allowed_file(file.filename):
+        return jsonify({"error": "Fournissez une image valide."}), 400
+
+    ext = file.filename.rsplit(".", 1)[1].lower()
+    image_data = file.read()
+    mime_type = mime_map.get(ext, "image/jpeg")
+
+    try:
+        analysis = describe_for_dalle([(image_data, mime_type)])
+    except Exception as exc:
+        return jsonify({"error": f"Erreur d'analyse Claude : {exc}"}), 502
+
+    dalle_prompt = analysis.get("dalle_prompt", "")
+
+    openai_key = os.environ.get("OPENAI_API_KEY", "").strip()
+    if not openai_key:
+        return jsonify({"error": "Clé OpenAI manquante (OPENAI_API_KEY)."}), 500
+
+    try:
+        import openai as _openai
+        oa = _openai.OpenAI(api_key=openai_key)
+        dalle_resp = oa.images.generate(
+            model="dall-e-3",
+            prompt=dalle_prompt,
+            size="1024x1024",
+            quality="standard",
+            n=1,
+        )
+        dalle_url = dalle_resp.data[0].url
+    except Exception as exc:
+        return jsonify({"error": f"Erreur DALL-E 3 : {exc}"}), 502
+
+    try:
+        filename = f"photo_ia_{uuid.uuid4().hex}.png"
+        save_path = os.path.join(UPLOAD_FOLDER, filename)
+        urllib.request.urlretrieve(dalle_url, save_path)
+        local_url = f"/uploads/{filename}"
+    except Exception:
+        local_url = dalle_url
+
+    return jsonify({
+        "description": analysis.get("description_fr", ""),
+        "dalle_prompt": dalle_prompt,
+        "image_url": local_url,
+    })
 
 
 # ── Search ────────────────────────────────────────────────
