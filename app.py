@@ -369,6 +369,9 @@ def photo_ia():
 
     dalle_prompt = analysis.get("dalle_prompt", "")
 
+    app.logger.info("[photo-ia] Claude description: %s", analysis.get("description_fr", ""))
+    app.logger.info("[photo-ia] DALL-E prompt (%d chars): %s", len(dalle_prompt), dalle_prompt)
+
     openai_key = os.environ.get("OPENAI_API_KEY", "").strip()
     if not openai_key:
         return jsonify({"error": "Clé OpenAI manquante (OPENAI_API_KEY)."}), 500
@@ -384,7 +387,9 @@ def photo_ia():
             n=1,
         )
         dalle_url = dalle_resp.data[0].url
+        app.logger.info("[photo-ia] DALL-E URL: %s", dalle_url)
     except Exception as exc:
+        app.logger.error("[photo-ia] DALL-E error (type=%s): %s", type(exc).__name__, exc, exc_info=True)
         return jsonify({"error": f"Erreur DALL-E 3 : {exc}"}), 502
 
     try:
