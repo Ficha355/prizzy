@@ -35,6 +35,19 @@ def _allowed_file(filename: str) -> bool:
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
+_SIZE_LIMIT = 5 * 1024 * 1024  # 5 MB
+
+
+def _compress_image(data: bytes, mime_type: str) -> tuple[bytes, str]:
+    if len(data) <= _SIZE_LIMIT:
+        return data, mime_type
+    img = Image.open(io.BytesIO(data)).convert("RGB")
+    img.thumbnail((1920, 1920), Image.LANCZOS)
+    buf = io.BytesIO()
+    img.save(buf, format="JPEG", quality=85, optimize=True)
+    return buf.getvalue(), "image/jpeg"
+
+
 # ── Sale score helpers ────────────────────────────────────
 
 _SCORE_LABELS = [
@@ -306,7 +319,8 @@ def legit_check_route():
     for file in request.files.getlist("images"):
         if file and file.filename and _allowed_file(file.filename):
             ext = file.filename.rsplit(".", 1)[1].lower()
-            images.append((file.read(), mime_map.get(ext, "image/jpeg")))
+            data, mime = _compress_image(file.read(), mime_map.get(ext, "image/jpeg"))
+            images.append((data, mime))
 
     if not images:
         return jsonify({"error": "Fournissez au moins une image."}), 400
@@ -344,16 +358,9 @@ def photo_ia():
         return jsonify({"error": "Fournissez une image valide."}), 400
 
     ext = file.filename.rsplit(".", 1)[1].lower()
-    image_data = file.read()
-    mime_type = mime_map.get(ext, "image/jpeg")
-
-    if len(image_data) > 5 * 1024 * 1024:
-        img = Image.open(io.BytesIO(image_data)).convert("RGB")
-        img.thumbnail((1920, 1920), Image.LANCZOS)
-        buf = io.BytesIO()
-        img.save(buf, format="JPEG", quality=85, optimize=True)
-        image_data = buf.getvalue()
-        mime_type = "image/jpeg"
+    image_data, mime_type = _compress_image(
+        file.read(), mime_map.get(ext, "image/jpeg")
+    )
 
     try:
         analysis = describe_for_dalle([(image_data, mime_type)])
@@ -443,7 +450,8 @@ def analyze():
     for file in request.files.getlist("images"):
         if file and file.filename and _allowed_file(file.filename):
             ext = file.filename.rsplit(".", 1)[1].lower()
-            images.append((file.read(), mime_map.get(ext, "image/jpeg")))
+            data, mime = _compress_image(file.read(), mime_map.get(ext, "image/jpeg"))
+            images.append((data, mime))
 
     if not images and not query:
         return jsonify({"error": "Fournissez une image et/ou une description."}), 400
