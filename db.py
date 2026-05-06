@@ -142,6 +142,17 @@ def has_elite_subscription(email: str) -> bool:
     return sub is not None and sub["status"] == "active" and sub.get("plan") == "elite"
 
 
+def has_ultimate_subscription(email: str) -> bool:
+    sub = get_subscriber(email)
+    return sub is not None and sub["status"] == "active" and sub.get("plan") == "ultimate"
+
+
+def has_premium_subscription(email: str) -> bool:
+    """True for elite or ultimate plans."""
+    sub = get_subscriber(email)
+    return sub is not None and sub["status"] == "active" and sub.get("plan") in ("elite", "ultimate")
+
+
 def get_discord_user_email(discord_id: str) -> Optional[str]:
     conn = get_db()
     if USE_PG:

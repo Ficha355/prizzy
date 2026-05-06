@@ -1575,7 +1575,7 @@ document.getElementById('btn-new-analysis').onclick = resetHome;
     const res = await fetch('/me');
     if (!res.ok) return;
     const data = await res.json();
-    if (data.plan === 'elite') {
+    if (data.plan === 'elite' || data.plan === 'ultimate') {
       document.getElementById('btn-open-legit').classList.add('visible');
       document.getElementById('btn-open-photo-ia').classList.add('visible');
     }

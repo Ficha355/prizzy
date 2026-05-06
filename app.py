@@ -15,7 +15,7 @@ from PIL import Image
 
 from vinted_client import search_items
 from claude_client import analyze_clothing, legit_check
-from db import init_db, upsert_subscriber, has_active_subscription, has_elite_subscription, get_subscriber
+from db import init_db, upsert_subscriber, has_active_subscription, has_elite_subscription, has_premium_subscription, get_subscriber
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024  # 50 MB (up to 5 photos)
@@ -185,6 +185,23 @@ def subscribe():
         return render_template("landing.html", error=str(exc))
 
 
+@app.route("/subscribe-ultimate", methods=["POST"])
+def subscribe_ultimate():
+    try:
+        checkout = stripe.checkout.Session.create(
+            payment_method_types=["card"],
+            line_items=[{"price": os.environ.get("STRIPE_PRICE_ID_ULTIMATE"), "quantity": 1}],
+            mode="subscription",
+            metadata={"plan": "ultimate"},
+            success_url=request.url_root + "success?session_id={CHECKOUT_SESSION_ID}",
+            cancel_url=request.url_root + "cancel",
+            locale="fr",
+        )
+        return redirect(checkout.url, code=303)
+    except Exception as exc:
+        return render_template("landing.html", error=str(exc))
+
+
 @app.route("/subscribe-elite", methods=["POST"])
 def subscribe_elite():
     try:
@@ -308,8 +325,8 @@ def _deactivate_customer(customer_id: str):
 @app.route("/legit-check", methods=["POST"])
 def legit_check_route():
     email = session.get("email")
-    if not email or not has_elite_subscription(email):
-        return jsonify({"error": "Plan Prizzy Elite requis.", "redirect": "/"}), 403
+    if not email or not has_premium_subscription(email):
+        return jsonify({"error": "Plan Prizzy Elite ou Ultimate requis.", "redirect": "/"}), 403
 
     mime_map = {
         "jpg": "image/jpeg", "jpeg": "image/jpeg",
@@ -345,8 +362,8 @@ def serve_upload(filename):
 @app.route("/photo-ia", methods=["POST"])
 def photo_ia():
     email = session.get("email")
-    if not email or not has_elite_subscription(email):
-        return jsonify({"error": "Plan Prizzy Elite requis.", "redirect": "/"}), 403
+    if not email or not has_premium_subscription(email):
+        return jsonify({"error": "Plan Prizzy Elite ou Ultimate requis.", "redirect": "/"}), 403
 
     mime_map = {
         "jpg": "image/jpeg", "jpeg": "image/jpeg",
