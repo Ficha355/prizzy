@@ -9,12 +9,12 @@ import os
 import uuid
 import statistics
 
+import base64
 import io
-import urllib.request
 from PIL import Image
 
 from vinted_client import search_items
-from claude_client import analyze_clothing, legit_check, describe_for_dalle
+from claude_client import analyze_clothing, legit_check
 from db import init_db, upsert_subscriber, has_active_subscription, has_elite_subscription, get_subscriber
 
 app = Flask(__name__)
@@ -358,53 +358,56 @@ def photo_ia():
         return jsonify({"error": "Fournissez une image valide."}), 400
 
     ext = file.filename.rsplit(".", 1)[1].lower()
-    image_data, mime_type = _compress_image(
-        file.read(), mime_map.get(ext, "image/jpeg")
-    )
+    image_data, _ = _compress_image(file.read(), mime_map.get(ext, "image/jpeg"))
 
-    try:
-        analysis = describe_for_dalle([(image_data, mime_type)])
-    except Exception as exc:
-        return jsonify({"error": f"Erreur d'analyse Claude : {exc}"}), 502
-
-    dalle_prompt = analysis.get("dalle_prompt", "")
-
-    app.logger.info("[photo-ia] Claude description: %s", analysis.get("description_fr", ""))
-    app.logger.info("[photo-ia] DALL-E prompt (%d chars): %s", len(dalle_prompt), dalle_prompt)
+    # Convert to PNG (required by the images.edit endpoint)
+    png_buf = io.BytesIO()
+    Image.open(io.BytesIO(image_data)).convert("RGBA").save(png_buf, format="PNG")
+    png_buf.seek(0)
+    png_buf.name = "image.png"
 
     openai_key = os.environ.get("OPENAI_API_KEY", "").strip()
     if not openai_key:
         return jsonify({"error": "Clé OpenAI manquante (OPENAI_API_KEY)."}), 500
 
+    prompt = (
+        "Keep exactly the same garment shown in this photo — same color, same fabric, "
+        "same brand markings, same style. Present it on a pure white neutral background, "
+        "neatly folded or laid flat, perfectly centered and well-framed, uniform studio "
+        "lighting with no shadows, sharp focus, high resolution, clean e-commerce product "
+        "photo style, no model, no props."
+    )
+    app.logger.info("[photo-ia] Sending to gpt-image-1 edit (%d bytes PNG), prompt: %s",
+                    png_buf.getbuffer().nbytes, prompt)
+
     try:
         import openai as _openai
         oa = _openai.OpenAI(api_key=openai_key)
-        dalle_resp = oa.images.generate(
-            model="dall-e-3",
-            prompt=dalle_prompt,
+        edit_resp = oa.images.edit(
+            model="gpt-image-1",
+            image=png_buf,
+            prompt=prompt,
             size="1024x1024",
-            quality="standard",
             n=1,
         )
-        dalle_url = dalle_resp.data[0].url
-        app.logger.info("[photo-ia] DALL-E URL: %s", dalle_url)
+        b64_data = edit_resp.data[0].b64_json
+        app.logger.info("[photo-ia] gpt-image-1 response received")
     except Exception as exc:
-        app.logger.error("[photo-ia] DALL-E error (type=%s): %s", type(exc).__name__, exc, exc_info=True)
-        return jsonify({"error": f"Erreur DALL-E 3 : {exc}"}), 502
+        app.logger.error("[photo-ia] gpt-image-1 error (type=%s): %s",
+                         type(exc).__name__, exc, exc_info=True)
+        return jsonify({"error": f"Erreur GPT-4o image : {exc}"}), 502
 
     try:
         filename = f"photo_ia_{uuid.uuid4().hex}.png"
         save_path = os.path.join(UPLOAD_FOLDER, filename)
-        urllib.request.urlretrieve(dalle_url, save_path)
+        with open(save_path, "wb") as f:
+            f.write(base64.b64decode(b64_data))
         local_url = f"/uploads/{filename}"
-    except Exception:
-        local_url = dalle_url
+    except Exception as exc:
+        app.logger.error("[photo-ia] save error: %s", exc)
+        return jsonify({"error": "Erreur lors de la sauvegarde de l'image."}), 500
 
-    return jsonify({
-        "description": analysis.get("description_fr", ""),
-        "dalle_prompt": dalle_prompt,
-        "image_url": local_url,
-    })
+    return jsonify({"image_url": local_url})
 
 
 # ── Search ────────────────────────────────────────────────
