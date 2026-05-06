@@ -9,7 +9,9 @@ import os
 import uuid
 import statistics
 
+import io
 import urllib.request
+from PIL import Image
 
 from vinted_client import search_items
 from claude_client import analyze_clothing, legit_check, describe_for_dalle
@@ -344,6 +346,14 @@ def photo_ia():
     ext = file.filename.rsplit(".", 1)[1].lower()
     image_data = file.read()
     mime_type = mime_map.get(ext, "image/jpeg")
+
+    if len(image_data) > 5 * 1024 * 1024:
+        img = Image.open(io.BytesIO(image_data)).convert("RGB")
+        img.thumbnail((1920, 1920), Image.LANCZOS)
+        buf = io.BytesIO()
+        img.save(buf, format="JPEG", quality=85, optimize=True)
+        image_data = buf.getvalue()
+        mime_type = "image/jpeg"
 
     try:
         analysis = describe_for_dalle([(image_data, mime_type)])
