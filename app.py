@@ -371,11 +371,17 @@ def photo_ia():
         return jsonify({"error": "Clé OpenAI manquante (OPENAI_API_KEY)."}), 500
 
     prompt = (
-        "Keep exactly the same garment shown in this photo — same color, same fabric, "
-        "same brand markings, same style. Present it on a pure white neutral background, "
-        "neatly folded or laid flat, perfectly centered and well-framed, uniform studio "
-        "lighting with no shadows, sharp focus, high resolution, clean e-commerce product "
-        "photo style, no model, no props."
+        "You are retouching a product photo of a garment for an e-commerce listing. "
+        "First, analyse the background quality: "
+        "— If the background is clean and aesthetic (hardwood floor, neutral surface, plain fabric, "
+        "tidy minimal setting), keep it exactly as in the original photo. "
+        "— If the background is poor quality (dirty floor, cluttered scene, blurry or distracting "
+        "elements, messy surroundings), replace it with a clean white studio background. "
+        "In all cases, apply these improvements to the garment itself: "
+        "straighten and neatly fold or lay flat the article, fix any creases, "
+        "improve lighting to be uniform and well-exposed, reframe and center the garment properly, "
+        "sharp focus, high resolution. Keep the garment identical — same color, fabric, brand "
+        "markings, and style. No model, no props."
     )
     app.logger.info("[photo-ia] Sending to gpt-image-1 edit (%d bytes PNG), prompt: %s",
                     png_buf.getbuffer().nbytes, prompt)
