@@ -372,16 +372,12 @@ def photo_ia():
 
     prompt = (
         "You are retouching a product photo of a garment for an e-commerce listing. "
-        "First, analyse the background quality: "
-        "— If the background is clean and aesthetic (hardwood floor, neutral surface, plain fabric, "
-        "tidy minimal setting), keep it exactly as in the original photo. "
-        "— If the background is poor quality (dirty floor, cluttered scene, blurry or distracting "
-        "elements, messy surroundings), replace it with a clean white studio background. "
-        "In all cases, apply these improvements to the garment itself: "
-        "straighten and neatly fold or lay flat the article, fix any creases, "
+        "Keep the original background exactly as it is — never replace it with white or any other background. "
+        "Only clean it up: remove stray objects, feet, hands, or any distracting elements that are not the garment. "
+        "Apply these improvements: straighten and neatly fold or lay flat the garment, fix any creases, "
         "improve lighting to be uniform and well-exposed, reframe and center the garment properly, "
-        "sharp focus, high resolution. Keep the garment identical — same color, fabric, brand "
-        "markings, and style. No model, no props."
+        "sharp focus, high resolution. "
+        "Keep the garment identical — same color, fabric, brand markings, and style."
     )
     app.logger.info("[photo-ia] Sending to gpt-image-1 edit (%d bytes PNG), prompt: %s",
                     png_buf.getbuffer().nbytes, prompt)
