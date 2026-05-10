@@ -134,7 +134,10 @@ def admin_add_elite():
     if not email:
         return jsonify({"error": "Paramètre 'email' manquant"}), 400
 
-    upsert_subscriber(email=email, status="active", plan="elite")
+    plan = (request.form.get("plan") or "elite").strip().lower()
+    if plan not in ("elite", "ultimate"):
+        plan = "elite"
+    upsert_subscriber(email=email, status="active", plan=plan)
     sub = get_subscriber(email)
     return jsonify({"ok": True, "subscriber": dict(sub)})
 
