@@ -397,7 +397,12 @@ def photo_ia():
         "Apply these improvements: straighten and neatly fold or lay flat the garment, fix any creases, "
         "improve lighting to be uniform and well-exposed, reframe and center the garment properly, "
         "sharp focus, high resolution. "
-        "Keep the garment identical — same color, fabric, brand markings, and style."
+        "Keep the garment identical — same color, fabric, brand markings, and style. "
+        "CRITICAL: never alter, recreate, or modify in any way the logo, brand name, text, embroidery, prints, "
+        "patches, or any visible inscription on the garment. "
+        "Every logo and text must remain pixel-perfect identical to the original: "
+        "same shape, same color, same position, same typography, same size. "
+        "Do not attempt to redraw or improve any lettering or branding — leave it exactly as it appears in the original photo."
     )
     app.logger.info("[photo-ia] Sending to gpt-image-1 edit (%d bytes PNG), prompt: %s",
                     png_buf.getbuffer().nbytes, prompt)
