@@ -394,18 +394,16 @@ def photo_ia():
         return jsonify({"error": "Clé OpenAI manquante (OPENAI_API_KEY)."}), 500
 
     prompt = (
-        "You are retouching a product photo of a garment for an e-commerce listing. "
-        "Keep the original background exactly as it is — never replace it with white or any other background. "
-        "Only clean it up: remove stray objects, feet, hands, or any distracting elements that are not the garment. "
-        "Apply these improvements: straighten and neatly fold or lay flat the garment, fix any creases, "
-        "improve lighting to be uniform and well-exposed, reframe and center the garment properly, "
-        "sharp focus, high resolution. "
-        "Keep the garment identical — same color, fabric, brand markings, and style. "
-        "CRITICAL: never alter, recreate, or modify in any way the logo, brand name, text, embroidery, prints, "
-        "patches, or any visible inscription on the garment. "
-        "Every logo and text must remain pixel-perfect identical to the original: "
-        "same shape, same color, same position, same typography, same size. "
-        "Do not attempt to redraw or improve any lettering or branding — leave it exactly as it appears in the original photo."
+        "Retouch this garment photo so it looks like a careful, natural photo taken by a human — not AI-generated. "
+        "Keep the original background exactly as it is: same colors, same texture, same imperfections. Never replace it. "
+        "Remove only obvious distractions: stray objects, visible hands or feet not part of the garment. "
+        "CRITICAL — do not change any of these under any circumstance: "
+        "logos, brand names, text, embroidery, labels, prints, patches, or any inscription on the garment. "
+        "Every letter, every color, every position must be byte-for-byte identical to the original. Do not redraw or 'improve' any branding. "
+        "Preserve the exact color of the garment — do not shift hue, saturation, or brightness of the fabric. "
+        "Keep natural folds and creases: smooth out only extreme wrinkles that would distract, but leave enough natural texture so the result looks like a real photo, not a CGI render. "
+        "Improve only: even out harsh shadows, gently brighten if underexposed, recenter and straighten the garment if tilted. "
+        "The final image must look like a tidy, well-lit photo a careful seller would take — realistic, slightly imperfect, human."
     )
     app.logger.info("[photo-ia] Sending to gpt-image-1 edit (%d bytes PNG), prompt: %s",
                     png_buf.getbuffer().nbytes, prompt)
