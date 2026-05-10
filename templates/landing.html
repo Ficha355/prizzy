@@ -256,36 +256,6 @@
       -webkit-tap-highlight-color: transparent;
     }
     .btn-subscribe:hover { background: var(--teal-hover); transform: translateY(-1px); box-shadow: 0 6px 28px rgba(9,177,186,.3); }
-    .promo-field {
-      display: flex; gap: 0; margin-bottom: 10px;
-      border: 1.5px solid var(--border); border-radius: var(--radius);
-      overflow: hidden;
-      transition: border-color var(--transition), box-shadow var(--transition);
-    }
-    .promo-field:focus-within { border-color: var(--teal); box-shadow: 0 0 0 3px var(--teal-dim); }
-    .promo-label {
-      padding: 10px 12px; font-size: 12px; font-weight: 600;
-      color: var(--text-3); background: var(--surface-2);
-      border-right: 1.5px solid var(--border);
-      white-space: nowrap; display: flex; align-items: center;
-    }
-    .promo-input {
-      flex: 1; padding: 10px 12px; border: none; outline: none;
-      font-size: 13px; background: transparent; color: var(--text-1);
-      font-family: inherit; letter-spacing: .5px; text-transform: uppercase;
-    }
-    .promo-input::placeholder { color: var(--text-3); text-transform: none; letter-spacing: 0; }
-    .promo-feedback {
-      font-size: 12px; font-weight: 600; margin: -4px 0 8px;
-      min-height: 18px; transition: opacity .2s;
-    }
-    .promo-feedback.valid   { color: #16a34a; }
-    .promo-feedback.invalid { color: #dc2626; }
-    .price-original {
-      text-decoration: line-through; opacity: .45;
-      font-size: 28px; font-weight: 700; margin-right: 6px;
-    }
-    .price-discounted { color: #16a34a; }
     .stripe-badge {
       display: flex; align-items: center; justify-content: center; gap: 6px;
       margin-top: 14px; font-size: 12px; color: var(--text-3);
@@ -450,7 +420,7 @@
         <div class="pricing-head">
           <p class="plan-name">Prizzy Starter</p>
           <div class="plan-price">
-            <span class="plan-amount" id="price-starter">7,99€</span>
+            <span class="plan-amount">7,99€</span>
             <span class="plan-period">/mois</span>
           </div>
           <p class="plan-note">Sans engagement · Résiliable à tout moment</p>
@@ -483,13 +453,8 @@
             </li>
           </ul>
           <form method="POST" action="/subscribe">
-            <div class="promo-field">
-              <span class="promo-label">Code promo</span>
-              <input type="text" name="promotion_code" id="promo-starter" class="promo-input" placeholder="Optionnel" autocomplete="off" maxlength="32" style="text-transform:lowercase" data-plan="starter" data-base="7.99">
-            </div>
-            <p class="promo-feedback" id="promo-feedback-starter"></p>
             <button type="submit" class="btn-subscribe">
-              <span id="btn-label-starter">S'abonner — 7,99€/mois</span>
+              S'abonner — 7,99€/mois
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
             </button>
           </form>
@@ -506,7 +471,7 @@
           <div class="plan-badge elite">✦ Meilleure offre</div>
           <p class="plan-name elite">Prizzy Elite</p>
           <div class="plan-price">
-            <span class="plan-amount" id="price-elite">21,99€</span>
+            <span class="plan-amount">21,99€</span>
             <span class="plan-period">/mois</span>
           </div>
           <p class="plan-note">Sans engagement · Résiliable à tout moment</p>
@@ -544,13 +509,8 @@
             </li>
           </ul>
           <form method="POST" action="/subscribe-elite">
-            <div class="promo-field">
-              <span class="promo-label">Code promo</span>
-              <input type="text" name="promotion_code" id="promo-elite" class="promo-input" placeholder="Optionnel" autocomplete="off" maxlength="32" style="text-transform:lowercase" data-plan="elite" data-base="21.99">
-            </div>
-            <p class="promo-feedback" id="promo-feedback-elite"></p>
             <button type="submit" class="btn-subscribe elite">
-              <span id="btn-label-elite">S'abonner — 21,99€/mois</span>
+              S'abonner — 21,99€/mois
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
             </button>
           </form>
@@ -567,7 +527,7 @@
           <div class="plan-badge ultimate">✦ Tout inclus</div>
           <p class="plan-name ultimate">Prizzy Ultimate</p>
           <div class="plan-price">
-            <span class="plan-amount" id="price-ultimate">34,99€</span>
+            <span class="plan-amount">34,99€</span>
             <span class="plan-period">/mois</span>
           </div>
           <p class="plan-note">Sans engagement · Résiliable à tout moment</p>
@@ -602,13 +562,8 @@
             </li>
           </ul>
           <form method="POST" action="/subscribe-ultimate">
-            <div class="promo-field">
-              <span class="promo-label">Code promo</span>
-              <input type="text" name="promotion_code" id="promo-ultimate" class="promo-input" placeholder="Optionnel" autocomplete="off" maxlength="32" style="text-transform:lowercase" data-plan="ultimate" data-base="34.99">
-            </div>
-            <p class="promo-feedback" id="promo-feedback-ultimate"></p>
             <button type="submit" class="btn-subscribe ultimate">
-              <span id="btn-label-ultimate">S'abonner — 34,99€/mois</span>
+              S'abonner — 34,99€/mois
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
             </button>
           </form>
@@ -650,90 +605,5 @@
   </div>
 </footer>
 
-<script>
-(function () {
-  const PLANS = {
-    starter: { base: 7.99,  labelBase: '7,99' },
-    elite:   { base: 21.99, labelBase: '21,99' },
-    ultimate:{ base: 34.99, labelBase: '34,99' },
-  };
-
-  function fmt(n) {
-    return n.toFixed(2).replace('.', ',');
-  }
-
-  function applyPromo(plan, percentOff, amountOff) {
-    const info = PLANS[plan];
-    const priceEl    = document.getElementById('price-' + plan);
-    const btnLabel   = document.getElementById('btn-label-' + plan);
-    const feedback   = document.getElementById('promo-feedback-' + plan);
-
-    let discounted;
-    if (percentOff) {
-      discounted = info.base * (1 - percentOff / 100);
-    } else if (amountOff) {
-      discounted = Math.max(0, info.base - amountOff / 100);
-    }
-
-    const discStr = fmt(discounted);
-
-    priceEl.innerHTML =
-      '<span class="price-original">' + info.labelBase + '€</span>' +
-      '<span class="price-discounted">' + discStr + '€</span>';
-
-    btnLabel.textContent = 'S\'abonner — ' + discStr + '€/mois';
-
-    feedback.textContent = percentOff
-      ? '✓ Code valide — -' + percentOff + '%'
-      : '✓ Code valide — -' + fmt(amountOff / 100) + '€';
-    feedback.className = 'promo-feedback valid';
-  }
-
-  function resetPromo(plan) {
-    const info = PLANS[plan];
-    const priceEl  = document.getElementById('price-' + plan);
-    const btnLabel = document.getElementById('btn-label-' + plan);
-    const feedback = document.getElementById('promo-feedback-' + plan);
-
-    priceEl.innerHTML = info.labelBase + '€';
-    btnLabel.textContent = 'S\'abonner — ' + info.labelBase + '€/mois';
-    feedback.textContent = '';
-    feedback.className = 'promo-feedback';
-  }
-
-  const timers = {};
-
-  ['starter', 'elite', 'ultimate'].forEach(function (plan) {
-    const input = document.getElementById('promo-' + plan);
-    if (!input) return;
-
-    input.addEventListener('input', function () {
-      const raw = input.value;
-      input.value = raw.toLowerCase();
-      const code = input.value.trim();
-
-      clearTimeout(timers[plan]);
-
-      if (!code) { resetPromo(plan); return; }
-
-      timers[plan] = setTimeout(function () {
-        fetch('/check-promo?code=' + encodeURIComponent(code))
-          .then(function (r) { return r.json(); })
-          .then(function (data) {
-            if (data.valid) {
-              applyPromo(plan, data.percent_off, data.amount_off);
-            } else {
-              resetPromo(plan);
-              const fb = document.getElementById('promo-feedback-' + plan);
-              fb.textContent = '✗ Code invalide';
-              fb.className = 'promo-feedback invalid';
-            }
-          })
-          .catch(function () { resetPromo(plan); });
-      }, 450);
-    });
-  });
-})();
-</script>
 </body>
 </html>
