@@ -256,6 +256,25 @@
       -webkit-tap-highlight-color: transparent;
     }
     .btn-subscribe:hover { background: var(--teal-hover); transform: translateY(-1px); box-shadow: 0 6px 28px rgba(9,177,186,.3); }
+    .promo-field {
+      display: flex; gap: 0; margin-bottom: 10px;
+      border: 1.5px solid var(--border); border-radius: var(--radius);
+      overflow: hidden;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .promo-field:focus-within { border-color: var(--teal); box-shadow: 0 0 0 3px var(--teal-dim); }
+    .promo-label {
+      padding: 10px 12px; font-size: 12px; font-weight: 600;
+      color: var(--text-3); background: var(--surface-2);
+      border-right: 1.5px solid var(--border);
+      white-space: nowrap; display: flex; align-items: center;
+    }
+    .promo-input {
+      flex: 1; padding: 10px 12px; border: none; outline: none;
+      font-size: 13px; background: transparent; color: var(--text-1);
+      font-family: inherit; letter-spacing: .5px; text-transform: uppercase;
+    }
+    .promo-input::placeholder { color: var(--text-3); text-transform: none; letter-spacing: 0; }
     .stripe-badge {
       display: flex; align-items: center; justify-content: center; gap: 6px;
       margin-top: 14px; font-size: 12px; color: var(--text-3);
@@ -453,6 +472,10 @@
             </li>
           </ul>
           <form method="POST" action="/subscribe">
+            <div class="promo-field">
+              <span class="promo-label">Code promo</span>
+              <input type="text" name="promotion_code" class="promo-input" placeholder="Optionnel" autocomplete="off" maxlength="32">
+            </div>
             <button type="submit" class="btn-subscribe">
               S'abonner — 7,99€/mois
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
@@ -509,6 +532,10 @@
             </li>
           </ul>
           <form method="POST" action="/subscribe-elite">
+            <div class="promo-field">
+              <span class="promo-label">Code promo</span>
+              <input type="text" name="promotion_code" class="promo-input" placeholder="Optionnel" autocomplete="off" maxlength="32">
+            </div>
             <button type="submit" class="btn-subscribe elite">
               S'abonner — 21,99€/mois
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
@@ -562,6 +589,10 @@
             </li>
           </ul>
           <form method="POST" action="/subscribe-ultimate">
+            <div class="promo-field">
+              <span class="promo-label">Code promo</span>
+              <input type="text" name="promotion_code" class="promo-input" placeholder="Optionnel" autocomplete="off" maxlength="32">
+            </div>
             <button type="submit" class="btn-subscribe ultimate">
               S'abonner — 34,99€/mois
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>

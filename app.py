@@ -168,10 +168,20 @@ def index():
 
 # ── Stripe subscription ───────────────────────────────────
 
+def _resolve_promotion_code(code: str):
+    code = code.strip().upper()
+    if not code:
+        return None
+    promos = stripe.PromotionCode.list(code=code, active=True, limit=1)
+    if promos and promos.data:
+        return promos.data[0].id
+    return None
+
+
 @app.route("/subscribe", methods=["POST"])
 def subscribe():
     try:
-        checkout = stripe.checkout.Session.create(
+        kwargs = dict(
             payment_method_types=["card"],
             line_items=[{"price": os.environ.get("STRIPE_PRICE_ID"), "quantity": 1}],
             mode="subscription",
@@ -180,6 +190,10 @@ def subscribe():
             cancel_url=request.url_root + "cancel",
             locale="fr",
         )
+        promo_id = _resolve_promotion_code(request.form.get("promotion_code", ""))
+        if promo_id:
+            kwargs["discounts"] = [{"promotion_code": promo_id}]
+        checkout = stripe.checkout.Session.create(**kwargs)
         return redirect(checkout.url, code=303)
     except Exception as exc:
         return render_template("landing.html", error=str(exc))
@@ -188,7 +202,7 @@ def subscribe():
 @app.route("/subscribe-ultimate", methods=["POST"])
 def subscribe_ultimate():
     try:
-        checkout = stripe.checkout.Session.create(
+        kwargs = dict(
             payment_method_types=["card"],
             line_items=[{"price": os.environ.get("STRIPE_PRICE_ID_ULTIMATE"), "quantity": 1}],
             mode="subscription",
@@ -197,6 +211,10 @@ def subscribe_ultimate():
             cancel_url=request.url_root + "cancel",
             locale="fr",
         )
+        promo_id = _resolve_promotion_code(request.form.get("promotion_code", ""))
+        if promo_id:
+            kwargs["discounts"] = [{"promotion_code": promo_id}]
+        checkout = stripe.checkout.Session.create(**kwargs)
         return redirect(checkout.url, code=303)
     except Exception as exc:
         return render_template("landing.html", error=str(exc))
@@ -205,7 +223,7 @@ def subscribe_ultimate():
 @app.route("/subscribe-elite", methods=["POST"])
 def subscribe_elite():
     try:
-        checkout = stripe.checkout.Session.create(
+        kwargs = dict(
             payment_method_types=["card"],
             line_items=[{"price": os.environ.get("STRIPE_PRICE_ID_ELITE"), "quantity": 1}],
             mode="subscription",
@@ -214,6 +232,10 @@ def subscribe_elite():
             cancel_url=request.url_root + "cancel",
             locale="fr",
         )
+        promo_id = _resolve_promotion_code(request.form.get("promotion_code", ""))
+        if promo_id:
+            kwargs["discounts"] = [{"promotion_code": promo_id}]
+        checkout = stripe.checkout.Session.create(**kwargs)
         return redirect(checkout.url, code=303)
     except Exception as exc:
         return render_template("landing.html", error=str(exc))
