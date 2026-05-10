@@ -3,7 +3,7 @@ load_dotenv()
 
 import stripe
 from flask import (Flask, request, jsonify, render_template,
-                   send_from_directory, session, redirect)
+                   send_from_directory, session, redirect, make_response)
 from werkzeug.utils import secure_filename
 import os
 import uuid
@@ -161,12 +161,21 @@ def manifest():
 
 # ── Main app (gated) ──────────────────────────────────────
 
+def _ref_cookie():
+    return request.cookies.get("ref", "").strip()[:64]
+
+
 @app.route("/")
 def index():
+    ref = request.args.get("ref", "").strip()[:64]
     email = session.get("email")
     if email and has_active_subscription(email):
-        return render_template("index.html", email=email)
-    return render_template("landing.html")
+        resp = make_response(render_template("index.html", email=email))
+    else:
+        resp = make_response(render_template("landing.html"))
+    if ref:
+        resp.set_cookie("ref", ref, max_age=30 * 24 * 3600, httponly=True, samesite="Lax")
+    return resp
 
 
 # ── Stripe subscription ───────────────────────────────────
@@ -174,12 +183,15 @@ def index():
 @app.route("/subscribe", methods=["POST"])
 def subscribe():
     try:
+        meta = {"plan": "starter"}
+        if _ref_cookie():
+            meta["ref"] = _ref_cookie()
         checkout = stripe.checkout.Session.create(
             payment_method_types=["card"],
             line_items=[{"price": os.environ.get("STRIPE_PRICE_ID"), "quantity": 1}],
             mode="subscription",
             allow_promotion_codes=True,
-            metadata={"plan": "starter"},
+            metadata=meta,
             success_url=request.url_root + "success?session_id={CHECKOUT_SESSION_ID}",
             cancel_url=request.url_root + "cancel",
             locale="fr",
@@ -192,12 +204,15 @@ def subscribe():
 @app.route("/subscribe-ultimate", methods=["POST"])
 def subscribe_ultimate():
     try:
+        meta = {"plan": "ultimate"}
+        if _ref_cookie():
+            meta["ref"] = _ref_cookie()
         checkout = stripe.checkout.Session.create(
             payment_method_types=["card"],
             line_items=[{"price": os.environ.get("STRIPE_PRICE_ID_ULTIMATE"), "quantity": 1}],
             mode="subscription",
             allow_promotion_codes=True,
-            metadata={"plan": "ultimate"},
+            metadata=meta,
             success_url=request.url_root + "success?session_id={CHECKOUT_SESSION_ID}",
             cancel_url=request.url_root + "cancel",
             locale="fr",
@@ -210,12 +225,15 @@ def subscribe_ultimate():
 @app.route("/subscribe-elite", methods=["POST"])
 def subscribe_elite():
     try:
+        meta = {"plan": "elite"}
+        if _ref_cookie():
+            meta["ref"] = _ref_cookie()
         checkout = stripe.checkout.Session.create(
             payment_method_types=["card"],
             line_items=[{"price": os.environ.get("STRIPE_PRICE_ID_ELITE"), "quantity": 1}],
             mode="subscription",
             allow_promotion_codes=True,
-            metadata={"plan": "elite"},
+            metadata=meta,
             success_url=request.url_root + "success?session_id={CHECKOUT_SESSION_ID}",
             cancel_url=request.url_root + "cancel",
             locale="fr",
