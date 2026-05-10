@@ -168,6 +168,26 @@ def index():
 
 # ── Stripe subscription ───────────────────────────────────
 
+@app.route("/check-promo", methods=["GET"])
+def check_promo():
+    code = request.args.get("code", "").strip().upper()
+    if not code:
+        return jsonify({"valid": False})
+    try:
+        promos = stripe.PromotionCode.list(code=code, active=True, limit=1, expand=["data.coupon"])
+        if promos and promos.data:
+            coupon = promos.data[0].coupon
+            return jsonify({
+                "valid": True,
+                "percent_off": coupon.percent_off,
+                "amount_off": coupon.amount_off,
+                "currency": coupon.currency,
+            })
+    except Exception:
+        pass
+    return jsonify({"valid": False})
+
+
 def _resolve_promotion_code(code: str):
     code = code.strip().upper()
     if not code:
