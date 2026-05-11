@@ -1,4 +1,4 @@
-const CACHE = 'pricecheck-v2';
+const CACHE = 'pricecheck-v3';
 const PRECACHE = ['/', '/static/icon.svg', '/manifest.json'];
 
 self.addEventListener('install', e => {
