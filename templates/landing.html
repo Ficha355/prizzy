@@ -68,6 +68,16 @@
       transition: all var(--transition);
     }
     .btn-nav:hover { background: var(--bg); color: var(--text); }
+    .btn-nav-demo {
+      font-family: inherit; font-size: 13px; font-weight: 700;
+      padding: 8px 18px; border-radius: 8px;
+      border: 1.5px solid var(--teal);
+      background: var(--teal-faint); color: var(--teal-hover);
+      cursor: pointer; text-decoration: none;
+      transition: all var(--transition);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .btn-nav-demo:hover { background: var(--teal); color: #fff; }
 
     /* ── Layout ── */
     .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
@@ -356,7 +366,10 @@
       <span class="logo-name">Prizzy</span>
     </a>
     <div class="nav-actions">
-      <a href="/demo" class="btn-nav">Voir la démo</a>
+      <a href="/demo" class="btn-nav-demo">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Voir la démo
+      </a>
       <a href="#connexion" class="btn-nav">Déjà abonné ?</a>
     </div>
   </div>

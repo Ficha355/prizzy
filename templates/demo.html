@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <title>Prizzy — Démo Photo IA</title>
+  <title>Prizzy — Démo</title>
   <style>
     :root {
       --teal:       #09B1BA;
@@ -179,6 +179,171 @@
     .btn-primary:hover { background: var(--teal-hover); transform: translateY(-1px); box-shadow: 0 6px 24px rgba(9,177,186,.4); }
     .cta-sub { margin-top: 12px; font-size: 13px; color: var(--text-2); }
 
+    /* ── Section headers ── */
+    .section-block {
+      padding: 72px 0 0;
+    }
+    .section-eyebrow {
+      font-size: 11px; font-weight: 700; letter-spacing: .8px;
+      text-transform: uppercase; color: var(--teal);
+      margin-bottom: 8px;
+    }
+    .section-title {
+      font-size: clamp(22px, 4vw, 32px); font-weight: 800;
+      letter-spacing: -.8px; margin-bottom: 8px;
+    }
+    .section-title em { font-style: normal; color: var(--teal); }
+    .section-desc {
+      font-size: 16px; color: var(--text-2); line-height: 1.6;
+      max-width: 520px; margin-bottom: 36px;
+    }
+
+    /* ── Prix mockup ── */
+    .prix-card {
+      background: var(--surface); border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg); overflow: hidden;
+      max-width: 560px;
+    }
+    .prix-header {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .prix-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: var(--teal-faint);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    .prix-title-block small {
+      font-size: 11px; font-weight: 600; color: var(--text-3);
+      text-transform: uppercase; letter-spacing: .5px;
+      display: block; margin-bottom: 2px;
+    }
+    .prix-title-block strong { font-size: 15px; font-weight: 700; }
+
+    .prix-body { padding: 24px; }
+    .prix-main {
+      display: flex; align-items: flex-end; gap: 6px;
+      margin-bottom: 6px;
+    }
+    .prix-amount {
+      font-size: 56px; font-weight: 800; letter-spacing: -2px;
+      line-height: 1; color: var(--text);
+    }
+    .prix-currency { font-size: 24px; font-weight: 700; color: var(--text-2); padding-bottom: 6px; }
+    .prix-range {
+      font-size: 13px; color: var(--text-3); margin-bottom: 24px;
+    }
+    .prix-range span { color: var(--text-2); font-weight: 600; }
+
+    .prix-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .stat-box {
+      background: var(--bg); border-radius: var(--radius);
+      padding: 14px 16px;
+    }
+    .stat-label {
+      font-size: 11px; font-weight: 600; color: var(--text-3);
+      text-transform: uppercase; letter-spacing: .5px;
+      margin-bottom: 6px;
+    }
+    .stat-value { font-size: 18px; font-weight: 800; color: var(--text); }
+    .stat-sub { font-size: 12px; color: var(--text-2); margin-top: 2px; }
+
+    .score-bar-wrap { margin-top: 4px; }
+    .score-bar-bg {
+      height: 6px; border-radius: 99px;
+      background: var(--border); overflow: hidden;
+    }
+    .score-bar-fill {
+      height: 100%; border-radius: 99px;
+      background: linear-gradient(90deg, var(--teal), #0ECAD5);
+    }
+
+    /* ── Legit Check mockup ── */
+    .legit-card {
+      background: var(--surface); border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg); overflow: hidden;
+      max-width: 560px;
+    }
+    .legit-header {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .legit-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: rgba(124,58,237,.1);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    .legit-title-block small {
+      font-size: 11px; font-weight: 600; color: var(--text-3);
+      text-transform: uppercase; letter-spacing: .5px;
+      display: block; margin-bottom: 2px;
+    }
+    .legit-title-block strong { font-size: 15px; font-weight: 700; }
+
+    .legit-body { padding: 24px; }
+    .verdict-row {
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 20px;
+    }
+    .verdict-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 20px; border-radius: 100px;
+      font-size: 15px; font-weight: 800; letter-spacing: .3px;
+    }
+    .verdict-auth {
+      background: #DCFCE7; color: #15803D;
+    }
+    .verdict-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: currentColor;
+    }
+    .confidence-wrap { flex: 1; }
+    .confidence-label {
+      font-size: 11px; font-weight: 600; color: var(--text-3);
+      text-transform: uppercase; letter-spacing: .5px;
+      margin-bottom: 4px;
+    }
+    .confidence-row { display: flex; align-items: center; gap: 10px; }
+    .confidence-val { font-size: 22px; font-weight: 800; color: #15803D; }
+    .confidence-bar-bg {
+      flex: 1; height: 8px; border-radius: 99px;
+      background: var(--border); overflow: hidden;
+    }
+    .confidence-bar-fill {
+      height: 100%; border-radius: 99px;
+      background: linear-gradient(90deg, #16A34A, #4ADE80);
+    }
+
+    .legit-checks { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .legit-check-item {
+      background: var(--bg); border-radius: var(--radius);
+      padding: 12px 14px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .legit-check-icon {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: #DCFCE7;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .legit-check-icon svg { width: 13px; height: 13px; }
+    .legit-check-name { font-size: 13px; font-weight: 600; color: var(--text); }
+    .legit-check-sub  { font-size: 11px; color: var(--text-2); margin-top: 1px; }
+
+    .demo-layout {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 32px; align-items: start;
+    }
+    .demo-layout-text { padding-top: 8px; }
+
+    @media (max-width: 720px) {
+      .demo-layout { grid-template-columns: 1fr; }
+    }
+
     @media (max-width: 640px) {
       .compare-grid {
         grid-template-columns: 1fr;
@@ -188,6 +353,8 @@
         margin-top: 0; padding: 20px 0;
         transform: rotate(90deg);
       }
+      .prix-stats { grid-template-columns: 1fr; }
+      .legit-checks { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -214,11 +381,15 @@
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
         Démo
       </div>
-      <h1>Photo IA — <em>avant / après</em></h1>
-      <p>Envoyez une simple photo de votre vêtement, notre IA génère une image pro prête à publier sur Vinted.</p>
+      <h1>Prizzy en <em>action</em></h1>
+      <p>Découvrez ce que Prizzy fait concrètement — photo IA, estimation de prix et legit check en temps réel.</p>
     </section>
 
+    <!-- ── 1. Photo IA ── -->
     <section class="demo-section">
+      <p class="section-eyebrow" style="text-align:center">✨ Fonctionnalité 1</p>
+      <h2 class="section-title" style="text-align:center;margin-bottom:8px">Photo IA — <em>avant / après</em></h2>
+      <p style="text-align:center;font-size:16px;color:var(--text-2);margin-bottom:36px">Envoyez une photo brute, Prizzy génère une image pro prête à publier.</p>
       <div class="compare-grid">
 
         <div class="compare-card">
@@ -251,14 +422,178 @@
 
       </div>
 
-      <div class="cta-block">
-        <a href="/" class="btn-primary">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
-          Essayer gratuitement
-        </a>
-        <p class="cta-sub">7 jours d'essai gratuit · Sans engagement</p>
+    </section>
+
+    <!-- ── 2. Estimation de prix ── -->
+    <section class="section-block">
+      <div class="demo-layout">
+        <div class="demo-layout-text">
+          <p class="section-eyebrow">💰 Fonctionnalité 2</p>
+          <h2 class="section-title">Estimation de <em>prix</em></h2>
+          <p class="section-desc">Prizzy scanne 50 annonces similaires sur Vinted et vous donne en 10 secondes le prix idéal, un score de vente et le meilleur créneau horaire pour publier.</p>
+          <ul style="list-style:none;display:flex;flex-direction:column;gap:10px">
+            <li style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text-2)">
+              <span style="width:22px;height:22px;border-radius:50%;background:var(--teal-faint);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#09B1BA" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              Prix recommandé + fourchette marché
+            </li>
+            <li style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text-2)">
+              <span style="width:22px;height:22px;border-radius:50%;background:var(--teal-faint);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#09B1BA" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              Score de vente /10 avec explication
+            </li>
+            <li style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text-2)">
+              <span style="width:22px;height:22px;border-radius:50%;background:var(--teal-faint);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#09B1BA" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              Meilleur moment pour publier
+            </li>
+          </ul>
+        </div>
+
+        <div class="prix-card">
+          <div class="prix-header">
+            <div class="prix-icon">👟</div>
+            <div class="prix-title-block">
+              <small>Article analysé</small>
+              <strong>Nike Air Jordan 1 Low — Taille 42</strong>
+            </div>
+          </div>
+          <div class="prix-body">
+            <p style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Prix recommandé</p>
+            <div class="prix-main">
+              <span class="prix-amount">68</span>
+              <span class="prix-currency">€</span>
+            </div>
+            <p class="prix-range">Fourchette marché : <span>55€ – 82€</span> · Basé sur 50 annonces</p>
+            <div class="prix-stats">
+              <div class="stat-box">
+                <p class="stat-label">Score de vente</p>
+                <p class="stat-value">8,5 <span style="font-size:14px;color:var(--text-2);font-weight:500">/10</span></p>
+                <div class="score-bar-wrap" style="margin-top:8px">
+                  <div class="score-bar-bg">
+                    <div class="score-bar-fill" style="width:85%"></div>
+                  </div>
+                </div>
+                <p class="stat-sub">Forte demande sur ce coloris</p>
+              </div>
+              <div class="stat-box">
+                <p class="stat-label">Meilleur moment</p>
+                <p class="stat-value" style="font-size:15px">Mer. 18h–20h</p>
+                <p class="stat-sub">+34% de vues vs moyenne</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
+
+    <!-- ── 3. Legit Check ── -->
+    <section class="section-block" style="padding-bottom:0">
+      <div class="demo-layout">
+        <div class="legit-card">
+          <div class="legit-header">
+            <div class="legit-icon">🔍</div>
+            <div class="legit-title-block">
+              <small>Article analysé</small>
+              <strong>Supreme Box Logo Hoodie — M</strong>
+            </div>
+          </div>
+          <div class="legit-body">
+            <div class="verdict-row">
+              <div class="verdict-badge verdict-auth">
+                <span class="verdict-dot"></span>
+                AUTHENTIQUE
+              </div>
+              <div class="confidence-wrap">
+                <p class="confidence-label">Confiance IA</p>
+                <div class="confidence-row">
+                  <span class="confidence-val">94%</span>
+                  <div class="confidence-bar-bg">
+                    <div class="confidence-bar-fill" style="width:94%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="legit-checks">
+              <div class="legit-check-item">
+                <div class="legit-check-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div>
+                  <p class="legit-check-name">Logo box</p>
+                  <p class="legit-check-sub">Typographie conforme</p>
+                </div>
+              </div>
+              <div class="legit-check-item">
+                <div class="legit-check-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div>
+                  <p class="legit-check-name">Coutures</p>
+                  <p class="legit-check-sub">Points réguliers, bon fil</p>
+                </div>
+              </div>
+              <div class="legit-check-item">
+                <div class="legit-check-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div>
+                  <p class="legit-check-name">Étiquettes</p>
+                  <p class="legit-check-sub">Police et placement OK</p>
+                </div>
+              </div>
+              <div class="legit-check-item">
+                <div class="legit-check-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div>
+                  <p class="legit-check-name">Matière</p>
+                  <p class="legit-check-sub">Texture coton authentique</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="demo-layout-text">
+          <p class="section-eyebrow">🔍 Fonctionnalité 3</p>
+          <h2 class="section-title">Legit <em>Check IA</em></h2>
+          <p class="section-desc">Prizzy analyse logo, coutures, étiquettes et matière pour vous donner un verdict clair — Authentique, Suspect ou Contrefaçon — avec un score de confiance en %.</p>
+          <ul style="list-style:none;display:flex;flex-direction:column;gap:10px">
+            <li style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text-2)">
+              <span style="width:22px;height:22px;border-radius:50%;background:rgba(124,58,237,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              Nike, Jordan, Supreme, LV, Gucci, Balenciaga…
+            </li>
+            <li style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text-2)">
+              <span style="width:22px;height:22px;border-radius:50%;background:rgba(124,58,237,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              Verdict en 3 niveaux + score de confiance
+            </li>
+            <li style="display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text-2)">
+              <span style="width:22px;height:22px;border-radius:50%;background:rgba(124,58,237,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              Analyse détaillée point par point
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CTA global ── -->
+    <div class="cta-block" style="padding-bottom:80px">
+      <a href="/" class="btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+        Essayer gratuitement
+      </a>
+      <p class="cta-sub">7 jours d'essai gratuit · Sans engagement</p>
+    </div>
   </div>
 </main>
 
