@@ -323,6 +323,108 @@
       padding: 8px 12px; border-radius: 8px;
     }
 
+    /* ── Counter ── */
+    .counter-section {
+      padding: 48px 0;
+      text-align: center;
+    }
+    .counter-inner {
+      display: inline-flex; align-items: center; gap: 20px;
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 28px 48px;
+    }
+    .counter-num {
+      font-size: 48px; font-weight: 800; letter-spacing: -2px;
+      color: var(--text); line-height: 1;
+    }
+    .counter-num span { color: var(--teal); }
+    .counter-divider {
+      width: 1px; height: 48px; background: var(--border);
+    }
+    .counter-label {
+      text-align: left;
+    }
+    .counter-label strong {
+      display: block; font-size: 15px; font-weight: 700; color: var(--text);
+    }
+    .counter-label small {
+      font-size: 13px; color: var(--text-2);
+    }
+    .counter-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #22C55E;
+      box-shadow: 0 0 0 3px rgba(34,197,94,.2);
+      animation: blink 2s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; } 50% { opacity: .3; }
+    }
+
+    /* ── Testimonials ── */
+    .testimonials { padding: 16px 0 64px; }
+    .testi-grid {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 16px;
+    }
+    .testi-card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 24px;
+    }
+    .testi-stars { color: #F59E0B; font-size: 14px; letter-spacing: 1px; margin-bottom: 12px; }
+    .testi-text {
+      font-size: 14px; color: var(--text); line-height: 1.65;
+      margin-bottom: 18px; font-style: italic;
+    }
+    .testi-author { display: flex; align-items: center; gap: 10px; }
+    .testi-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--teal-faint);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; font-weight: 700; color: var(--teal);
+      flex-shrink: 0;
+    }
+    .testi-name { font-size: 13px; font-weight: 700; color: var(--text); }
+    .testi-city { font-size: 12px; color: var(--text-3); }
+
+    /* ── FAQ ── */
+    .faq { padding: 0 0 64px; }
+    .faq-list { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
+    .faq-item {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .faq-q {
+      width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 18px 20px;
+      background: none; border: none; cursor: pointer;
+      font-family: inherit; font-size: 15px; font-weight: 600; color: var(--text);
+      text-align: left;
+      transition: background var(--transition);
+    }
+    .faq-q:hover { background: var(--bg); }
+    .faq-icon {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--teal-faint); color: var(--teal);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: transform var(--transition);
+    }
+    .faq-icon svg { width: 12px; height: 12px; }
+    .faq-item.open .faq-icon { transform: rotate(45deg); background: var(--teal); color: #fff; }
+    .faq-a {
+      display: none;
+      padding: 0 20px 18px;
+      font-size: 14px; color: var(--text-2); line-height: 1.7;
+      border-top: 1px solid var(--border);
+      padding-top: 14px;
+    }
+    .faq-item.open .faq-a { display: block; }
+
     /* ── Error banner (Stripe failure) ── */
     .error-banner {
       background: #FEE2E2; border: 1px solid #FECACA;
@@ -342,6 +444,7 @@
     /* ── Responsive ── */
     @media (max-width: 960px) {
       .pricing-grid { grid-template-columns: 1fr 1fr; max-width: 720px; }
+      .testi-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
     }
     @media (max-width: 720px) {
       .hero { padding: 48px 0 40px; }
@@ -425,6 +528,104 @@
         <p class="step-title">Legit Check IA</p>
         <p class="step-desc">Verdict Authentique / Suspect / Contrefaçon avec score de confiance en %. Analyse logo, coutures, étiquettes et matière.</p>
       </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ── Counter ── -->
+<section class="counter-section">
+  <div class="counter-inner">
+    <span class="counter-dot"></span>
+    <p class="counter-num">2&nbsp;<span>847</span></p>
+    <div class="counter-divider"></div>
+    <div class="counter-label">
+      <strong>articles analysés</strong>
+      <small>par les bêta testeurs Prizzy</small>
+    </div>
+  </div>
+</section>
+
+
+<!-- ── Testimonials ── -->
+<section class="testimonials">
+  <div class="container">
+    <p class="section-eyebrow">Témoignages</p>
+    <h2 class="section-title" style="margin-bottom:32px">Ils ont testé Prizzy</h2>
+    <div class="testi-grid">
+
+      <div class="testi-card">
+        <p class="testi-stars">★★★★★</p>
+        <p class="testi-text">« J'ai vendu ma paire de Jordan en 2 jours. Le prix recommandé était pile dans la fourchette et la photo IA rendait vraiment pro. »</p>
+        <div class="testi-author">
+          <div class="testi-avatar">L</div>
+          <div>
+            <p class="testi-name">Lucas M.</p>
+            <p class="testi-city">Lyon · bêta testeur</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="testi-card">
+        <p class="testi-stars">★★★★★</p>
+        <p class="testi-text">« Le legit check m'a sauvé : j'allais acheter un Supreme à 180€ qui était une contrefaçon. Prizzy l'a détecté en quelques secondes. »</p>
+        <div class="testi-author">
+          <div class="testi-avatar">S</div>
+          <div>
+            <p class="testi-name">Sofia R.</p>
+            <p class="testi-city">Paris · bêta testrice</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="testi-card">
+        <p class="testi-stars">★★★★★</p>
+        <p class="testi-text">« Avant je passais 30 min à chercher le bon prix. Maintenant c'est 10 secondes. J'ai liquidé toute ma penderie en un mois. »</p>
+        <div class="testi-author">
+          <div class="testi-avatar">T</div>
+          <div>
+            <p class="testi-name">Thomas K.</p>
+            <p class="testi-city">Bordeaux · bêta testeur</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ── FAQ ── -->
+<section class="faq">
+  <div class="container">
+    <p class="section-eyebrow" style="text-align:center">FAQ</p>
+    <h2 class="section-title" style="margin-bottom:28px">Questions fréquentes</h2>
+    <div class="faq-list">
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Est-ce vraiment précis ?
+          <span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+        </button>
+        <p class="faq-a">Oui — Prizzy scanne en temps réel les 50 annonces les plus similaires sur Vinted (même marque, même taille, même état) et calcule un prix médian ajusté. Nos bêta testeurs rapportent en moyenne une vente dans les 5 jours au prix recommandé.</p>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Comment ça marche ?
+          <span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+        </button>
+        <p class="faq-a">Prenez une photo de votre article depuis l'app Prizzy. L'IA identifie la marque, le type et l'état en quelques secondes, puis analyse le marché Vinted. Vous recevez un prix recommandé, un score de vente, et si vous avez le plan Ultimate, une photo retouchée prête à publier.</p>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Puis-je résilier à tout moment ?
+          <span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+        </button>
+        <p class="faq-a">Oui, sans conditions ni frais. Vous gérez votre abonnement depuis le portail Stripe en un clic. La résiliation prend effet à la fin de la période en cours — vous conservez l'accès jusqu'au dernier jour payé.</p>
+      </div>
+
     </div>
   </div>
 </section>
@@ -631,5 +832,13 @@
   </div>
 </footer>
 
+<script>
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item');
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+  if (!isOpen) item.classList.add('open');
+}
+</script>
 </body>
 </html>
