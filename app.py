@@ -273,6 +273,11 @@ def cancel():
     return render_template("cancel.html")
 
 
+@app.route("/demo")
+def demo():
+    return render_template("demo.html")
+
+
 @app.route("/login", methods=["POST"])
 def login():
     email = request.form.get("email", "").strip().lower()
