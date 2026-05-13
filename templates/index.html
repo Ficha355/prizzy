@@ -885,6 +885,40 @@
       font-style: italic;
     }
 
+    /* ── Mode Select ─────────────────────────────────────── */
+    #screen-mode-select { background: var(--bg); }
+    .mode-select-body { padding: 8px 0 32px; display: flex; flex-direction: column; gap: 10px; }
+    .mode-select-title {
+      font-size: 19px; font-weight: 700; color: var(--text);
+      margin-bottom: 6px;
+    }
+    .mode-select-sub {
+      font-size: 13px; color: var(--text-3); margin-bottom: 4px;
+    }
+    .mode-card {
+      display: flex; align-items: center; gap: 14px;
+      padding: 16px; border-radius: var(--radius-lg);
+      background: var(--surface); border: 1.5px solid var(--border);
+      cursor: pointer; text-align: left; width: 100%;
+      transition: border-color .15s, box-shadow .15s;
+      -webkit-tap-highlight-color: transparent;
+      font-family: inherit;
+    }
+    .mode-card:hover { border-color: var(--primary); box-shadow: 0 2px 12px rgba(99,102,241,.15); }
+    .mode-card:active { transform: scale(.98); }
+    .mode-icon { font-size: 24px; flex-shrink: 0; line-height: 1; }
+    .mode-label { font-size: 14px; font-weight: 700; color: var(--text); }
+    .mode-desc { font-size: 12px; color: var(--text-3); margin-top: 2px; line-height: 1.4; }
+    .mode-card-ultimate { border-color: rgba(234,88,12,.25); }
+    .mode-card-ultimate:hover { border-color: #EA580C; box-shadow: 0 2px 12px rgba(234,88,12,.15); }
+
+    /* ── Combined Results ─────────────────────────────────── */
+    .combined-section-label {
+      font-size: 11px; font-weight: 700; color: var(--text-3);
+      text-transform: uppercase; letter-spacing: .07em;
+      margin: 20px 0 8px; padding-left: 2px;
+    }
+
     /* ── Responsive ──────────────────────────────────────── */
     @media (min-width: 600px) {
       .hero { padding: 72px 0 52px; }
@@ -983,6 +1017,75 @@
   <div class="spinner"></div>
   <p class="loading-title">Analyse en cours…</p>
   <p class="loading-sub">Analyse en cours avec Prizzy IA</p>
+</div>
+
+
+<!-- ══════════ MODE SELECT ══════════ -->
+<div id="screen-mode-select" class="screen">
+
+  <div class="topbar">
+    <div class="topbar-inner">
+      <a class="logo" href="#">
+        <div class="logo-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>
+          </svg>
+        </div>
+        <span class="logo-name">Prizzy</span>
+      </a>
+      <div class="topbar-right">
+        <span class="topbar-badge">Vinted · IA</span>
+        <form method="POST" action="/portal" style="display:contents">
+          <button type="submit" class="btn-topbar" title="Gérer l'abonnement">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          </button>
+        </form>
+        <a href="/logout" class="btn-topbar" title="Se déconnecter">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="mode-select-body">
+      <p class="mode-select-title">Que veux-tu faire ?</p>
+      <p class="mode-select-sub">Choisis une analyse pour commencer</p>
+
+      <button class="mode-card" id="mode-estimate">
+        <span class="mode-icon">📊</span>
+        <div>
+          <div class="mode-label">Estimation seule</div>
+          <div class="mode-desc">Prix recommandé, score de vente et meilleur moment pour publier</div>
+        </div>
+      </button>
+
+      <button class="mode-card" id="mode-legit">
+        <span class="mode-icon">🔍</span>
+        <div>
+          <div class="mode-label">Legit Check seul</div>
+          <div class="mode-desc">Vérifie l'authenticité du vêtement avec niveau de confiance</div>
+        </div>
+      </button>
+
+      <button class="mode-card" id="mode-combined">
+        <span class="mode-icon">📊🔍</span>
+        <div>
+          <div class="mode-label">Estimation + Legit Check ensemble</div>
+          <div class="mode-desc">Les deux analyses envoyées en parallèle, résultats sur une page</div>
+        </div>
+      </button>
+
+      <button class="mode-card mode-card-ultimate" id="mode-photo-ia" style="display:none">
+        <span class="mode-icon">✨</span>
+        <div>
+          <div class="mode-label">Photo IA</div>
+          <div class="mode-desc">Améliore et plie automatiquement tes photos produit</div>
+        </div>
+      </button>
+    </div>
+  </div>
+
 </div>
 
 
@@ -1264,6 +1367,106 @@
 </div>
 
 
+<!-- ══════════ COMBINED RESULTS ══════════ -->
+<div id="screen-combined-results" class="screen">
+
+  <div class="results-topbar">
+    <div class="results-topbar-inner">
+      <button class="btn-back" id="btn-back-combined" aria-label="Retour">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div style="flex:1;min-width:0">
+        <p class="results-title">Estimation + Legit Check</p>
+        <p class="results-subtitle" id="comb-subtitle"></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="results-body">
+
+    <p class="combined-section-label">📊 Estimation du prix</p>
+
+    <div class="price-card">
+      <p class="price-label">Prix recommandé · 7 jours</p>
+      <div class="price-amount">
+        <span id="comb-price-recommended">—</span>
+        <span class="price-currency">€</span>
+      </div>
+      <p class="price-note" id="comb-price-note">Calculé sur les articles similaires</p>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-cell">
+        <p class="stat-label">Moyenne</p>
+        <p class="stat-value" id="comb-price-mean">—</p>
+      </div>
+      <div class="stat-cell">
+        <p class="stat-label">Médiane</p>
+        <p class="stat-value" id="comb-price-median">—</p>
+      </div>
+      <div class="stat-cell">
+        <p class="stat-label">Minimum</p>
+        <p class="stat-value" id="comb-price-min">—</p>
+      </div>
+    </div>
+
+    <div class="score-card">
+      <div class="score-circle" id="comb-score-circle">
+        <span class="score-num" id="comb-score-num">—</span>
+        <span class="score-denom">/10</span>
+      </div>
+      <div class="score-body">
+        <p class="score-title">Score de vente</p>
+        <p class="score-label" id="comb-score-label"></p>
+        <span class="publish-badge" id="comb-publish-badge">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span id="comb-publish-text"></span>
+        </span>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-header">
+        <p class="section-title">Article analysé</p>
+        <button class="btn-copy" id="btn-copy-combined" style="width:auto;margin:0;padding:6px 12px">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          Copier
+        </button>
+      </div>
+      <div class="tags" id="comb-analysis-tags"></div>
+      <p class="desc-text" id="comb-analysis-description"></p>
+    </div>
+
+    <p class="combined-section-label">🔍 Legit Check</p>
+
+    <div class="verdict-card" id="comb-verdict-card">
+      <div class="verdict-icon" id="comb-verdict-icon"></div>
+      <div class="confidence-pct" id="comb-confidence-pct"></div>
+      <div class="confidence-sub">Niveau de confiance</div>
+      <div class="confidence-bar-wrap">
+        <div class="confidence-bar-bg">
+          <div class="confidence-bar-fill" id="comb-confidence-bar" style="width:0%"></div>
+        </div>
+      </div>
+      <div class="verdict-label" id="comb-verdict-label"></div>
+    </div>
+
+    <div class="legit-resume" id="comb-legit-resume"></div>
+
+    <div class="legit-details-card">
+      <p class="legit-details-title">Détails observés</p>
+      <div id="comb-legit-details-list"></div>
+    </div>
+
+    <button class="btn-new-analysis" id="btn-new-combined">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Nouvelle analyse
+    </button>
+
+  </div>
+</div>
+
+
 <!-- Photo source picker -->
 <div class="photo-picker" id="photo-picker" role="dialog" aria-modal="true">
   <div class="picker-backdrop" id="picker-backdrop"></div>
@@ -1338,6 +1541,7 @@ function showScreen(id) {
   if (id === 'results') document.getElementById('screen-results').scrollTop = 0;
   if (id === 'photo-ia-result') document.getElementById('screen-photo-ia-result').scrollTop = 0;
   if (id === 'legit-results') document.getElementById('screen-legit-results').scrollTop = 0;
+  if (id === 'combined-results') document.getElementById('screen-combined-results').scrollTop = 0;
 }
 
 /* ── Upload / photos ─────────────────────────────────── */
@@ -1465,11 +1669,34 @@ function syncBtn() {
 
 /* ── Analyze ─────────────────────────────────────────── */
 btnAnalyze.addEventListener('click', async () => {
+  showScreen('loading');
+
+  if (combineMode) {
+    const fd1 = new FormData(), fd2 = new FormData();
+    photos.forEach(p => { fd1.append('images', p.file); fd2.append('images', p.file); });
+    if (textarea.value.trim()) fd1.append('query', textarea.value.trim());
+    try {
+      const [r1, r2] = await Promise.all([
+        fetch('/analyze',      { method: 'POST', body: fd1 }),
+        fetch('/legit-check',  { method: 'POST', body: fd2 }),
+      ]);
+      if (r1.status === 403 || r2.status === 403) { window.location.href = '/'; return; }
+      const [d1, d2] = await Promise.all([r1.json(), r2.json()]);
+      if (d1.error) throw new Error(d1.error);
+      if (d2.error) throw new Error(d2.error);
+      renderCombinedResults(d1, d2);
+      showScreen('combined-results');
+      document.getElementById('screen-combined-results').scrollTop = 0;
+    } catch (err) {
+      showScreen('home');
+      showToast(err.message);
+    }
+    return;
+  }
+
   const fd = new FormData();
   photos.forEach(p => fd.append('images', p.file));
   if (textarea.value.trim()) fd.append('query', textarea.value.trim());
-
-  showScreen('loading');
   try {
     const res  = await fetch('/analyze', { method: 'POST', body: fd });
     if (res.status === 403) { window.location.href = '/'; return; }
@@ -1568,23 +1795,134 @@ function resetHome() {
   cameraInput.value = '';
   textarea.value = '';
   btnAnalyze.disabled = true;
-  showScreen('home');
+  combineMode = false;
+  showScreen(currentPlan ? 'mode-select' : 'home');
 }
 document.getElementById('btn-back').onclick = resetHome;
 document.getElementById('btn-new-analysis').onclick = resetHome;
 
 /* ── Me / Elite gate ─────────────────────────────────── */
+let currentPlan = null;
+let combineMode = false;
+
 (async () => {
   try {
     const res = await fetch('/me');
     if (!res.ok) return;
     const data = await res.json();
     if (data.plan === 'elite' || data.plan === 'ultimate') {
-      document.getElementById('btn-open-legit').classList.add('visible');
-      document.getElementById('btn-open-photo-ia').classList.add('visible');
+      currentPlan = data.plan;
+      if (data.plan === 'ultimate') {
+        document.getElementById('mode-photo-ia').style.display = 'flex';
+      }
+      showScreen('mode-select');
     }
   } catch {}
 })();
+
+/* ── Mode select handlers ────────────────────────────── */
+document.getElementById('mode-estimate').addEventListener('click', () => {
+  combineMode = false;
+  showScreen('home');
+});
+document.getElementById('mode-legit').addEventListener('click', () => {
+  combineMode = false;
+  showScreen('legit');
+});
+document.getElementById('mode-combined').addEventListener('click', () => {
+  combineMode = true;
+  showScreen('home');
+});
+document.getElementById('mode-photo-ia').addEventListener('click', () => {
+  combineMode = false;
+  showScreen('photo-ia');
+});
+
+/* ── Combined results ────────────────────────────────── */
+function renderCombinedResults(analyzeData, legitData) {
+  const { analysis, price_stats, sale_score, publish_time } = analyzeData;
+
+  document.getElementById('comb-subtitle').textContent =
+    [analysis.marque, analysis.type_vetement].filter(Boolean).join(' · ') || '';
+
+  document.getElementById('comb-price-recommended').textContent = fmt(price_stats.recommended_price_7j);
+  document.getElementById('comb-price-mean').textContent    = fmt(price_stats.mean)   + ' €';
+  document.getElementById('comb-price-median').textContent  = fmt(price_stats.median) + ' €';
+  document.getElementById('comb-price-min').textContent     = fmt(price_stats.min)    + ' €';
+  document.getElementById('comb-price-note').textContent    =
+    `25e percentile sur ${price_stats.count} articles similaires`;
+
+  const sc = sale_score || {};
+  const circle = document.getElementById('comb-score-circle');
+  circle.className = 'score-circle ' + (sc.color || 'orange');
+  document.getElementById('comb-score-num').textContent = sc.score ?? '—';
+  document.getElementById('comb-score-label').textContent = sc.label || '';
+
+  const pt = publish_time || {};
+  document.getElementById('comb-publish-text').textContent =
+    pt.jour ? `Publie ${pt.jour} entre ${pt.creneau}` : '';
+
+  const tagDefs = [
+    [analysis.marque,        'accent'],
+    [analysis.type_vetement, ''],
+    [analysis.taille ? 'Taille ' + analysis.taille : null, ''],
+    [analysis.couleur,       ''],
+    [analysis.etat_estime,   ''],
+  ].filter(([v]) => v);
+  document.getElementById('comb-analysis-tags').innerHTML =
+    tagDefs.map(([v, cls]) => `<span class="tag ${cls}">${esc(v)}</span>`).join('');
+  document.getElementById('comb-analysis-description').textContent =
+    analysis.description_optimisee || '';
+
+  const verdictMap = {
+    'Authentique':          { cls: 'authentic', icon: '✅' },
+    'Suspect':              { cls: 'suspect',   icon: '⚠️' },
+    'Contrefaçon probable': { cls: 'fake',      icon: '❌' },
+  };
+  const v = verdictMap[legitData.verdict] || { cls: 'suspect', icon: '❓' };
+  document.getElementById('comb-verdict-card').className = 'verdict-card ' + v.cls;
+  document.getElementById('comb-verdict-icon').textContent = v.icon;
+  document.getElementById('comb-verdict-label').textContent = legitData.verdict;
+  document.getElementById('comb-confidence-pct').textContent = (legitData.confiance ?? '—') + '%';
+  document.getElementById('comb-confidence-bar').style.width = (legitData.confiance ?? 0) + '%';
+  document.getElementById('comb-legit-resume').textContent = legitData.resume || '';
+  document.getElementById('comb-legit-details-list').innerHTML =
+    (legitData.details || []).map(d => `
+      <div class="legit-detail-item">
+        <div class="legit-detail-dot"></div>
+        <span>${esc(d)}</span>
+      </div>`).join('');
+}
+
+document.getElementById('btn-back-combined').addEventListener('click', () => {
+  showScreen(currentPlan ? 'mode-select' : 'home');
+});
+document.getElementById('btn-new-combined').addEventListener('click', () => {
+  photos.forEach(p => URL.revokeObjectURL(p.url));
+  photos = [];
+  renderPhotos();
+  cameraInput.value = '';
+  textarea.value = '';
+  btnAnalyze.disabled = true;
+  combineMode = false;
+  showScreen(currentPlan ? 'mode-select' : 'home');
+});
+
+document.getElementById('btn-copy-combined').addEventListener('click', async () => {
+  const text = document.getElementById('comb-analysis-description').textContent;
+  try { await navigator.clipboard.writeText(text); } catch {
+    const t = Object.assign(document.createElement('textarea'),
+      { value: text, style: 'position:fixed;opacity:0' });
+    document.body.append(t); t.select(); document.execCommand('copy'); t.remove();
+  }
+  const btn = document.getElementById('btn-copy-combined');
+  btn.classList.add('copied');
+  btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Copié`;
+  setTimeout(() => {
+    btn.classList.remove('copied');
+    btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copier`;
+  }, 2500);
+});
 
 /* ── Legit Check flow ────────────────────────────────── */
 const legitCameraInput  = document.getElementById('legit-camera-input');
@@ -1601,8 +1939,8 @@ let legitPhotos = [];
 document.getElementById('btn-open-legit').addEventListener('click', () => {
   showScreen('legit');
 });
-document.getElementById('btn-back-legit').addEventListener('click', () => showScreen('home'));
-document.getElementById('btn-back-legit-results').addEventListener('click', () => showScreen('legit'));
+document.getElementById('btn-back-legit').addEventListener('click', () => showScreen(currentPlan ? 'mode-select' : 'home'));
+document.getElementById('btn-back-legit-results').addEventListener('click', () => showScreen(currentPlan ? 'mode-select' : 'legit'));
 document.getElementById('btn-new-legit').addEventListener('click', resetLegit);
 
 legitUploadZone.addEventListener('click', () => {
@@ -1678,7 +2016,7 @@ function resetLegit() {
   legitPhotos.forEach(p => URL.revokeObjectURL(p.url));
   legitPhotos = [];
   renderLegitPhotos();
-  showScreen('legit');
+  showScreen(currentPlan ? 'mode-select' : 'legit');
 }
 
 btnLegitAnalyze.addEventListener('click', async () => {
@@ -1739,7 +2077,7 @@ let photoIaFile      = null;
 let photoIaPreviewUrl = null;
 
 document.getElementById('btn-open-photo-ia').addEventListener('click', () => showScreen('photo-ia'));
-document.getElementById('btn-back-photo-ia').addEventListener('click', () => showScreen('home'));
+document.getElementById('btn-back-photo-ia').addEventListener('click', () => showScreen(currentPlan ? 'mode-select' : 'home'));
 document.getElementById('btn-back-photo-ia-result').addEventListener('click', () => showScreen('photo-ia'));
 document.getElementById('btn-new-photo-ia').addEventListener('click', resetPhotoIa);
 
@@ -1797,7 +2135,7 @@ function resetPhotoIa() {
   photoIaPreview.style.display = 'none';
   btnPhotoIaGen.disabled = true;
   photoIaInput.value = '';
-  showScreen('photo-ia');
+  showScreen(currentPlan ? 'mode-select' : 'photo-ia');
 }
 
 /* ── Helpers ─────────────────────────────────────────── */
