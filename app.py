@@ -412,9 +412,12 @@ def photo_ia():
     ext = file.filename.rsplit(".", 1)[1].lower()
     image_data, _ = _compress_image(file.read(), mime_map.get(ext, "image/jpeg"))
 
+    original_img = Image.open(io.BytesIO(image_data)).convert("RGBA")
+    orig_w, orig_h = original_img.size
+
     # Convert to PNG (required by the images.edit endpoint)
     png_buf = io.BytesIO()
-    Image.open(io.BytesIO(image_data)).convert("RGBA").save(png_buf, format="PNG")
+    original_img.save(png_buf, format="PNG")
     png_buf.seek(0)
     png_buf.name = "image.png"
 
@@ -422,14 +425,76 @@ def photo_ia():
     if not openai_key:
         return jsonify({"error": "Clé OpenAI manquante (OPENAI_API_KEY)."}), 500
 
+    anthropic_key = os.environ.get("ANTHROPIC_API_KEY", "").strip()
+    if not anthropic_key:
+        return jsonify({"error": "Clé Anthropic manquante (ANTHROPIC_API_KEY)."}), 500
+
+    # ── Step 1: Claude Vision — detect label/logo bounding box ──
+    label_box = None  # (x, y, w, h) in pixels, or None if not found
+    try:
+        import anthropic as _anthropic
+        import json as _json
+
+        ac = _anthropic.Anthropic(api_key=anthropic_key)
+        img_b64 = base64.b64encode(image_data).decode()
+        media_type = mime_map.get(ext, "image/jpeg")
+
+        vision_resp = ac.messages.create(
+            model="claude-opus-4-7",
+            max_tokens=256,
+            messages=[{
+                "role": "user",
+                "content": [
+                    {
+                        "type": "image",
+                        "source": {"type": "base64", "media_type": media_type, "data": img_b64},
+                    },
+                    {
+                        "type": "text",
+                        "text": (
+                            "Look at this garment photo. If there is a visible label, tag, logo, or embroidery, "
+                            "return ONLY a JSON object with the bounding box as percentages of the image dimensions: "
+                            "{\"x\": <left %>, \"y\": <top %>, \"w\": <width %>, \"h\": <height %>}. "
+                            "All values are 0–100. If there is no visible label or logo, return {\"found\": false}. "
+                            "Return only valid JSON, nothing else."
+                        ),
+                    },
+                ],
+            }],
+        )
+        raw = vision_resp.content[0].text.strip()
+        parsed = _json.loads(raw)
+        if parsed.get("found") is not False and "x" in parsed:
+            px = int(parsed["x"] / 100 * orig_w)
+            py = int(parsed["y"] / 100 * orig_h)
+            pw = int(parsed["w"] / 100 * orig_w)
+            ph = int(parsed["h"] / 100 * orig_h)
+            # Clamp to image bounds
+            px = max(0, min(px, orig_w - 1))
+            py = max(0, min(py, orig_h - 1))
+            pw = max(1, min(pw, orig_w - px))
+            ph = max(1, min(ph, orig_h - py))
+            label_box = (px, py, pw, ph)
+            app.logger.info("[photo-ia] Label detected at box px=(%d,%d,%d,%d)", px, py, pw, ph)
+        else:
+            app.logger.info("[photo-ia] No label detected by Claude Vision")
+    except Exception as exc:
+        app.logger.warning("[photo-ia] Claude Vision error (skipping label restore): %s", exc)
+
+    # ── Step 2: Crop and save label patch from original ──
+    label_patch = None
+    if label_box:
+        px, py, pw, ph = label_box
+        label_patch = original_img.crop((px, py, px + pw, py + ph))
+
+    # ── Step 3: Send to gpt-image-1 to fold the garment ──
     prompt = (
         "Fold this garment neatly and lay it flat. "
         "Do not change anything else — not the color, not the background, not any text, logo, label or embroidery. "
         "Only fold it. "
         "Preserve the exact original color of the garment — do not lighten, darken, or change the saturation in any way."
     )
-    app.logger.info("[photo-ia] Sending to gpt-image-1 edit (%d bytes PNG), prompt: %s",
-                    png_buf.getbuffer().nbytes, prompt)
+    app.logger.info("[photo-ia] Sending to gpt-image-1 edit (%d bytes PNG)", png_buf.getbuffer().nbytes)
 
     try:
         import openai as _openai
@@ -448,15 +513,31 @@ def photo_ia():
                          type(exc).__name__, exc, exc_info=True)
         return jsonify({"error": f"Erreur GPT-4o image : {exc}"}), 502
 
+    # ── Step 4: Paste original label patch back onto generated image ──
     try:
+        generated_img = Image.open(io.BytesIO(base64.b64decode(b64_data))).convert("RGBA")
+        gen_w, gen_h = generated_img.size
+
+        if label_patch and label_box:
+            px, py, pw, ph = label_box
+            # Scale coordinates from original resolution to generated resolution
+            scale_x = gen_w / orig_w
+            scale_y = gen_h / orig_h
+            dest_x = int(px * scale_x)
+            dest_y = int(py * scale_y)
+            dest_w = int(pw * scale_x)
+            dest_h = int(ph * scale_y)
+            resized_patch = label_patch.resize((dest_w, dest_h), Image.LANCZOS)
+            generated_img.paste(resized_patch, (dest_x, dest_y), resized_patch)
+            app.logger.info("[photo-ia] Label patch pasted at (%d,%d,%d,%d)", dest_x, dest_y, dest_w, dest_h)
+
         filename = f"photo_ia_{uuid.uuid4().hex}.png"
         save_path = os.path.join(UPLOAD_FOLDER, filename)
-        with open(save_path, "wb") as f:
-            f.write(base64.b64decode(b64_data))
+        generated_img.save(save_path, format="PNG")
         local_url = f"/uploads/{filename}"
     except Exception as exc:
-        app.logger.error("[photo-ia] save error: %s", exc)
-        return jsonify({"error": "Erreur lors de la sauvegarde de l'image."}), 500
+        app.logger.error("[photo-ia] post-processing error: %s", exc)
+        return jsonify({"error": "Erreur lors du traitement de l'image."}), 500
 
     return jsonify({"image_url": local_url})
 
