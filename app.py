@@ -423,17 +423,9 @@ def photo_ia():
         return jsonify({"error": "Clé OpenAI manquante (OPENAI_API_KEY)."}), 500
 
     prompt = (
-        "Retouch this garment photo for resale. The result must look like a careful, natural photo taken by a human — never AI-generated. "
-        "CRITICAL — GARMENT IDENTITY: The garment must remain STRICTLY identical to the original. "
-        "Do NOT change the color in any way: no brightening, darkening, hue shift, or saturation change — the fabric color must be exactly the same as in the input. "
-        "Every logo, label, tag, embroidery, print, patch, and visible text must be preserved pixel-by-pixel without any modification, simplification, or reinterpretation. "
-        "If you cannot reproduce a branding element with 100% fidelity, leave that area completely untouched. "
-        "WHAT TO IMPROVE (and only this): "
-        "1. Fold or lay the garment neatly flat on a surface, as if placed by a tidy person — keep natural, slight creases so it looks real, not CGI. "
-        "2. Gently improve lighting if underexposed or harsh shadows are present — do not alter colors. "
-        "3. Remove distracting elements: stray objects, visible feet, hands, or unrelated items in the frame. "
-        "NOTHING ELSE should change. Do not alter the background, the garment shape, or any detail not listed above. "
-        "The final image must look like a tidy, well-lit photo a careful human seller would take — realistic, slightly imperfect, never AI-polished."
+        "Fold this garment neatly and lay it flat. "
+        "Do not change anything else — not the color, not the background, not any text, logo, label or embroidery. "
+        "Only fold it."
     )
     app.logger.info("[photo-ia] Sending to gpt-image-1 edit (%d bytes PNG), prompt: %s",
                     png_buf.getbuffer().nbytes, prompt)
