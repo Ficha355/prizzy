@@ -425,7 +425,8 @@ def photo_ia():
     prompt = (
         "Fold this garment neatly and lay it flat. "
         "Do not change anything else — not the color, not the background, not any text, logo, label or embroidery. "
-        "Only fold it."
+        "Only fold it. "
+        "Preserve the exact original color of the garment — do not lighten, darken, or change the saturation in any way."
     )
     app.logger.info("[photo-ia] Sending to gpt-image-1 edit (%d bytes PNG), prompt: %s",
                     png_buf.getbuffer().nbytes, prompt)
