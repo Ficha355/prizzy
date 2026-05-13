@@ -423,19 +423,17 @@ def photo_ia():
         return jsonify({"error": "Clé OpenAI manquante (OPENAI_API_KEY)."}), 500
 
     prompt = (
-        "Retouch this garment photo so it looks like a careful, natural photo taken by a human — not AI-generated. "
-        "Keep the original background exactly as it is: same colors, same texture, same imperfections. Never replace it. "
-        "Remove only obvious distractions: stray objects, visible hands or feet not part of the garment. "
-        "STEP 1 — BEFORE making any change, carefully identify and memorize every logo, label, tag, embroidery, print, "
-        "patch, and visible text on the garment: their exact shape, font, color, size, and position. "
-        "STEP 2 — reproduce each of those elements pixel-by-pixel in the output. "
-        "Do not redraw, simplify, enhance, or reinterpret any branding or text. "
-        "If you are not certain you can reproduce a logo exactly, leave that area completely untouched. "
-        "Preserve the exact color of the garment — do not shift hue, saturation, or brightness of the fabric. "
-        "FOLDING: present the garment neatly folded or laid flat, as if carefully placed on a flat surface by a tidy person. "
-        "Align edges and seams cleanly. Keep light, natural folds and slight creases so it looks real — not ironed flat like a CGI render. "
-        "Improve only: even out harsh shadows, gently brighten if underexposed, recenter and straighten the garment if tilted. "
-        "The final image must look like a tidy, well-lit photo a careful seller would take — realistic, slightly imperfect, human."
+        "Retouch this garment photo for resale. The result must look like a careful, natural photo taken by a human — never AI-generated. "
+        "CRITICAL — GARMENT IDENTITY: The garment must remain STRICTLY identical to the original. "
+        "Do NOT change the color in any way: no brightening, darkening, hue shift, or saturation change — the fabric color must be exactly the same as in the input. "
+        "Every logo, label, tag, embroidery, print, patch, and visible text must be preserved pixel-by-pixel without any modification, simplification, or reinterpretation. "
+        "If you cannot reproduce a branding element with 100% fidelity, leave that area completely untouched. "
+        "WHAT TO IMPROVE (and only this): "
+        "1. Fold or lay the garment neatly flat on a surface, as if placed by a tidy person — keep natural, slight creases so it looks real, not CGI. "
+        "2. Gently improve lighting if underexposed or harsh shadows are present — do not alter colors. "
+        "3. Remove distracting elements: stray objects, visible feet, hands, or unrelated items in the frame. "
+        "NOTHING ELSE should change. Do not alter the background, the garment shape, or any detail not listed above. "
+        "The final image must look like a tidy, well-lit photo a careful human seller would take — realistic, slightly imperfect, never AI-polished."
     )
     app.logger.info("[photo-ia] Sending to gpt-image-1 edit (%d bytes PNG), prompt: %s",
                     png_buf.getbuffer().nbytes, prompt)
