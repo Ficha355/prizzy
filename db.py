@@ -157,14 +157,21 @@ def count_active_subscribers() -> int:
     conn = get_db()
     if USE_PG:
         with conn.cursor() as cur:
-            cur.execute("SELECT COUNT(*) FROM subscribers WHERE status IN ('active', 'trialing')")
-            row = cur.fetchone()
+            cur.execute(
+                "SELECT status, COUNT(*) AS n FROM subscribers GROUP BY status"
+            )
+            rows = cur.fetchall()
+        print(f"[stats] breakdown by status: {[dict(r) for r in rows]}", flush=True)
+        total = sum(int(r["n"]) for r in rows if r["status"] in ("active", "trialing"))
     else:
-        row = conn.execute(
-            "SELECT COUNT(*) FROM subscribers WHERE status IN ('active', 'trialing')"
-        ).fetchone()
+        rows = conn.execute(
+            "SELECT status, COUNT(*) AS n FROM subscribers GROUP BY status"
+        ).fetchall()
+        print(f"[stats] breakdown by status: {[(r[0], r[1]) for r in rows]}", flush=True)
+        total = sum(int(r[1]) for r in rows if r[0] in ("active", "trialing"))
     conn.close()
-    return int(list(row.values())[0] if USE_PG else row[0])
+    print(f"[stats] count active+trialing = {total}", flush=True)
+    return total
 
 
 def get_discord_user_email(discord_id: str) -> Optional[str]:
