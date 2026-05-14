@@ -1888,22 +1888,18 @@ document.getElementById('btn-new-analysis').onclick = resetHome;
 let currentPlan = null;
 let combineMode = false;
 
-(async () => {
-  try {
-    const res = await fetch('/me');
-    if (!res.ok) return;
-    const data = await res.json();
-    console.log('[Prizzy] plan reçu depuis /me :', data.plan);
-    if (data.plan === 'elite' || data.plan === 'ultimate') {
-      currentPlan = data.plan;
-      const badge = document.getElementById('mode-plan-badge');
-      if (badge) badge.textContent = data.plan.charAt(0).toUpperCase() + data.plan.slice(1);
-      if (data.plan === 'ultimate') {
-        document.getElementById('mode-photo-ia').style.display = 'flex';
-      }
-      showScreen('mode-select');
+(function initPlan() {
+  const plan = '{{ plan }}';
+  console.log('[Prizzy] plan injecté par le serveur :', plan);
+  if (plan === 'elite' || plan === 'ultimate') {
+    currentPlan = plan;
+    const badge = document.getElementById('mode-plan-badge');
+    if (badge) badge.textContent = plan.charAt(0).toUpperCase() + plan.slice(1);
+    if (plan === 'ultimate') {
+      document.getElementById('mode-photo-ia').style.display = 'flex';
     }
-  } catch {}
+    showScreen('mode-select');
+  }
 })();
 
 /* ── Mode select handlers ────────────────────────────── */

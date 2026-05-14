@@ -171,8 +171,10 @@ def _ref_cookie():
 def index():
     ref = request.args.get("ref", "").strip()[:64]
     email = session.get("email")
-    if email and has_active_subscription(email):
-        resp = make_response(render_template("index.html", email=email))
+    sub = get_subscriber(email) if email else None
+    if sub and sub.get("status") == "active":
+        plan = sub.get("plan", "starter")
+        resp = make_response(render_template("index.html", email=email, plan=plan))
     else:
         resp = make_response(render_template("landing.html"))
     if ref:
