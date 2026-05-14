@@ -998,6 +998,9 @@
 
   <div class="topbar">
     <div class="topbar-inner">
+      <button class="btn-back" id="btn-back-home" aria-label="Retour" style="display:none;margin-right:8px">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
       <a class="logo" href="#">
         <div class="logo-mark">
           <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -1883,6 +1886,7 @@ function resetHome() {
 }
 document.getElementById('btn-back').onclick = resetHome;
 document.getElementById('btn-new-analysis').onclick = resetHome;
+document.getElementById('btn-back-home').addEventListener('click', () => showScreen('mode-select'));
 
 /* ── Me / Elite gate ─────────────────────────────────── */
 let currentPlan = null;
@@ -1898,6 +1902,7 @@ let combineMode = false;
     if (plan === 'ultimate') {
       document.getElementById('mode-photo-ia').style.display = 'flex';
     }
+    document.getElementById('btn-back-home').style.display = 'flex';
     showScreen('mode-select');
   }
 })();
@@ -2160,7 +2165,7 @@ let photoIaPreviewUrl = null;
 
 document.getElementById('btn-open-photo-ia').addEventListener('click', () => showScreen('photo-ia'));
 document.getElementById('btn-back-photo-ia').addEventListener('click', () => showScreen(currentPlan ? 'mode-select' : 'home'));
-document.getElementById('btn-back-photo-ia-result').addEventListener('click', () => showScreen('photo-ia'));
+document.getElementById('btn-back-photo-ia-result').addEventListener('click', () => showScreen(currentPlan ? 'mode-select' : 'photo-ia'));
 document.getElementById('btn-new-photo-ia').addEventListener('click', resetPhotoIa);
 
 photoIaZone.addEventListener('click', () => { if (!photoIaFile) photoIaInput.click(); });
