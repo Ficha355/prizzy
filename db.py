@@ -157,11 +157,11 @@ def count_active_subscribers() -> int:
     conn = get_db()
     if USE_PG:
         with conn.cursor() as cur:
-            cur.execute("SELECT COUNT(*) FROM subscribers WHERE status = 'active'")
+            cur.execute("SELECT COUNT(*) FROM subscribers WHERE status IN ('active', 'trialing')")
             row = cur.fetchone()
     else:
         row = conn.execute(
-            "SELECT COUNT(*) FROM subscribers WHERE status = 'active'"
+            "SELECT COUNT(*) FROM subscribers WHERE status IN ('active', 'trialing')"
         ).fetchone()
     conn.close()
     return int(list(row.values())[0] if USE_PG else row[0])
