@@ -1893,6 +1893,7 @@ let combineMode = false;
     const res = await fetch('/me');
     if (!res.ok) return;
     const data = await res.json();
+    console.log('[Prizzy] plan reçu depuis /me :', data.plan);
     if (data.plan === 'elite' || data.plan === 'ultimate') {
       currentPlan = data.plan;
       const badge = document.getElementById('mode-plan-badge');
