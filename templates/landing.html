@@ -122,6 +122,40 @@
     }
     .hero-sub span { display: flex; align-items: center; gap: 5px; }
 
+    /* ── Early adopters counter ── */
+    .early-counter {
+      max-width: 340px; margin: 24px auto 0;
+      background: var(--surface);
+      border: 1px solid var(--teal-dim);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      box-shadow: 0 2px 12px rgba(9,177,186,.08);
+    }
+    .early-counter-top {
+      display: flex; justify-content: space-between; align-items: baseline;
+      margin-bottom: 8px;
+    }
+    .early-counter-label {
+      font-size: 13px; font-weight: 600; color: var(--text);
+    }
+    .early-counter-label span { color: var(--teal); }
+    .early-counter-sub {
+      font-size: 11px; color: var(--text-3);
+    }
+    .early-progress-track {
+      height: 6px; background: var(--teal-dim);
+      border-radius: 100px; overflow: hidden;
+    }
+    .early-progress-fill {
+      height: 100%; background: var(--teal);
+      border-radius: 100px;
+      transition: width .6s cubic-bezier(.4,0,.2,1);
+    }
+    .early-counter-bottom {
+      margin-top: 7px; font-size: 11px; color: var(--teal-hover); font-weight: 600;
+      text-align: center;
+    }
+
     /* ── Steps ── */
     .steps {
       padding: 16px 0 64px;
@@ -499,6 +533,18 @@
       <span>✓ Résiliable à tout moment</span>
       <span>✓ Paiement sécurisé Stripe</span>
     </div>
+
+    <div class="early-counter" id="early-counter" style="display:none">
+      <div class="early-counter-top">
+        <div class="early-counter-label"><span id="early-count">—</span>/300 early adopters</div>
+        <div class="early-counter-sub" id="early-remaining">— places restantes</div>
+      </div>
+      <div class="early-progress-track">
+        <div class="early-progress-fill" id="early-bar" style="width:0%"></div>
+      </div>
+      <div class="early-counter-bottom">🎁 1 mois offert sur l'app à la sortie</div>
+    </div>
+
     {% if error %}
     <div class="error-banner" style="max-width:520px;margin:20px auto 0">{{ error }}</div>
     {% endif %}
@@ -839,6 +885,34 @@ function toggleFaq(btn) {
   document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
   if (!isOpen) item.classList.add('open');
 }
+
+(function earlyCounter() {
+  const GOAL = 300;
+  const elCount = document.getElementById('early-count');
+  const elBar = document.getElementById('early-bar');
+  const elRemaining = document.getElementById('early-remaining');
+  const elBox = document.getElementById('early-counter');
+
+  function update(n) {
+    const pct = Math.min(100, Math.round(n / GOAL * 100));
+    elCount.textContent = n;
+    elBar.style.width = pct + '%';
+    elRemaining.textContent = Math.max(0, GOAL - n) + ' places restantes';
+    elBox.style.display = 'block';
+  }
+
+  async function fetchStats() {
+    try {
+      const res = await fetch('/stats');
+      if (!res.ok) return;
+      const data = await res.json();
+      update(data.subscribers);
+    } catch {}
+  }
+
+  fetchStats();
+  setInterval(fetchStats, 30000);
+})();
 </script>
 </body>
 </html>

@@ -153,6 +153,20 @@ def has_premium_subscription(email: str) -> bool:
     return sub is not None and sub["status"] == "active" and sub.get("plan") in ("elite", "ultimate")
 
 
+def count_active_subscribers() -> int:
+    conn = get_db()
+    if USE_PG:
+        with conn.cursor() as cur:
+            cur.execute("SELECT COUNT(*) FROM subscribers WHERE status = 'active'")
+            row = cur.fetchone()
+    else:
+        row = conn.execute(
+            "SELECT COUNT(*) FROM subscribers WHERE status = 'active'"
+        ).fetchone()
+    conn.close()
+    return int(list(row.values())[0] if USE_PG else row[0])
+
+
 def get_discord_user_email(discord_id: str) -> Optional[str]:
     conn = get_db()
     if USE_PG:

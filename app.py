@@ -15,7 +15,7 @@ from PIL import Image
 
 from vinted_client import search_items
 from claude_client import analyze_clothing, legit_check
-from db import init_db, upsert_subscriber, has_active_subscription, has_elite_subscription, has_premium_subscription, get_subscriber
+from db import init_db, upsert_subscriber, has_active_subscription, has_elite_subscription, has_premium_subscription, get_subscriber, count_active_subscribers
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024  # 50 MB (up to 5 photos)
@@ -109,6 +109,12 @@ def ping():
 
 
 # ── Me ────────────────────────────────────────────────────
+
+@app.route("/stats")
+def stats():
+    count = count_active_subscribers()
+    return jsonify({"subscribers": count})
+
 
 @app.route("/me")
 def me():
