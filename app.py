@@ -118,7 +118,9 @@ def me():
     sub = get_subscriber(email)
     if not sub or sub["status"] != "active":
         return jsonify({"error": "Pas d'abonnement actif"}), 403
-    return jsonify({"email": email, "plan": sub.get("plan", "starter")})
+    plan = sub.get("plan", "starter")
+    print(f"[/me] email={email} plan={plan}", flush=True)
+    return jsonify({"email": email, "plan": plan})
 
 
 # ── Admin ─────────────────────────────────────────────────
