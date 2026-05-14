@@ -887,30 +887,92 @@
 
     /* ── Mode Select ─────────────────────────────────────── */
     #screen-mode-select { background: var(--bg); }
-    .mode-select-body { padding: 8px 0 32px; display: flex; flex-direction: column; gap: 10px; }
+
+    .mode-select-hero {
+      padding: 40px 0 28px;
+      text-align: center;
+    }
+    .mode-select-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--teal-faint); border: 1px solid var(--teal-dim);
+      color: var(--teal-hover);
+      font-size: 11px; font-weight: 700; letter-spacing: .4px; text-transform: uppercase;
+      padding: 5px 12px; border-radius: 100px;
+      margin-bottom: 16px;
+    }
     .mode-select-title {
-      font-size: 19px; font-weight: 700; color: var(--text);
-      margin-bottom: 6px;
+      font-size: clamp(24px, 6vw, 32px); font-weight: 800; letter-spacing: -1px; line-height: 1.15;
+      color: var(--text); margin-bottom: 10px;
     }
+    .mode-select-title em { font-style: normal; color: var(--teal); }
     .mode-select-sub {
-      font-size: 13px; color: var(--text-3); margin-bottom: 4px;
+      font-size: 15px; color: var(--text-2); line-height: 1.55; max-width: 360px; margin: 0 auto;
     }
+
+    .mode-cards-grid {
+      display: flex; flex-direction: column; gap: 14px;
+      padding-bottom: calc(32px + var(--safe-b));
+    }
+
     .mode-card {
-      display: flex; align-items: center; gap: 14px;
-      padding: 16px; border-radius: var(--radius-lg);
-      background: var(--surface); border: 1.5px solid var(--border);
+      display: flex; align-items: flex-start; gap: 18px;
+      padding: 24px 22px;
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      box-shadow: var(--shadow-sm);
       cursor: pointer; text-align: left; width: 100%;
-      transition: border-color .15s, box-shadow .15s;
+      transition: border-color .18s, box-shadow .18s, transform .18s;
       -webkit-tap-highlight-color: transparent;
       font-family: inherit;
     }
-    .mode-card:hover { border-color: var(--primary); box-shadow: 0 2px 12px rgba(99,102,241,.15); }
-    .mode-card:active { transform: scale(.98); }
-    .mode-icon { font-size: 24px; flex-shrink: 0; line-height: 1; }
-    .mode-label { font-size: 14px; font-weight: 700; color: var(--text); }
-    .mode-desc { font-size: 12px; color: var(--text-3); margin-top: 2px; line-height: 1.4; }
-    .mode-card-ultimate { border-color: rgba(234,88,12,.25); }
-    .mode-card-ultimate:hover { border-color: #EA580C; box-shadow: 0 2px 12px rgba(234,88,12,.15); }
+    .mode-card:hover {
+      border-color: var(--teal);
+      box-shadow: var(--shadow-teal);
+      transform: translateY(-2px);
+    }
+    .mode-card:active { transform: scale(.97); }
+
+    .mode-icon-wrap {
+      width: 52px; height: 52px; border-radius: 14px; flex-shrink: 0;
+      background: var(--teal-faint);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+    }
+    .mode-card-body { flex: 1; min-width: 0; }
+    .mode-label {
+      font-size: 16px; font-weight: 700; color: var(--text);
+      margin-bottom: 5px; line-height: 1.25;
+    }
+    .mode-desc { font-size: 13px; color: var(--text-2); line-height: 1.5; }
+    .mode-card-arrow {
+      flex-shrink: 0; align-self: center;
+      color: var(--text-3);
+      transition: transform .18s, color .18s;
+    }
+    .mode-card:hover .mode-card-arrow { transform: translateX(3px); color: var(--teal); }
+
+    /* Photo IA card */
+    .mode-card-photo {
+      border-color: rgba(168,85,247,.2);
+      background: linear-gradient(135deg, #fdf4ff 0%, #fff7ed 100%);
+    }
+    .mode-card-photo:hover {
+      border-color: #a855f7;
+      box-shadow: 0 4px 24px rgba(168,85,247,.18);
+    }
+    .mode-card-photo .mode-icon-wrap {
+      background: linear-gradient(135deg, rgba(168,85,247,.15), rgba(234,88,12,.12));
+    }
+    .mode-card-photo .mode-label { color: #7c3aed; }
+    .mode-card-photo:hover .mode-card-arrow { color: #a855f7; }
+    .mode-photo-badge {
+      display: inline-block;
+      font-size: 10px; font-weight: 700; letter-spacing: .4px; text-transform: uppercase;
+      background: linear-gradient(135deg, #a855f7, #ea580c);
+      color: white; border-radius: 6px; padding: 2px 7px;
+      margin-bottom: 5px;
+    }
 
     /* ── Combined Results ─────────────────────────────────── */
     .combined-section-label {
@@ -1048,41 +1110,62 @@
   </div>
 
   <div class="container">
-    <div class="mode-select-body">
-      <p class="mode-select-title">Que veux-tu faire ?</p>
+    <div class="mode-select-hero">
+      <div class="mode-select-pill">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Abonné <span id="mode-plan-badge" style="text-transform:none;letter-spacing:0"></span>
+      </div>
+      <p class="mode-select-title">Que veux-tu<br><em>analyser ?</em></p>
       <p class="mode-select-sub">Choisis une analyse pour commencer</p>
+    </div>
+
+    <div class="mode-cards-grid">
 
       <button class="mode-card" id="mode-estimate">
-        <span class="mode-icon">📊</span>
-        <div>
+        <div class="mode-icon-wrap">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#09B1BA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </div>
+        <div class="mode-card-body">
           <div class="mode-label">Estimation seule</div>
           <div class="mode-desc">Prix recommandé, score de vente et meilleur moment pour publier</div>
         </div>
+        <svg class="mode-card-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
 
       <button class="mode-card" id="mode-legit">
-        <span class="mode-icon">🔍</span>
-        <div>
+        <div class="mode-icon-wrap">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#09B1BA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="mode-card-body">
           <div class="mode-label">Legit Check seul</div>
           <div class="mode-desc">Vérifie l'authenticité du vêtement avec niveau de confiance</div>
         </div>
+        <svg class="mode-card-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
 
       <button class="mode-card" id="mode-combined">
-        <span class="mode-icon">📊🔍</span>
-        <div>
-          <div class="mode-label">Estimation + Legit Check ensemble</div>
-          <div class="mode-desc">Les deux analyses envoyées en parallèle, résultats sur une page</div>
+        <div class="mode-icon-wrap">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#09B1BA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><path d="M3 17l3 3 4-4"/></svg>
         </div>
+        <div class="mode-card-body">
+          <div class="mode-label">Estimation + Legit Check</div>
+          <div class="mode-desc">Les deux analyses en parallèle, résultats sur une seule page</div>
+        </div>
+        <svg class="mode-card-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
 
-      <button class="mode-card mode-card-ultimate" id="mode-photo-ia" style="display:none">
-        <span class="mode-icon">✨</span>
-        <div>
-          <div class="mode-label">Photo IA</div>
-          <div class="mode-desc">Améliore et plie automatiquement tes photos produit</div>
+      <button class="mode-card mode-card-photo" id="mode-photo-ia" style="display:none">
+        <div class="mode-icon-wrap">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
         </div>
+        <div class="mode-card-body">
+          <div class="mode-photo-badge">Ultimate</div>
+          <div class="mode-label">Photo IA</div>
+          <div class="mode-desc">Améliore et plie automatiquement tes photos produit avec l'IA</div>
+        </div>
+        <svg class="mode-card-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
+
     </div>
   </div>
 
@@ -1812,6 +1895,8 @@ let combineMode = false;
     const data = await res.json();
     if (data.plan === 'elite' || data.plan === 'ultimate') {
       currentPlan = data.plan;
+      const badge = document.getElementById('mode-plan-badge');
+      if (badge) badge.textContent = data.plan.charAt(0).toUpperCase() + data.plan.slice(1);
       if (data.plan === 'ultimate') {
         document.getElementById('mode-photo-ia').style.display = 'flex';
       }
