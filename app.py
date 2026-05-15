@@ -265,11 +265,17 @@ def success():
         checkout = stripe.checkout.Session.retrieve(session_id)
         email = checkout.customer_details.email
         plan = checkout.metadata.get("plan", "starter")
+        sub_status = "active"
+        if checkout.subscription:
+            sub = stripe.Subscription.retrieve(checkout.subscription)
+            if sub.status == "trialing":
+                sub_status = "trialing"
+        print(f"[success] email={email} plan={plan} status={sub_status}", flush=True)
         upsert_subscriber(
             email=email,
             stripe_customer_id=checkout.customer,
             stripe_subscription_id=checkout.subscription,
-            status="active",
+            status=sub_status,
             plan=plan,
         )
         session["email"] = email
@@ -330,36 +336,39 @@ def webhook():
 
     etype = event["type"]
     obj   = event["data"]["object"]
+    print(f"[webhook] event={etype} status={obj.get('status')} customer={obj.get('customer')}", flush=True)
 
     if etype == "customer.subscription.deleted":
         _deactivate_customer(obj["customer"])
-    elif etype == "customer.subscription.updated":
+    elif etype in ("customer.subscription.created", "customer.subscription.updated"):
         if obj["status"] in ("canceled", "unpaid", "past_due"):
             _deactivate_customer(obj["customer"])
+        elif obj["status"] == "trialing":
+            _set_customer_status(obj["customer"], "trialing")
         elif obj["status"] == "active":
-            _activate_customer(obj["customer"])
+            _set_customer_status(obj["customer"], "active")
     elif etype == "invoice.payment_failed":
         _deactivate_customer(obj["customer"])
 
     return jsonify({"status": "ok"})
 
 
-def _activate_customer(customer_id: str):
+def _set_customer_status(customer_id: str, status: str):
     try:
         c = stripe.Customer.retrieve(customer_id)
         if c.email:
-            upsert_subscriber(c.email, status="active")
-    except Exception:
-        pass
+            print(f"[webhook] upsert email={c.email} status={status}", flush=True)
+            upsert_subscriber(c.email, status=status)
+    except Exception as e:
+        print(f"[webhook] _set_customer_status error: {e}", flush=True)
+
+
+def _activate_customer(customer_id: str):
+    _set_customer_status(customer_id, "active")
 
 
 def _deactivate_customer(customer_id: str):
-    try:
-        c = stripe.Customer.retrieve(customer_id)
-        if c.email:
-            upsert_subscriber(c.email, status="inactive")
-    except Exception:
-        pass
+    _set_customer_status(customer_id, "inactive")
 
 
 # ── Legit Check (Elite) ───────────────────────────────────

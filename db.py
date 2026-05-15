@@ -134,23 +134,23 @@ def get_subscriber(email: str) -> Optional[dict]:
 
 def has_active_subscription(email: str) -> bool:
     sub = get_subscriber(email)
-    return sub is not None and sub["status"] == "active"
+    return sub is not None and sub["status"] in ("active", "trialing")
 
 
 def has_elite_subscription(email: str) -> bool:
     sub = get_subscriber(email)
-    return sub is not None and sub["status"] == "active" and sub.get("plan") == "elite"
+    return sub is not None and sub["status"] in ("active", "trialing") and sub.get("plan") == "elite"
 
 
 def has_ultimate_subscription(email: str) -> bool:
     sub = get_subscriber(email)
-    return sub is not None and sub["status"] == "active" and sub.get("plan") == "ultimate"
+    return sub is not None and sub["status"] in ("active", "trialing") and sub.get("plan") == "ultimate"
 
 
 def has_premium_subscription(email: str) -> bool:
     """True for elite or ultimate plans."""
     sub = get_subscriber(email)
-    return sub is not None and sub["status"] == "active" and sub.get("plan") in ("elite", "ultimate")
+    return sub is not None and sub["status"] in ("active", "trialing") and sub.get("plan") in ("elite", "ultimate")
 
 
 def count_active_subscribers() -> int:
