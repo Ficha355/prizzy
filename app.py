@@ -15,7 +15,7 @@ from PIL import Image
 
 from vinted_client import search_items
 from claude_client import analyze_clothing, legit_check
-from db import init_db, upsert_subscriber, has_active_subscription, has_elite_subscription, has_premium_subscription, get_subscriber, count_active_subscribers, increment_analyses_count, get_analyses_count
+from db import init_db, upsert_subscriber, has_active_subscription, has_elite_subscription, has_premium_subscription, get_subscriber, count_active_subscribers, increment_analyses_count, get_analyses_count, set_analyses_count
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024  # 50 MB (up to 5 photos)
@@ -139,6 +139,16 @@ def admin_add_elite():
     expected = os.environ.get("ADMIN_TOKEN", "")
     if not expected or token != expected:
         return jsonify({"error": "Non autorisé"}), 401
+
+    action = request.form.get("action", "").strip()
+
+    if action == "set_analyses":
+        try:
+            n = int(request.form.get("count", 0))
+        except ValueError:
+            return jsonify({"error": "Paramètre 'count' invalide"}), 400
+        set_analyses_count(n)
+        return jsonify({"ok": True, "analyses": n})
 
     email = (request.form.get("email") or "").strip().lower()
     if not email:

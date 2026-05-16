@@ -204,6 +204,24 @@ def increment_analyses_count() -> None:
     conn.close()
 
 
+def set_analyses_count(n: int) -> None:
+    conn = get_db()
+    if USE_PG:
+        with conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO counters (key, value) VALUES ('analyses', %s)
+                ON CONFLICT (key) DO UPDATE SET value = %s
+            """, (n, n))
+        conn.commit()
+    else:
+        conn.execute("""
+            INSERT INTO counters (key, value) VALUES ('analyses', ?)
+            ON CONFLICT (key) DO UPDATE SET value = ?
+        """, (n, n))
+        conn.commit()
+    conn.close()
+
+
 def get_analyses_count() -> int:
     conn = get_db()
     if USE_PG:
