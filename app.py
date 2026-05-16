@@ -15,7 +15,7 @@ from PIL import Image
 
 from vinted_client import search_items
 from claude_client import analyze_clothing, legit_check
-from db import init_db, upsert_subscriber, has_active_subscription, has_elite_subscription, has_premium_subscription, get_subscriber, count_active_subscribers
+from db import init_db, upsert_subscriber, has_active_subscription, has_elite_subscription, has_premium_subscription, get_subscriber, count_active_subscribers, increment_analyses_count, get_analyses_count
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024  # 50 MB (up to 5 photos)
@@ -112,8 +112,10 @@ def ping():
 
 @app.route("/stats")
 def stats():
-    count = count_active_subscribers()
-    return jsonify({"subscribers": count})
+    return jsonify({
+        "subscribers": count_active_subscribers(),
+        "analyses":    get_analyses_count(),
+    })
 
 
 @app.route("/me")
@@ -478,6 +480,7 @@ def photo_ia():
         app.logger.error("[photo-ia] save error: %s", exc)
         return jsonify({"error": "Erreur lors de la sauvegarde de l'image."}), 500
 
+    increment_analyses_count()
     return jsonify({"image_url": local_url})
 
 
@@ -508,6 +511,7 @@ def search():
 
     results["query"]          = query
     results["image_uploaded"] = image_path is not None
+    increment_analyses_count()
     return jsonify(results)
 
 
@@ -570,6 +574,7 @@ def analyze():
         }
 
     total_entries = vinted_results.get("total_entries", 0)
+    increment_analyses_count()
     return jsonify({
         "analysis":     analysis,
         "price_stats":  price_stats,

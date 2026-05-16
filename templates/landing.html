@@ -579,7 +579,7 @@
 <section class="counter-section">
   <div class="counter-inner">
     <span class="counter-dot"></span>
-    <p class="counter-num">2&nbsp;<span>847</span></p>
+    <p class="counter-num" id="analyses-count">—</p>
     <div class="counter-divider"></div>
     <div class="counter-label">
       <strong>articles analysés</strong>
@@ -888,21 +888,29 @@ function toggleFaq(btn) {
   const elBar = document.getElementById('early-bar');
   const elRemaining = document.getElementById('early-remaining');
   const elBox = document.getElementById('early-counter');
+  const elAnalyses = document.getElementById('analyses-count');
 
-  function update(n) {
+  function fmt(n) {
+    return n >= 1000
+      ? Math.floor(n / 1000) + '\u00a0' + String(n % 1000).padStart(3, '0')
+      : String(n);
+  }
+
+  function update(data) {
+    const n = data.subscribers || 0;
     const pct = Math.min(100, Math.round(n / GOAL * 100));
     elCount.textContent = n;
     elBar.style.width = pct + '%';
     elRemaining.textContent = Math.max(0, GOAL - n);
     elBox.style.display = 'block';
+    if (elAnalyses) elAnalyses.textContent = fmt(data.analyses || 0);
   }
 
   async function fetchStats() {
     try {
       const res = await fetch('/stats');
       if (!res.ok) return;
-      const data = await res.json();
-      update(data.subscribers);
+      update(await res.json());
     } catch {}
   }
 

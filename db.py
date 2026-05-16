@@ -46,8 +46,20 @@ def init_db():
                     created_at TIMESTAMPTZ DEFAULT NOW()
                 )
             """)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS counters (
+                    key   TEXT PRIMARY KEY,
+                    value INTEGER NOT NULL DEFAULT 0
+                )
+            """)
         conn.commit()
     else:
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS counters (
+                key   TEXT PRIMARY KEY,
+                value INTEGER NOT NULL DEFAULT 0
+            )
+        """)
         conn.execute("""
             CREATE TABLE IF NOT EXISTS subscribers (
                 id                     INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -172,6 +184,40 @@ def count_active_subscribers() -> int:
     conn.close()
     print(f"[stats] count active+trialing = {total}", flush=True)
     return total
+
+
+def increment_analyses_count() -> None:
+    conn = get_db()
+    if USE_PG:
+        with conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO counters (key, value) VALUES ('analyses', 1)
+                ON CONFLICT (key) DO UPDATE SET value = counters.value + 1
+            """)
+        conn.commit()
+    else:
+        conn.execute("""
+            INSERT INTO counters (key, value) VALUES ('analyses', 1)
+            ON CONFLICT (key) DO UPDATE SET value = value + 1
+        """)
+        conn.commit()
+    conn.close()
+
+
+def get_analyses_count() -> int:
+    conn = get_db()
+    if USE_PG:
+        with conn.cursor() as cur:
+            cur.execute("SELECT value FROM counters WHERE key = 'analyses'")
+            row = cur.fetchone()
+    else:
+        row = conn.execute(
+            "SELECT value FROM counters WHERE key = 'analyses'"
+        ).fetchone()
+    conn.close()
+    if not row:
+        return 0
+    return int(row["value"] if USE_PG else row[0])
 
 
 def get_discord_user_email(discord_id: str) -> Optional[str]:
