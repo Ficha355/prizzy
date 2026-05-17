@@ -596,7 +596,7 @@ def serve_upload(filename):
 
 _FAL_MANNEQUIN_URL = (
     os.environ.get("FAL_MANNEQUIN_URL")
-    or "https://storage.googleapis.com/falserverless/model_tests/cat-vton/human_image.png"
+    or "https://storage.googleapis.com/falserverless/model_tests/cat-vton/person.png"
 )
 
 
@@ -659,12 +659,8 @@ def photo_ia():
                 "fal-ai/flux/dev/image-to-image",
                 arguments={
                     "image_url": garment_url,
-                    "prompt": (
-                        "The exact same clothing item neatly folded, flat lay on a pure white background, "
-                        "professional e-commerce product photography, studio lighting, preserve all colors "
-                        "logos and patterns exactly, no mannequin, no model"
-                    ),
-                    "strength": 0.60,
+                    "prompt": "fold this garment neatly",
+                    "strength": 0.3,
                     "num_inference_steps": 28,
                     "guidance_scale": 3.5,
                     "num_images": 1,
