@@ -150,6 +150,23 @@
     }
     .btn-logout:hover { background: var(--bg); color: var(--text); }
 
+    .stat-card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 20px 24px;
+      margin-bottom: 16px;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    }
+    .stat-label {
+      font-size: 13px; color: var(--text-2); font-weight: 500;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .stat-label svg { flex-shrink: 0; color: var(--teal); }
+    .stat-value {
+      font-size: 22px; font-weight: 800; letter-spacing: -.5px; color: var(--text);
+    }
+
     @media (max-width: 480px) {
       .page-wrap { padding: 32px 16px 60px; }
     }
@@ -210,6 +227,14 @@
       </div>
     </div>
     {% endif %}
+  </div>
+
+  <div class="stat-card">
+    <span class="stat-label">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Articles analysés sur Prizzy
+    </span>
+    <span class="stat-value">{{ analyses }}</span>
   </div>
 
   {% if has_portal %}

@@ -399,7 +399,8 @@ def account():
                            status=sub.get("status"),
                            trial_end=trial_end,
                            next_renewal=next_renewal,
-                           has_portal=bool(sub.get("stripe_customer_id")))
+                           has_portal=bool(sub.get("stripe_customer_id")),
+                           analyses=get_analyses_count())
 
 
 @app.route("/portal", methods=["POST"])
