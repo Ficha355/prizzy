@@ -310,6 +310,51 @@
     }
     .nav-actions { display: flex; align-items: center; gap: 8px; }
 
+    /* ── À la carte ── */
+    .acarte-section { padding: 0 0 72px; }
+    .acarte-eyebrow {
+      text-align: center; font-size: 12px; font-weight: 700;
+      color: var(--teal); text-transform: uppercase; letter-spacing: .8px;
+      margin-bottom: 12px;
+    }
+    .acarte-title {
+      text-align: center; font-size: clamp(20px,3vw,28px); font-weight: 800;
+      letter-spacing: -.5px; margin-bottom: 24px; color: var(--text);
+    }
+    .acarte-card {
+      max-width: 680px; margin: 0 auto;
+      background: var(--surface); border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      border: 1.5px solid var(--border);
+      padding: 28px 32px;
+      display: flex; align-items: center; gap: 28px;
+    }
+    .acarte-icon {
+      width: 56px; height: 56px; border-radius: 16px; flex-shrink: 0;
+      background: var(--teal-faint);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+    }
+    .acarte-body { flex: 1; min-width: 0; }
+    .acarte-name { font-size: 17px; font-weight: 800; margin-bottom: 4px; }
+    .acarte-desc { font-size: 13px; color: var(--text-2); line-height: 1.6; margin-bottom: 0; }
+    .acarte-right { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; flex-shrink: 0; }
+    .acarte-price { font-size: 24px; font-weight: 800; color: var(--teal); }
+    .acarte-price small { font-size: 13px; font-weight: 500; color: var(--text-3); }
+    .acarte-btn {
+      font-family: inherit; font-size: 13px; font-weight: 700;
+      padding: 10px 20px; border-radius: var(--radius);
+      background: var(--teal); color: white; border: none;
+      cursor: pointer; text-decoration: none; white-space: nowrap;
+      box-shadow: 0 4px 16px rgba(9,177,186,.25);
+      transition: all var(--transition);
+    }
+    .acarte-btn:hover { background: var(--teal-hover); }
+    @media (max-width: 600px) {
+      .acarte-card { flex-direction: column; align-items: flex-start; gap: 16px; }
+      .acarte-right { flex-direction: row; align-items: center; width: 100%; justify-content: space-between; }
+    }
+
     .success-msg {
       margin-top: 10px; font-size: 13px;
       color: #15803D; background: #DCFCE7;
@@ -806,6 +851,25 @@
   </div>
 </section>
 
+
+<!-- ── À la carte ── -->
+<section class="acarte-section">
+  <div class="container">
+    <p class="acarte-eyebrow">À la carte</p>
+    <h2 class="acarte-title">Un outil, un usage, un prix unique</h2>
+    <div class="acarte-card">
+      <div class="acarte-icon">🔍</div>
+      <div class="acarte-body">
+        <div class="acarte-name">Analyse de profil Vinted</div>
+        <div class="acarte-desc">Collez l'URL de votre profil et obtenez un audit complet : annonces sous-évaluées, sur-évaluées, score vendeur et 3 actions prioritaires pour vendre plus vite. Sans abonnement.</div>
+      </div>
+      <div class="acarte-right">
+        <div class="acarte-price">0,99€ <small>/ analyse</small></div>
+        <a href="/login" class="acarte-btn">Essayer →</a>
+      </div>
+    </div>
+  </div>
+</section>
 
 <footer>
   <div class="container">

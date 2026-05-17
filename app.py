@@ -428,7 +428,7 @@ def profile_audit():
 def profile_audit_checkout():
     email = session.get("email")
     if not email or not has_active_subscription(email):
-        return redirect("/login")
+        return redirect("/login?info=Connectez-vous pour accéder à l'audit de profil Vinted.")
     profile_url = request.form.get("profile_url", "").strip()
     if not profile_url or "vinted" not in profile_url.lower():
         return render_template("profile_audit.html", email=email,
