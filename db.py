@@ -35,10 +35,12 @@ def init_db():
                     stripe_subscription_id TEXT,
                     status                 TEXT NOT NULL DEFAULT 'inactive',
                     plan                   TEXT NOT NULL DEFAULT 'starter',
+                    password_hash          TEXT,
                     created_at             TIMESTAMPTZ DEFAULT NOW(),
                     updated_at             TIMESTAMPTZ DEFAULT NOW()
                 )
             """)
+            cur.execute("ALTER TABLE subscribers ADD COLUMN IF NOT EXISTS password_hash TEXT")
             cur.execute("""
                 CREATE TABLE IF NOT EXISTS discord_users (
                     discord_id TEXT PRIMARY KEY,
@@ -68,12 +70,17 @@ def init_db():
                 stripe_subscription_id TEXT,
                 status                 TEXT NOT NULL DEFAULT 'inactive',
                 plan                   TEXT NOT NULL DEFAULT 'starter',
+                password_hash          TEXT,
                 created_at             TEXT DEFAULT (datetime('now')),
                 updated_at             TEXT DEFAULT (datetime('now'))
             )
         """)
         try:
             conn.execute("ALTER TABLE subscribers ADD COLUMN plan TEXT NOT NULL DEFAULT 'starter'")
+        except Exception:
+            pass
+        try:
+            conn.execute("ALTER TABLE subscribers ADD COLUMN password_hash TEXT")
         except Exception:
             pass
         conn.execute("""
@@ -163,6 +170,28 @@ def has_premium_subscription(email: str) -> bool:
     """True for elite or ultimate plans."""
     sub = get_subscriber(email)
     return sub is not None and sub["status"] in ("active", "trialing") and sub.get("plan") in ("elite", "ultimate")
+
+
+def set_password(email: str, password_hash: str) -> None:
+    conn = get_db()
+    if USE_PG:
+        with conn.cursor() as cur:
+            cur.execute(
+                "UPDATE subscribers SET password_hash = %s WHERE email = %s",
+                (password_hash, email),
+            )
+    else:
+        conn.execute(
+            "UPDATE subscribers SET password_hash = ? WHERE email = ?",
+            (password_hash, email),
+        )
+    conn.commit()
+    conn.close()
+
+
+def get_password_hash(email: str) -> Optional[str]:
+    sub = get_subscriber(email)
+    return sub["password_hash"] if sub else None
 
 
 def count_active_subscribers() -> int:

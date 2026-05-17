@@ -15,7 +15,8 @@ from PIL import Image
 
 from vinted_client import search_items
 from claude_client import analyze_clothing, legit_check
-from db import init_db, upsert_subscriber, has_active_subscription, has_elite_subscription, has_premium_subscription, get_subscriber, count_active_subscribers, increment_analyses_count, get_analyses_count, set_analyses_count
+import bcrypt
+from db import init_db, upsert_subscriber, has_active_subscription, has_elite_subscription, has_premium_subscription, get_subscriber, count_active_subscribers, increment_analyses_count, get_analyses_count, set_analyses_count, set_password, get_password_hash
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024  # 50 MB (up to 5 photos)
@@ -309,12 +310,37 @@ def demo():
 @app.route("/login", methods=["POST"])
 def login():
     email = request.form.get("email", "").strip().lower()
+    password = request.form.get("password", "")
     if not email:
         return render_template("landing.html", login_error="Entrez votre adresse email.")
-    if has_active_subscription(email):
-        session["email"] = email
+    if not has_active_subscription(email):
+        return render_template("landing.html", login_error="Aucun abonnement actif pour cet email.")
+    stored_hash = get_password_hash(email)
+    if stored_hash is None:
+        return redirect(f"/set-password?email={email}")
+    if not bcrypt.checkpw(password.encode(), stored_hash.encode()):
+        return render_template("landing.html", login_error="Mot de passe incorrect.")
+    session["email"] = email
+    return redirect("/")
+
+
+@app.route("/set-password", methods=["GET", "POST"])
+def set_password_route():
+    email = request.args.get("email", "").strip().lower() or request.form.get("email", "").strip().lower()
+    if not email or not has_active_subscription(email):
         return redirect("/")
-    return render_template("landing.html", login_error="Aucun abonnement actif pour cet email.")
+    if request.method == "GET":
+        return render_template("set_password.html", email=email)
+    password = request.form.get("password", "")
+    confirm = request.form.get("confirm", "")
+    if len(password) < 8:
+        return render_template("set_password.html", email=email, error="Le mot de passe doit faire au moins 8 caractères.")
+    if password != confirm:
+        return render_template("set_password.html", email=email, error="Les mots de passe ne correspondent pas.")
+    hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+    set_password(email, hashed)
+    session["email"] = email
+    return redirect("/")
 
 
 @app.route("/logout")

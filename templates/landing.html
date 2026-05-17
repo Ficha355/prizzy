@@ -853,11 +853,14 @@
   <div class="container">
     <div class="already-card">
       <p class="already-title">Vous avez déjà un abonnement ?</p>
-      <p class="already-sub">Entrez votre adresse email pour accéder à Prizzy.</p>
+      <p class="already-sub">Connectez-vous avec votre email et mot de passe.</p>
       <form method="POST" action="/login" class="login-form">
         <input type="email" name="email" class="login-input"
                placeholder="votre@email.com" required
                autocomplete="email" inputmode="email">
+        <input type="password" name="password" class="login-input"
+               placeholder="Mot de passe" required
+               autocomplete="current-password">
         <button type="submit" class="btn-login">Accéder →</button>
       </form>
       {% if login_error %}
