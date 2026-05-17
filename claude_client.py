@@ -137,6 +137,76 @@ def describe_for_dalle(images: list[tuple[bytes, str]]) -> dict:
     return json.loads(raw)
 
 
+_AUDIT_SYSTEM = (
+    "Tu es un expert en vente sur Vinted avec une connaissance approfondie du marché de la mode d'occasion. "
+    "Tu analyses des profils vendeur pour identifier les optimisations de prix et de stratégie. "
+    "Réponds UNIQUEMENT avec un objet JSON valide, sans texte supplémentaire, "
+    "sans bloc markdown, sans explication."
+)
+
+_AUDIT_SCHEMA = """\
+Voici les annonces actives d'un vendeur Vinted. Analyse ce profil et retourne un JSON avec exactement ces clés :
+{{
+  "score": entier entre 0 et 10 (qualité globale du profil vendeur),
+  "score_label": "une phrase courte qualifiant le profil (ex: Vendeur débutant, Profil solide, Expert Vinted)",
+  "resume": "synthèse en 2-3 phrases : points forts, points faibles, potentiel",
+  "sous_evalues": [
+    {{
+      "titre": "titre exact de l'annonce",
+      "prix_actuel": prix actuel (nombre),
+      "prix_suggere": prix recommandé (nombre),
+      "raison": "explication en 1 phrase"
+    }}
+  ],
+  "sur_evalues": [
+    {{
+      "titre": "titre exact de l'annonce",
+      "prix_actuel": prix actuel (nombre),
+      "prix_suggere": prix recommandé (nombre),
+      "raison": "explication en 1 phrase"
+    }}
+  ],
+  "actions": [
+    "action prioritaire 1 — concrète et actionnable",
+    "action prioritaire 2",
+    "action prioritaire 3"
+  ]
+}}
+
+Limite sous_evalues et sur_evalues à 5 articles maximum chacun. Si aucune annonce n'est concernée, retourne une liste vide [].
+
+Annonces du vendeur ({n} articles) :
+{items_text}"""
+
+
+def audit_seller_profile(user_info: dict, items: list[dict]) -> dict:
+    """
+    Analyze a Vinted seller's profile and listings with Claude.
+    Returns a dict with keys: score, score_label, resume, sous_evalues, sur_evalues, actions.
+    """
+    lines = []
+    for i, item in enumerate(items, 1):
+        lines.append(
+            f"{i}. {item['title']} | {item['price']}€ | {item['brand']} | "
+            f"{item['size']} | {item['condition']} | "
+            f"{item['views']} vues | {item['favourites']} favoris"
+        )
+    items_text = "\n".join(lines) if lines else "(aucune annonce active)"
+
+    prompt = _AUDIT_SCHEMA.format(n=len(items), items_text=items_text)
+
+    response = _client.messages.create(
+        model=MODEL,
+        max_tokens=2048,
+        system=_AUDIT_SYSTEM,
+        messages=[{"role": "user", "content": prompt}],
+    )
+
+    raw = next(b.text for b in response.content if b.type == "text").strip()
+    raw = re.sub(r"^```(?:json)?\s*|\s*```$", "", raw, flags=re.DOTALL).strip()
+    return json.loads(raw)
+
+
 def analyze_clothing(
     images: list[tuple[bytes, str]],
     description: Optional[str],

@@ -13,8 +13,8 @@ import base64
 import io
 from PIL import Image
 
-from vinted_client import search_items
-from claude_client import analyze_clothing, legit_check
+from vinted_client import search_items, get_seller_items
+from claude_client import analyze_clothing, legit_check, audit_seller_profile
 import bcrypt
 from db import init_db, upsert_subscriber, has_active_subscription, has_elite_subscription, has_premium_subscription, get_subscriber, count_active_subscribers, increment_analyses_count, get_analyses_count, set_analyses_count, set_password, get_password_hash, increment_user_analyses, get_user_analyses
 
@@ -414,6 +414,91 @@ def portal():
         return_url=request.url_root,
     )
     return redirect(portal_session.url, code=303)
+
+
+@app.route("/profile-audit", methods=["GET"])
+def profile_audit():
+    email = session.get("email")
+    if not email or not has_active_subscription(email):
+        return redirect("/login?info=Connectez-vous pour accéder à l'audit de profil.")
+    return render_template("profile_audit.html", email=email)
+
+
+@app.route("/profile-audit/checkout", methods=["POST"])
+def profile_audit_checkout():
+    email = session.get("email")
+    if not email or not has_active_subscription(email):
+        return redirect("/login")
+    profile_url = request.form.get("profile_url", "").strip()
+    if not profile_url or "vinted" not in profile_url.lower():
+        return render_template("profile_audit.html", email=email,
+                               form_error="Entrez une URL de profil Vinted valide.")
+    try:
+        checkout = stripe.checkout.Session.create(
+            payment_method_types=["card"],
+            line_items=[{
+                "price_data": {
+                    "currency": "eur",
+                    "unit_amount": 99,
+                    "product_data": {
+                        "name": "Audit de profil Vinted — Prizzy",
+                        "description": "Analyse IA de vos annonces : prix, stratégie, actions prioritaires",
+                    },
+                },
+                "quantity": 1,
+            }],
+            mode="payment",
+            customer_email=email,
+            metadata={"profile_url": profile_url[:400], "email": email},
+            success_url=request.url_root + "profile-audit/result?session_id={CHECKOUT_SESSION_ID}",
+            cancel_url=request.url_root + "profile-audit",
+            locale="fr",
+        )
+        return redirect(checkout.url, code=303)
+    except Exception as exc:
+        return render_template("profile_audit.html", email=email,
+                               form_error=f"Erreur paiement : {exc}")
+
+
+@app.route("/profile-audit/result", methods=["GET"])
+def profile_audit_result():
+    email = session.get("email")
+    if not email:
+        return redirect("/login")
+    session_id = request.args.get("session_id", "")
+    if not session_id:
+        return redirect("/profile-audit")
+    try:
+        checkout = stripe.checkout.Session.retrieve(session_id)
+    except Exception:
+        return render_template("profile_audit.html", email=email,
+                               result_error="Session de paiement introuvable.")
+    if checkout.payment_status != "paid":
+        return render_template("profile_audit.html", email=email,
+                               result_error="Paiement non finalisé.")
+    profile_url = checkout.metadata.get("profile_url", "")
+    if not profile_url:
+        return render_template("profile_audit.html", email=email,
+                               result_error="URL de profil manquante.")
+    try:
+        user_info, items = get_seller_items(profile_url, max_items=50)
+    except ValueError as exc:
+        return render_template("profile_audit.html", email=email,
+                               result_error=str(exc))
+    except Exception as exc:
+        return render_template("profile_audit.html", email=email,
+                               result_error=f"Impossible de récupérer les annonces : {exc}")
+    if not items:
+        return render_template("profile_audit.html", email=email,
+                               result_error="Aucune annonce active trouvée sur ce profil.")
+    try:
+        audit = audit_seller_profile(user_info, items)
+    except Exception as exc:
+        return render_template("profile_audit.html", email=email,
+                               result_error=f"Erreur analyse IA : {exc}")
+    return render_template("profile_audit.html", email=email,
+                           user_info=user_info, items=items, audit=audit,
+                           profile_url=profile_url)
 
 
 @app.route("/webhook", methods=["POST"])

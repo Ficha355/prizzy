@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#09B1BA">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <title>Audit de profil Vinted — Prizzy</title>
+  <style>
+    :root {
+      --teal:       #09B1BA;
+      --teal-hover: #0a9ea6;
+      --teal-dim:   rgba(9,177,186,.14);
+      --teal-faint: #f0fbfc;
+      --bg:         #F7F8F9;
+      --surface:    #ffffff;
+      --border:     #E5E7EB;
+      --text:       #111827;
+      --text-2:     #6B7280;
+      --text-3:     #9CA3AF;
+      --shadow:     0 0 0 1px rgba(0,0,0,.06), 0 4px 24px rgba(0,0,0,.08);
+      --radius:     12px;
+      --radius-lg:  16px;
+      --transition: 150ms cubic-bezier(.4,0,.2,1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg); color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,.88);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: 960px; margin: 0 auto; padding: 14px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .logo { display: flex; align-items: center; gap: 9px; text-decoration: none; color: var(--text); }
+    .logo-mark {
+      width: 28px; height: 28px; border-radius: 7px; background: var(--teal);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo-mark svg { width: 15px; height: 15px; }
+    .logo-name { font-size: 15px; font-weight: 700; letter-spacing: -.2px; }
+    .nav-right { display: flex; align-items: center; gap: 8px; }
+    .btn-nav {
+      font-family: inherit; font-size: 13px; font-weight: 600;
+      padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--surface); color: var(--text-2); text-decoration: none;
+      transition: all var(--transition);
+    }
+    .btn-nav:hover { background: var(--bg); color: var(--text); }
+
+    /* ── Layout ── */
+    .page-wrap { max-width: 680px; margin: 0 auto; padding: 48px 24px 80px; }
+
+    /* ── Hero ── */
+    .page-hero { text-align: center; margin-bottom: 40px; }
+    .page-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--teal-faint); border: 1px solid var(--teal-dim);
+      color: var(--teal-hover);
+      font-size: 12px; font-weight: 600; letter-spacing: .3px;
+      padding: 5px 12px; border-radius: 100px; margin-bottom: 16px;
+    }
+    .page-title { font-size: clamp(24px,4vw,32px); font-weight: 800; letter-spacing: -.6px; margin-bottom: 10px; }
+    .page-title em { font-style: normal; color: var(--teal); }
+    .page-sub { font-size: 15px; color: var(--text-2); line-height: 1.65; max-width: 520px; margin: 0 auto; }
+
+    /* ── Form card ── */
+    .form-card {
+      background: var(--surface); border-radius: var(--radius-lg); box-shadow: var(--shadow);
+      padding: 32px;
+    }
+    .form-label { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 8px; display: block; }
+    .form-input {
+      display: block; width: 100%; min-width: 0;
+      padding: 12px 14px; font-family: inherit; font-size: 14px; color: var(--text);
+      background: var(--bg); border: 1.5px solid var(--border); border-radius: var(--radius);
+      outline: none; transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .form-input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px var(--teal-dim); }
+    .form-input::placeholder { color: var(--text-3); }
+    .form-hint { font-size: 12px; color: var(--text-3); margin-top: 6px; }
+
+    .price-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      margin: 20px 0 0; padding: 16px; background: var(--teal-faint);
+      border: 1px solid var(--teal-dim); border-radius: var(--radius);
+    }
+    .price-row-left { font-size: 13px; color: var(--text-2); line-height: 1.5; }
+    .price-row-left strong { display: block; font-size: 14px; color: var(--text); margin-bottom: 2px; }
+    .price-tag { font-size: 22px; font-weight: 800; color: var(--teal); white-space: nowrap; }
+
+    .btn-submit {
+      display: block; width: 100%; padding: 14px 20px; margin-top: 20px;
+      background: var(--teal); color: white;
+      font-family: inherit; font-size: 15px; font-weight: 700; text-align: center;
+      border: none; border-radius: var(--radius); cursor: pointer;
+      box-shadow: 0 4px 20px rgba(9,177,186,.25);
+      transition: all var(--transition); -webkit-tap-highlight-color: transparent;
+    }
+    .btn-submit:hover { background: var(--teal-hover); box-shadow: 0 6px 28px rgba(9,177,186,.3); }
+
+    .includes-list { list-style: none; margin-top: 20px; display: flex; flex-direction: column; gap: 8px; }
+    .includes-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--text-2); }
+    .check-icon {
+      width: 18px; height: 18px; border-radius: 50%; background: var(--teal-faint);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
+    }
+    .check-icon svg { width: 10px; height: 10px; color: var(--teal); }
+
+    /* ── Messages ── */
+    .error-msg {
+      padding: 12px 16px; border-radius: var(--radius); margin-bottom: 24px;
+      font-size: 13px; color: #B91C1C; background: #FEE2E2; border: 1px solid #FECACA;
+    }
+
+    /* ── Results ── */
+    .results-header { margin-bottom: 32px; }
+    .results-profile {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 24px;
+      padding: 16px 20px; background: var(--surface);
+      border-radius: var(--radius); box-shadow: var(--shadow);
+    }
+    .profile-avatar {
+      width: 44px; height: 44px; border-radius: 50%; background: var(--teal-faint);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 800; color: var(--teal); flex-shrink: 0;
+    }
+    .profile-name { font-size: 15px; font-weight: 700; }
+    .profile-meta { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+
+    .score-card {
+      background: var(--surface); border-radius: var(--radius-lg); box-shadow: var(--shadow);
+      padding: 28px 32px; margin-bottom: 16px;
+      display: flex; align-items: center; gap: 24px;
+    }
+    .score-circle {
+      width: 72px; height: 72px; border-radius: 50%; flex-shrink: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      font-size: 26px; font-weight: 800; line-height: 1;
+    }
+    .score-circle small { font-size: 11px; font-weight: 500; opacity: .7; }
+    .score-circle.high   { background: #DCFCE7; color: #15803D; }
+    .score-circle.medium { background: #FEF3C7; color: #92400E; }
+    .score-circle.low    { background: #FEE2E2; color: #B91C1C; }
+    .score-info { flex: 1; min-width: 0; }
+    .score-label { font-size: 17px; font-weight: 800; margin-bottom: 6px; }
+    .score-resume { font-size: 13px; color: var(--text-2); line-height: 1.65; }
+
+    .section-title {
+      font-size: 13px; font-weight: 700; color: var(--text-3);
+      text-transform: uppercase; letter-spacing: .7px; margin: 28px 0 12px;
+    }
+
+    .items-list { display: flex; flex-direction: column; gap: 10px; }
+    .audit-item {
+      background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
+      padding: 16px 20px;
+    }
+    .audit-item-title { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+    .audit-item-prices { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .price-current { font-size: 13px; color: var(--text-3); text-decoration: line-through; }
+    .price-arrow { font-size: 12px; color: var(--text-3); }
+    .price-suggested { font-size: 14px; font-weight: 700; }
+    .price-suggested.up   { color: #15803D; }
+    .price-suggested.down { color: #B91C1C; }
+    .audit-item-raison { font-size: 12px; color: var(--text-2); line-height: 1.5; }
+
+    .actions-list { display: flex; flex-direction: column; gap: 10px; }
+    .action-item {
+      display: flex; align-items: flex-start; gap: 12px;
+      background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
+      padding: 16px 20px;
+    }
+    .action-num {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: var(--teal); color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; flex-shrink: 0;
+    }
+    .action-text { font-size: 14px; color: var(--text); line-height: 1.5; }
+
+    .back-btn {
+      display: inline-block; margin-top: 32px;
+      font-size: 13px; color: var(--text-3); text-decoration: none;
+    }
+    .back-btn:hover { color: var(--text-2); }
+
+    @media (max-width: 600px) {
+      .page-wrap { padding: 32px 16px 60px; }
+      .form-card { padding: 24px 20px; }
+      .score-card { flex-direction: column; text-align: center; }
+      .results-profile { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="logo" href="/">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>
+        </svg>
+      </div>
+      <span class="logo-name">Prizzy</span>
+    </a>
+    <div class="nav-right">
+      <a href="/" class="btn-nav">← Retour à l'app</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page-wrap">
+
+{% if audit %}
+{# ─────────── RESULTS VIEW ─────────── #}
+
+  <div class="results-header">
+    <div class="results-profile">
+      <div class="profile-avatar">{{ user_info.login[0] | upper }}</div>
+      <div>
+        <div class="profile-name">@{{ user_info.login }}</div>
+        <div class="profile-meta">{{ user_info.item_count }} annonces · {{ user_info.feedback_count }} avis positifs</div>
+      </div>
+    </div>
+
+    <div class="score-card">
+      {% set s = audit.score %}
+      <div class="score-circle {% if s >= 7 %}high{% elif s >= 4 %}medium{% else %}low{% endif %}">
+        {{ s }}<small>/10</small>
+      </div>
+      <div class="score-info">
+        <div class="score-label">{{ audit.score_label }}</div>
+        <div class="score-resume">{{ audit.resume }}</div>
+      </div>
+    </div>
+  </div>
+
+  {% if audit.actions %}
+  <div class="section-title">3 actions prioritaires</div>
+  <div class="actions-list">
+    {% for action in audit.actions %}
+    <div class="action-item">
+      <div class="action-num">{{ loop.index }}</div>
+      <div class="action-text">{{ action }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if audit.sous_evalues %}
+  <div class="section-title">📈 Annonces sous-évaluées</div>
+  <div class="items-list">
+    {% for item in audit.sous_evalues %}
+    <div class="audit-item">
+      <div class="audit-item-title">{{ item.titre }}</div>
+      <div class="audit-item-prices">
+        <span class="price-current">{{ item.prix_actuel }}€</span>
+        <span class="price-arrow">→</span>
+        <span class="price-suggested up">{{ item.prix_suggere }}€</span>
+      </div>
+      <div class="audit-item-raison">{{ item.raison }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if audit.sur_evalues %}
+  <div class="section-title">📉 Annonces sur-évaluées</div>
+  <div class="items-list">
+    {% for item in audit.sur_evalues %}
+    <div class="audit-item">
+      <div class="audit-item-title">{{ item.titre }}</div>
+      <div class="audit-item-prices">
+        <span class="price-current">{{ item.prix_actuel }}€</span>
+        <span class="price-arrow">→</span>
+        <span class="price-suggested down">{{ item.prix_suggere }}€</span>
+      </div>
+      <div class="audit-item-raison">{{ item.raison }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <a href="/profile-audit" class="back-btn">← Analyser un autre profil</a>
+
+{% else %}
+{# ─────────── FORM VIEW ─────────── #}
+
+  <div class="page-hero">
+    <div class="page-pill">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Analyse IA · Vinted
+    </div>
+    <h1 class="page-title">Audit de profil <em>Vinted</em></h1>
+    <p class="page-sub">Collez l'URL de votre profil Vinted et obtenez en quelques secondes un diagnostic complet de vos annonces.</p>
+  </div>
+
+  {% if result_error %}
+  <div class="error-msg">{{ result_error }}</div>
+  {% endif %}
+
+  <div class="form-card">
+    {% if form_error %}
+    <div class="error-msg" style="margin-bottom:20px">{{ form_error }}</div>
+    {% endif %}
+
+    <form method="POST" action="/profile-audit/checkout">
+      <label class="form-label" for="profile_url">URL de votre profil Vinted</label>
+      <input class="form-input" type="url" name="profile_url" id="profile_url"
+             placeholder="https://www.vinted.fr/member/votre-profil"
+             required inputmode="url" autocomplete="off">
+      <p class="form-hint">Exemple : vinted.fr/member/fashionqueen ou vinted.fr/member/12345678</p>
+
+      <div class="price-row">
+        <div class="price-row-left">
+          <strong>Analyse complète de votre profil</strong>
+          Paiement unique et sécurisé via Stripe
+        </div>
+        <div class="price-tag">0,99€</div>
+      </div>
+
+      <button type="submit" class="btn-submit">
+        Analyser mon profil →
+      </button>
+    </form>
+
+    <ul class="includes-list">
+      <li>
+        <div class="check-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        Détection des annonces sous-évaluées (argent perdu)
+      </li>
+      <li>
+        <div class="check-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        Détection des annonces sur-évaluées (freinent les ventes)
+      </li>
+      <li>
+        <div class="check-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        Score global du profil vendeur (0–10)
+      </li>
+      <li>
+        <div class="check-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        3 actions prioritaires pour vendre plus vite
+      </li>
+    </ul>
+  </div>
+
+{% endif %}
+
+</div>
+</body>
+</html>
