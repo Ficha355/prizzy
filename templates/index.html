@@ -971,6 +971,26 @@
       margin-bottom: 5px;
     }
 
+    /* Photo IA mode selector */
+    .photo-ia-modes {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+      margin: 16px 0;
+    }
+    .photo-ia-mode-btn {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      padding: 14px 12px;
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: var(--radius); cursor: pointer; font-family: inherit;
+      transition: all var(--transition); -webkit-tap-highlight-color: transparent;
+    }
+    .photo-ia-mode-btn:hover { border-color: #EA580C; }
+    .photo-ia-mode-btn.active {
+      border-color: #EA580C; background: rgba(234,88,12,.06);
+    }
+    .photo-ia-mode-emoji { font-size: 22px; }
+    .photo-ia-mode-label { font-size: 13px; font-weight: 700; color: var(--text); }
+    .photo-ia-mode-desc { font-size: 11px; color: var(--text-3); line-height: 1.3; text-align: center; }
+
     /* Photo IA card */
     .mode-card-photo {
       border-color: rgba(168,85,247,.2);
@@ -1329,6 +1349,19 @@
           </button>
         </div>
       </div>
+    </div>
+
+    <div class="photo-ia-modes">
+      <button class="photo-ia-mode-btn active" data-mode="plie" id="photo-ia-mode-plie">
+        <span class="photo-ia-mode-emoji">🗂️</span>
+        <span class="photo-ia-mode-label">Plié</span>
+        <span class="photo-ia-mode-desc">Photo produit à plat</span>
+      </button>
+      <button class="photo-ia-mode-btn" data-mode="porte" id="photo-ia-mode-porte">
+        <span class="photo-ia-mode-emoji">👗</span>
+        <span class="photo-ia-mode-label">Porté</span>
+        <span class="photo-ia-mode-desc">Sur mannequin</span>
+      </button>
     </div>
 
     <button id="btn-photo-ia-generate" class="btn-primary" disabled
@@ -2187,6 +2220,15 @@ const photoIaImg     = document.getElementById('photo-ia-preview-img');
 const btnPhotoIaGen  = document.getElementById('btn-photo-ia-generate');
 let photoIaFile      = null;
 let photoIaPreviewUrl = null;
+let photoIaMode      = 'plie';
+
+document.querySelectorAll('.photo-ia-mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.photo-ia-mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    photoIaMode = btn.dataset.mode;
+  });
+});
 
 document.getElementById('btn-open-photo-ia').addEventListener('click', () => showScreen('photo-ia'));
 document.getElementById('btn-back-photo-ia').addEventListener('click', () => showScreen(currentPlan ? 'mode-select' : 'home'));
@@ -2215,9 +2257,10 @@ btnPhotoIaGen.addEventListener('click', async () => {
   if (!photoIaFile) return;
   const fd = new FormData();
   fd.append('image', photoIaFile);
+  fd.append('mode', photoIaMode);
   showScreen('loading');
   document.querySelector('#screen-loading .loading-sub').textContent =
-    'Claude analyse · DALL-E 3 génère…';
+    photoIaMode === 'porte' ? 'Virtual try-on en cours…' : 'Génération photo pliée…';
   try {
     const res = await fetch('/photo-ia', { method: 'POST', body: fd });
     if (res.status === 403) { showScreen('photo-ia'); showToast('Plan Elite requis'); return; }
@@ -2236,6 +2279,7 @@ btnPhotoIaGen.addEventListener('click', async () => {
   } finally {
     document.querySelector('#screen-loading .loading-sub').textContent =
       'Analyse en cours avec Prizzy IA';
+    photoIaMode = document.querySelector('.photo-ia-mode-btn.active')?.dataset.mode || 'plie';
   }
 });
 

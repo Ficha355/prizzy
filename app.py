@@ -1,6 +1,12 @@
 from dotenv import load_dotenv
 load_dotenv()
 
+import os as _os
+# Map FAL_API_KEY → FAL_KEY read by fal_client
+_fal_k = _os.environ.get("FAL_API_KEY", "").strip()
+if _fal_k:
+    _os.environ.setdefault("FAL_KEY", _fal_k)
+
 import stripe
 from flask import (Flask, request, jsonify, render_template,
                    send_from_directory, session, redirect, make_response)
@@ -588,20 +594,34 @@ def serve_upload(filename):
 
 # ── Photo IA (Elite) ──────────────────────────────────────
 
+_FAL_MANNEQUIN_URL = (
+    os.environ.get("FAL_MANNEQUIN_URL")
+    or "https://storage.googleapis.com/falserverless/model_tests/cat-vton/human_image.png"
+)
+
+
 @app.route("/photo-ia", methods=["POST"])
 def photo_ia():
-    bot_token  = request.headers.get("X-Bot-Token", "")
+    import fal_client
+    import tempfile
+    import requests as _req
+
+    bot_token   = request.headers.get("X-Bot-Token", "")
     admin_token = os.environ.get("ADMIN_TOKEN", "")
+    email = None
     if not (bot_token and admin_token and bot_token == admin_token):
         email = session.get("email")
         if not email or not has_premium_subscription(email):
             return jsonify({"error": "Plan Prizzy Elite ou Ultimate requis.", "redirect": "/"}), 403
 
-    mime_map = {
-        "jpg": "image/jpeg", "jpeg": "image/jpeg",
-        "png": "image/png",  "webp": "image/webp",
-    }
+    fal_key = os.environ.get("FAL_KEY", "").strip()
+    if not fal_key:
+        return jsonify({"error": "Clé fal.ai manquante (FAL_API_KEY)."}), 500
 
+    mode = request.form.get("mode", "plie")  # "plie" | "porte"
+
+    mime_map = {"jpg": "image/jpeg", "jpeg": "image/jpeg",
+                "png": "image/png",  "webp": "image/webp"}
     file = request.files.get("image")
     if not file or not file.filename or not _allowed_file(file.filename):
         return jsonify({"error": "Fournissez une image valide."}), 400
@@ -609,58 +629,70 @@ def photo_ia():
     ext = file.filename.rsplit(".", 1)[1].lower()
     image_data, _ = _compress_image(file.read(), mime_map.get(ext, "image/jpeg"))
 
-    # Convert to PNG (required by the images.edit endpoint)
-    png_buf = io.BytesIO()
-    Image.open(io.BytesIO(image_data)).convert("RGBA").save(png_buf, format="PNG")
-    png_buf.seek(0)
-    png_buf.name = "image.png"
-
-    openai_key = os.environ.get("OPENAI_API_KEY", "").strip()
-    if not openai_key:
-        return jsonify({"error": "Clé OpenAI manquante (OPENAI_API_KEY)."}), 500
-
-    prompt = (
-        "You are editing a product photo for resale. Your ONLY task is to neatly fold or lay flat the garment. "
-        "STRICT RULES — never break these: "
-        "1. COLOR: preserve the exact original color, hue, saturation and brightness. Never lighten, darken or shift the color in any way. "
-        "2. LOGOS & TEXT: every logo, label, brand name, embroidery, print and text must remain 100% identical to the original — same font, same spelling, same color, same size, same position. Do not redraw or recreate any text. "
-        "3. BACKGROUND: if the background is clean (wood floor, neutral surface), keep it exactly as is. If messy, replace with a plain white background. "
-        "4. ONLY change: fold or lay the garment neatly, straighten it, improve lighting slightly. Nothing else."
-    )
-    app.logger.info("[photo-ia] Sending to gpt-image-1 edit (%d bytes PNG)", png_buf.getbuffer().nbytes)
-
+    # Save to temp PNG and upload to fal.ai storage
     try:
-        import openai as _openai
-        oa = _openai.OpenAI(api_key=openai_key)
-        edit_resp = oa.images.edit(
-            model="gpt-image-1",
-            image=png_buf,
-            prompt=prompt,
-            size="1024x1024",
-            n=1,
-        )
-        b64_data = edit_resp.data[0].b64_json
-        app.logger.info("[photo-ia] gpt-image-1 response received")
+        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
+            Image.open(io.BytesIO(image_data)).convert("RGB").save(tmp.name, format="PNG")
+            tmp_path = tmp.name
+        garment_url = fal_client.upload_file(tmp_path)
+        os.unlink(tmp_path)
     except Exception as exc:
-        app.logger.error("[photo-ia] gpt-image-1 error (type=%s): %s",
-                         type(exc).__name__, exc, exc_info=True)
-        return jsonify({"error": f"Erreur GPT-4o image : {exc}"}), 502
+        app.logger.error("[photo-ia] upload error: %s", exc)
+        return jsonify({"error": f"Erreur upload image : {exc}"}), 502
 
     try:
-        filename = f"photo_ia_{uuid.uuid4().hex}.png"
+        if mode == "porte":
+            app.logger.info("[photo-ia] cat-vton porte — garment=%s", garment_url)
+            result = fal_client.subscribe(
+                "fal-ai/cat-vton",
+                arguments={
+                    "human_image_url": _FAL_MANNEQUIN_URL,
+                    "garment_image_url": garment_url,
+                    "cloth_type": "overall",
+                },
+            )
+            result_url = result["image"]["url"]
+            description = "Vêtement porté sur mannequin"
+        else:
+            app.logger.info("[photo-ia] flux/dev/image-to-image plie — image=%s", garment_url)
+            result = fal_client.subscribe(
+                "fal-ai/flux/dev/image-to-image",
+                arguments={
+                    "image_url": garment_url,
+                    "prompt": (
+                        "The exact same clothing item neatly folded, flat lay on a pure white background, "
+                        "professional e-commerce product photography, studio lighting, preserve all colors "
+                        "logos and patterns exactly, no mannequin, no model"
+                    ),
+                    "strength": 0.60,
+                    "num_inference_steps": 28,
+                    "guidance_scale": 3.5,
+                    "num_images": 1,
+                    "enable_safety_checker": False,
+                },
+            )
+            result_url = result["images"][0]["url"]
+            description = "Vêtement plié — photo produit"
+    except Exception as exc:
+        app.logger.error("[photo-ia] fal error (mode=%s): %s", mode, exc, exc_info=True)
+        return jsonify({"error": f"Erreur génération image : {exc}"}), 502
+
+    # Download result and save locally
+    try:
+        img_bytes = _req.get(result_url, timeout=60).content
+        filename  = f"photo_ia_{uuid.uuid4().hex}.png"
         save_path = os.path.join(UPLOAD_FOLDER, filename)
         with open(save_path, "wb") as f:
-            f.write(base64.b64decode(b64_data))
+            f.write(img_bytes)
         local_url = f"/uploads/{filename}"
     except Exception as exc:
         app.logger.error("[photo-ia] save error: %s", exc)
         return jsonify({"error": "Erreur lors de la sauvegarde de l'image."}), 500
 
     increment_analyses_count()
-    email = session.get("email")
     if email:
         increment_user_analyses(email)
-    return jsonify({"image_url": local_url})
+    return jsonify({"image_url": local_url, "description": description})
 
 
 # ── Search ────────────────────────────────────────────────
