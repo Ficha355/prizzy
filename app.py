@@ -307,19 +307,21 @@ def demo():
     return render_template("demo.html")
 
 
-@app.route("/login", methods=["POST"])
+@app.route("/login", methods=["GET", "POST"])
 def login():
+    if request.method == "GET":
+        return render_template("login.html")
     email = request.form.get("email", "").strip().lower()
     password = request.form.get("password", "")
     if not email:
-        return render_template("landing.html", login_error="Entrez votre adresse email.")
+        return render_template("login.html", login_error="Entrez votre adresse email.")
     if not has_active_subscription(email):
-        return render_template("landing.html", login_error="Aucun abonnement actif pour cet email.")
+        return render_template("login.html", login_error="Aucun abonnement actif pour cet email.")
     stored_hash = get_password_hash(email)
     if stored_hash is None:
         return redirect(f"/set-password?email={email}")
     if not bcrypt.checkpw(password.encode(), stored_hash.encode()):
-        return render_template("landing.html", login_error="Mot de passe incorrect.")
+        return render_template("login.html", login_error="Mot de passe incorrect.")
     session["email"] = email
     return redirect("/")
 

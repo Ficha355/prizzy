@@ -310,45 +310,6 @@
     }
     .nav-actions { display: flex; align-items: center; gap: 8px; }
 
-    /* ── Already subscriber ── */
-    .already-section {
-      padding: 0 0 80px;
-      text-align: center;
-    }
-    .already-card {
-      background: var(--surface);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow);
-      max-width: 420px; margin: 0 auto;
-      padding: 28px;
-    }
-    .already-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
-    .already-sub   { font-size: 13px; color: var(--text-2); margin-bottom: 20px; }
-    .login-form { display: flex; gap: 8px; }
-    .login-input {
-      flex: 1; padding: 11px 14px;
-      border: 1.5px solid var(--border); border-radius: var(--radius);
-      font-family: inherit; font-size: 14px; color: var(--text);
-      background: var(--bg); outline: none;
-      transition: border-color var(--transition), box-shadow var(--transition);
-    }
-    .login-input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px var(--teal-dim); }
-    .login-input::placeholder { color: var(--text-3); }
-    .btn-login {
-      padding: 11px 18px;
-      background: var(--text); color: white;
-      font-family: inherit; font-size: 14px; font-weight: 600;
-      border: none; border-radius: var(--radius);
-      cursor: pointer; white-space: nowrap;
-      transition: all var(--transition);
-    }
-    .btn-login:hover { background: #374151; }
-    .error-msg {
-      margin-top: 10px; font-size: 13px;
-      color: #B91C1C; background: #FEE2E2;
-      padding: 8px 12px; border-radius: 8px;
-      text-align: left;
-    }
     .success-msg {
       margin-top: 10px; font-size: 13px;
       color: #15803D; background: #DCFCE7;
@@ -483,8 +444,6 @@
       .steps-grid { grid-template-columns: 1fr; }
       .pricing-grid { grid-template-columns: 1fr; max-width: 420px; }
       .pricing-head, .pricing-body { padding-left: 24px; padding-right: 24px; }
-      .login-form { flex-direction: column; }
-      .btn-login { width: 100%; }
     }
   </style>
 </head>
@@ -505,7 +464,7 @@
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
         Voir la démo
       </a>
-      <a href="#connexion" class="btn-nav">Déjà abonné ?</a>
+      <a href="/login" class="btn-nav">Se connecter</a>
     </div>
   </div>
 </nav>
@@ -843,29 +802,6 @@
         </div>
       </div>
 
-    </div>
-  </div>
-</section>
-
-
-<!-- ── Already subscriber ── -->
-<section class="already-section" id="connexion">
-  <div class="container">
-    <div class="already-card">
-      <p class="already-title">Vous avez déjà un abonnement ?</p>
-      <p class="already-sub">Connectez-vous avec votre email et mot de passe.</p>
-      <form method="POST" action="/login" class="login-form">
-        <input type="email" name="email" class="login-input"
-               placeholder="votre@email.com" required
-               autocomplete="email" inputmode="email">
-        <input type="password" name="password" class="login-input"
-               placeholder="Mot de passe" required
-               autocomplete="current-password">
-        <button type="submit" class="btn-login">Accéder →</button>
-      </form>
-      {% if login_error %}
-      <p class="error-msg">{{ login_error }}</p>
-      {% endif %}
     </div>
   </div>
 </section>
