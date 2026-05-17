@@ -367,6 +367,41 @@ def logout():
     return redirect("/")
 
 
+@app.route("/account")
+def account():
+    email = session.get("email")
+    if not email:
+        return redirect("/login")
+    sub = get_subscriber(email)
+    if not sub or sub.get("status") not in ("active", "trialing"):
+        return redirect("/")
+
+    plan_labels = {"starter": "Starter", "elite": "Elite", "ultimate": "Ultimate"}
+    plan = plan_labels.get(sub.get("plan", "starter"), "Starter")
+
+    trial_end = None
+    next_renewal = None
+    stripe_sub_id = sub.get("stripe_subscription_id")
+    if stripe_sub_id:
+        try:
+            import datetime
+            stripe_sub = stripe.Subscription.retrieve(stripe_sub_id)
+            if stripe_sub.get("trial_end"):
+                trial_end = datetime.datetime.fromtimestamp(stripe_sub["trial_end"]).strftime("%-d %B %Y")
+            if stripe_sub.get("current_period_end"):
+                next_renewal = datetime.datetime.fromtimestamp(stripe_sub["current_period_end"]).strftime("%-d %B %Y")
+        except Exception:
+            pass
+
+    return render_template("account.html",
+                           email=email,
+                           plan=plan,
+                           status=sub.get("status"),
+                           trial_end=trial_end,
+                           next_renewal=next_renewal,
+                           has_portal=bool(sub.get("stripe_customer_id")))
+
+
 @app.route("/portal", methods=["POST"])
 def portal():
     email = session.get("email")

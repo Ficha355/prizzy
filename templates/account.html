@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#09B1BA">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <title>Mon compte — Prizzy</title>
+  <style>
+    :root {
+      --teal:       #09B1BA;
+      --teal-hover: #0a9ea6;
+      --teal-dim:   rgba(9,177,186,.14);
+      --teal-faint: #f0fbfc;
+      --bg:         #F7F8F9;
+      --surface:    #ffffff;
+      --border:     #E5E7EB;
+      --text:       #111827;
+      --text-2:     #6B7280;
+      --text-3:     #9CA3AF;
+      --shadow:     0 0 0 1px rgba(0,0,0,.06), 0 4px 24px rgba(0,0,0,.08);
+      --radius:     12px;
+      --radius-lg:  16px;
+      --transition: 150ms cubic-bezier(.4,0,.2,1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg); color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,.88);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: 960px; margin: 0 auto;
+      padding: 14px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .logo { display: flex; align-items: center; gap: 9px; text-decoration: none; color: var(--text); }
+    .logo-mark {
+      width: 28px; height: 28px; border-radius: 7px;
+      background: var(--teal);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo-mark svg { width: 15px; height: 15px; }
+    .logo-name { font-size: 15px; font-weight: 700; letter-spacing: -.2px; }
+    .nav-right { display: flex; align-items: center; gap: 8px; }
+    .btn-nav {
+      font-family: inherit; font-size: 13px; font-weight: 600;
+      padding: 8px 16px; border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface); color: var(--text-2);
+      cursor: pointer; text-decoration: none;
+      transition: all var(--transition);
+    }
+    .btn-nav:hover { background: var(--bg); color: var(--text); }
+
+    /* ── Page ── */
+    .page-wrap {
+      max-width: 520px; margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+
+    .page-title {
+      font-size: 24px; font-weight: 800; letter-spacing: -.5px;
+      margin-bottom: 4px;
+    }
+    .page-sub {
+      font-size: 14px; color: var(--text-2);
+      margin-bottom: 32px;
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    .card-section {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .card-section:last-child { border-bottom: none; }
+
+    .row {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px;
+    }
+    .row-label {
+      font-size: 13px; color: var(--text-2); font-weight: 500;
+    }
+    .row-value {
+      font-size: 14px; font-weight: 700; color: var(--text);
+    }
+
+    .plan-badge {
+      display: inline-flex; align-items: center;
+      font-size: 13px; font-weight: 700;
+      padding: 4px 12px; border-radius: 100px;
+    }
+    .plan-badge.starter  { background: var(--teal-faint); color: var(--teal-hover); border: 1px solid var(--teal-dim); }
+    .plan-badge.elite    { background: #F5F3FF; color: #7C3AED; border: 1px solid rgba(124,58,237,.2); }
+    .plan-badge.ultimate { background: #FFF7ED; color: #EA580C; border: 1px solid rgba(234,88,12,.2); }
+
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 12px; font-weight: 600;
+      padding: 3px 10px; border-radius: 100px;
+    }
+    .status-badge.active   { background: #DCFCE7; color: #15803D; }
+    .status-badge.trialing { background: #FEF3C7; color: #92400E; }
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+    /* ── Button ── */
+    .btn-portal {
+      display: block; width: 100%;
+      padding: 13px 20px;
+      background: var(--teal); color: white;
+      font-family: inherit; font-size: 15px; font-weight: 700; text-align: center;
+      border: none; border-radius: var(--radius);
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(9,177,186,.25);
+      transition: all var(--transition);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-portal:hover { background: var(--teal-hover); box-shadow: 0 6px 28px rgba(9,177,186,.3); }
+
+    .btn-logout {
+      display: block; width: 100%;
+      padding: 11px 20px;
+      background: transparent; color: var(--text-2);
+      font-family: inherit; font-size: 14px; font-weight: 500; text-align: center;
+      border: 1px solid var(--border); border-radius: var(--radius);
+      cursor: pointer; text-decoration: none;
+      transition: all var(--transition);
+      margin-top: 10px;
+    }
+    .btn-logout:hover { background: var(--bg); color: var(--text); }
+
+    @media (max-width: 480px) {
+      .page-wrap { padding: 32px 16px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="logo" href="/">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>
+        </svg>
+      </div>
+      <span class="logo-name">Prizzy</span>
+    </a>
+    <div class="nav-right">
+      <a href="/" class="btn-nav">← Retour à l'app</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <p class="page-title">Mon compte</p>
+  <p class="page-sub">{{ email }}</p>
+
+  <div class="card">
+    <div class="card-section">
+      <div class="row">
+        <span class="row-label">Plan</span>
+        <span class="plan-badge {{ plan | lower }}">{{ plan }}</span>
+      </div>
+    </div>
+    <div class="card-section">
+      <div class="row">
+        <span class="row-label">Statut</span>
+        {% if status == "trialing" %}
+        <span class="status-badge trialing"><span class="status-dot"></span>Essai gratuit</span>
+        {% else %}
+        <span class="status-badge active"><span class="status-dot"></span>Actif</span>
+        {% endif %}
+      </div>
+    </div>
+    {% if status == "trialing" and trial_end %}
+    <div class="card-section">
+      <div class="row">
+        <span class="row-label">Fin de l'essai</span>
+        <span class="row-value">{{ trial_end }}</span>
+      </div>
+    </div>
+    {% endif %}
+    {% if next_renewal %}
+    <div class="card-section">
+      <div class="row">
+        <span class="row-label">{% if status == "trialing" %}Premier prélèvement{% else %}Prochain renouvellement{% endif %}</span>
+        <span class="row-value">{{ next_renewal }}</span>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  {% if has_portal %}
+  <form method="POST" action="/portal" style="margin-top:24px">
+    <button type="submit" class="btn-portal">Gérer mon abonnement →</button>
+  </form>
+  {% endif %}
+
+  <a href="/logout" class="btn-logout">Se déconnecter</a>
+</div>
+
+</body>
+</html>
