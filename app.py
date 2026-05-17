@@ -604,6 +604,8 @@ def photo_ia():
         if not email or not has_premium_subscription(email):
             return jsonify({"error": "Plan Prizzy Elite ou Ultimate requis.", "redirect": "/"}), 403
 
+    mode = request.form.get("mode", "plie")  # "plie" | "aplat"
+
     mime_map = {"jpg": "image/jpeg", "jpeg": "image/jpeg",
                 "png": "image/png",  "webp": "image/webp"}
     file = request.files.get("image")
@@ -658,13 +660,22 @@ def photo_ia():
         return jsonify({"error": f"Erreur vision GPT-4o-mini : {exc}"}), 502
 
     # Step 2: gpt-image-1 edit with the enriched prompt
-    prompt = (
-        f"Fold this garment neatly and lay it flat on the surface. "
-        f"The garment is: {garment_desc}. "
-        f"Do not change anything else — not the color, not the background, not any text, logo, label or embroidery. "
-        f"Only fold it. "
-        f"Preserve the exact original color of the garment — do not lighten, darken, or change the saturation in any way."
-    )
+    if mode == "aplat":
+        prompt = (
+            f"Lay this garment completely flat on a surface. "
+            f"The garment is: {garment_desc}. "
+            f"Do not change anything else — not the color, not the background, not any text, logo, label or embroidery. "
+            f"Only lay it flat and smooth. "
+            f"Preserve the exact original color."
+        )
+    else:
+        prompt = (
+            f"Fold this garment neatly and lay it flat on the surface. "
+            f"The garment is: {garment_desc}. "
+            f"Do not change anything else — not the color, not the background, not any text, logo, label or embroidery. "
+            f"Only fold it. "
+            f"Preserve the exact original color of the garment — do not lighten, darken, or change the saturation in any way."
+        )
     app.logger.info("[photo-ia] sending to gpt-image-1 (%d bytes PNG)", png_buf.getbuffer().nbytes)
 
     try:

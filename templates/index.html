@@ -1357,10 +1357,10 @@
         <span class="photo-ia-mode-label">Plié</span>
         <span class="photo-ia-mode-desc">Photo produit à plat</span>
       </button>
-      <button class="photo-ia-mode-btn" data-mode="porte" id="photo-ia-mode-porte">
-        <span class="photo-ia-mode-emoji">👗</span>
-        <span class="photo-ia-mode-label">Porté</span>
-        <span class="photo-ia-mode-desc">Sur mannequin</span>
+      <button class="photo-ia-mode-btn" data-mode="aplat" id="photo-ia-mode-aplat">
+        <span class="photo-ia-mode-emoji">👕</span>
+        <span class="photo-ia-mode-label">À plat</span>
+        <span class="photo-ia-mode-desc">Étalé sans plis</span>
       </button>
     </div>
 
@@ -2260,7 +2260,7 @@ btnPhotoIaGen.addEventListener('click', async () => {
   fd.append('mode', photoIaMode);
   showScreen('loading');
   document.querySelector('#screen-loading .loading-sub').textContent =
-    photoIaMode === 'porte' ? 'Virtual try-on en cours…' : 'Génération photo pliée…';
+    photoIaMode === 'aplat' ? 'Mise à plat en cours…' : 'Génération photo pliée…';
   try {
     const res = await fetch('/photo-ia', { method: 'POST', body: fd });
     if (res.status === 403) { showScreen('photo-ia'); showToast('Plan Elite requis'); return; }
