@@ -622,17 +622,52 @@ def photo_ia():
     if not openai_key:
         return jsonify({"error": "Clé OpenAI manquante (OPENAI_API_KEY)."}), 500
 
+    import openai as _openai
+    oa = _openai.OpenAI(api_key=openai_key)
+
+    # Step 1: gpt-4o-mini vision → precise garment description
+    try:
+        vision_b64 = base64.b64encode(image_data).decode()
+        vision_mime = mime_map.get(ext, "image/jpeg")
+        vision_resp = oa.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{
+                "role": "user",
+                "content": [
+                    {
+                        "type": "image_url",
+                        "image_url": {"url": f"data:{vision_mime};base64,{vision_b64}"},
+                    },
+                    {
+                        "type": "text",
+                        "text": (
+                            "Describe this garment precisely for an image editing prompt. "
+                            "Include: garment type, exact color and any color variations, "
+                            "fabric texture, visible patterns, logos, labels, text, or embroidery, "
+                            "and the current background. Be concise but exhaustive."
+                        ),
+                    },
+                ],
+            }],
+            max_tokens=300,
+        )
+        garment_desc = vision_resp.choices[0].message.content.strip()
+        app.logger.info("[photo-ia] vision description: %s", garment_desc)
+    except Exception as exc:
+        app.logger.error("[photo-ia] vision error: %s", exc, exc_info=True)
+        return jsonify({"error": f"Erreur vision GPT-4o-mini : {exc}"}), 502
+
+    # Step 2: gpt-image-1 edit with the enriched prompt
     prompt = (
-        "Fold this garment neatly and lay it flat. "
-        "Do not change anything else — not the color, not the background, not any text, logo, label or embroidery. "
-        "Only fold it. "
-        "Preserve the exact original color of the garment — do not lighten, darken, or change the saturation in any way."
+        f"Fold this garment neatly and lay it flat on the surface. "
+        f"The garment is: {garment_desc}. "
+        f"Do not change anything else — not the color, not the background, not any text, logo, label or embroidery. "
+        f"Only fold it. "
+        f"Preserve the exact original color of the garment — do not lighten, darken, or change the saturation in any way."
     )
     app.logger.info("[photo-ia] sending to gpt-image-1 (%d bytes PNG)", png_buf.getbuffer().nbytes)
 
     try:
-        import openai as _openai
-        oa = _openai.OpenAI(api_key=openai_key)
         edit_resp = oa.images.edit(
             model="gpt-image-1",
             image=png_buf,
@@ -643,7 +678,7 @@ def photo_ia():
         b64_data = edit_resp.data[0].b64_json
     except Exception as exc:
         app.logger.error("[photo-ia] gpt-image-1 error: %s", exc, exc_info=True)
-        return jsonify({"error": f"Erreur GPT-4o image : {exc}"}), 502
+        return jsonify({"error": f"Erreur gpt-image-1 : {exc}"}), 502
 
     try:
         filename  = f"photo_ia_{uuid.uuid4().hex}.png"
