@@ -532,18 +532,23 @@ def webhook():
         sub_status = obj.get("status")
         customer_id = obj["customer"]
         sub_id = obj["id"]
+        is_new = etype == "customer.subscription.created"
         app.logger.info(
-            "[webhook] subscription event: sub_id=%s customer=%s status=%s",
-            sub_id, customer_id, sub_status,
+            "[webhook] subscription event: sub_id=%s customer=%s status=%s new=%s",
+            sub_id, customer_id, sub_status, is_new,
         )
         if sub_status in ("canceled", "unpaid", "past_due", "incomplete_expired"):
             _upsert_customer(customer_id, sub_id, "inactive", plan=None)
         elif sub_status == "trialing":
             plan = _plan_from_subscription(obj)
             _upsert_customer(customer_id, sub_id, "trialing", plan=plan)
+            if is_new:
+                _send_welcome_email(customer_id, plan)
         elif sub_status == "active":
             plan = _plan_from_subscription(obj)
             _upsert_customer(customer_id, sub_id, "active", plan=plan)
+            if is_new:
+                _send_welcome_email(customer_id, plan)
         else:
             app.logger.warning("[webhook] unhandled subscription status=%s", sub_status)
 
@@ -637,6 +642,107 @@ def _activate_customer(customer_id: str):
 
 def _deactivate_customer(customer_id: str):
     _upsert_customer(customer_id, None, "inactive", plan=None)
+
+
+def _send_welcome_email(customer_id: str, plan: Optional[str]):
+    import smtplib
+    from email.mime.multipart import MIMEMultipart
+    from email.mime.text import MIMEText
+
+    mail_user = os.environ.get("MAIL_USERNAME", "").strip()
+    mail_pass = os.environ.get("MAIL_PASSWORD", "").strip()
+    if not mail_user or not mail_pass:
+        app.logger.warning("[welcome-mail] MAIL_USERNAME ou MAIL_PASSWORD manquant, email non envoyé")
+        return
+
+    try:
+        c = stripe.Customer.retrieve(customer_id)
+        to_email = c.email
+        if not to_email:
+            app.logger.error("[welcome-mail] customer %s sans email", customer_id)
+            return
+    except Exception as e:
+        app.logger.error("[welcome-mail] impossible de récupérer le customer %s: %s", customer_id, e)
+        return
+
+    plan_labels = {"starter": "Starter", "elite": "Elite", "ultimate": "Ultimate"}
+    plan_label = plan_labels.get(plan or "", "Starter")
+
+    subject = f"Bienvenue sur Prizzy {plan_label} 🎉"
+    html = f"""\
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#F7F8F9;font-family:Inter,Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#F7F8F9;padding:40px 0;">
+    <tr><td align="center">
+      <table width="520" cellpadding="0" cellspacing="0"
+             style="background:#fff;border-radius:16px;border:1px solid #E5E7EB;padding:40px 36px;">
+        <tr><td>
+          <p style="margin:0 0 4px;font-size:28px;font-weight:700;color:#09B1BA;letter-spacing:-0.5px;">
+            Prizzy
+          </p>
+          <p style="margin:0 0 28px;font-size:13px;color:#6B7280;">
+            Ton assistant IA pour vendre mieux sur Vinted
+          </p>
+          <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;color:#111827;">
+            Bienvenue sur le plan <span style="color:#09B1BA;">{plan_label}</span>&nbsp;!
+          </h1>
+          <p style="margin:0 0 24px;font-size:15px;color:#374151;line-height:1.6;">
+            Ton abonnement est activé. Pour commencer, connecte-toi à Prizzy et
+            <strong>crée ton mot de passe</strong> lors de ta première connexion.
+          </p>
+
+          <table cellpadding="0" cellspacing="0" style="margin:0 0 28px;">
+            <tr><td style="background:#F0FDFD;border-left:4px solid #09B1BA;
+                           border-radius:8px;padding:16px 20px;">
+              <p style="margin:0 0 6px;font-size:13px;font-weight:600;color:#09B1BA;
+                         text-transform:uppercase;letter-spacing:.5px;">
+                Comment créer ton mot de passe
+              </p>
+              <ol style="margin:0;padding-left:18px;font-size:14px;color:#374151;line-height:1.8;">
+                <li>Clique sur le bouton ci-dessous</li>
+                <li>Entre ton adresse email (<strong>{to_email}</strong>)</li>
+                <li>Laisse le champ mot de passe <strong>vide</strong> et valide</li>
+                <li>Tu seras redirigé vers la page de création de mot de passe</li>
+              </ol>
+            </td></tr>
+          </table>
+
+          <table cellpadding="0" cellspacing="0" style="margin:0 0 32px;">
+            <tr><td align="center"
+                    style="background:#09B1BA;border-radius:10px;padding:14px 32px;">
+              <a href="https://prizzy.onrender.com/login"
+                 style="color:#fff;font-size:16px;font-weight:600;text-decoration:none;">
+                Se connecter à Prizzy →
+              </a>
+            </td></tr>
+          </table>
+
+          <p style="margin:0;font-size:13px;color:#9CA3AF;line-height:1.5;">
+            Une question ? Réponds directement à cet email.<br>
+            L'équipe Prizzy
+          </p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>"""
+
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = subject
+    msg["From"]    = f"Prizzy <{mail_user}>"
+    msg["To"]      = to_email
+    msg.attach(MIMEText(html, "html", "utf-8"))
+
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
+            smtp.login(mail_user, mail_pass)
+            smtp.sendmail(mail_user, to_email, msg.as_string())
+        app.logger.info("[welcome-mail] envoyé à %s (plan=%s)", to_email, plan_label)
+    except Exception as e:
+        app.logger.error("[welcome-mail] échec envoi à %s: %s", to_email, e)
 
 
 # ── Legit Check (Elite) ───────────────────────────────────
