@@ -514,44 +514,129 @@ def webhook():
     secret = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
     try:
         event = stripe.Webhook.construct_event(payload, sig, secret)
-    except (ValueError, stripe.error.SignatureVerificationError):
+    except ValueError as e:
+        app.logger.error("[webhook] invalid payload: %s", e)
+        return jsonify({"error": "Invalid payload"}), 400
+    except stripe.error.SignatureVerificationError as e:
+        app.logger.error("[webhook] invalid signature: %s", e)
         return jsonify({"error": "Invalid signature"}), 400
 
     etype = event["type"]
     obj   = event["data"]["object"]
-    print(f"[webhook] event={etype} status={obj.get('status')} customer={obj.get('customer')}", flush=True)
+    app.logger.info(
+        "[webhook] received event=%s id=%s customer=%s status=%s",
+        etype, event.get("id"), obj.get("customer"), obj.get("status"),
+    )
 
-    if etype == "customer.subscription.deleted":
-        _deactivate_customer(obj["customer"])
-    elif etype in ("customer.subscription.created", "customer.subscription.updated"):
-        if obj["status"] in ("canceled", "unpaid", "past_due"):
-            _deactivate_customer(obj["customer"])
-        elif obj["status"] == "trialing":
-            _set_customer_status(obj["customer"], "trialing")
-        elif obj["status"] == "active":
-            _set_customer_status(obj["customer"], "active")
+    if etype in ("customer.subscription.created", "customer.subscription.updated"):
+        sub_status = obj.get("status")
+        customer_id = obj["customer"]
+        sub_id = obj["id"]
+        app.logger.info(
+            "[webhook] subscription event: sub_id=%s customer=%s status=%s",
+            sub_id, customer_id, sub_status,
+        )
+        if sub_status in ("canceled", "unpaid", "past_due", "incomplete_expired"):
+            _upsert_customer(customer_id, sub_id, "inactive", plan=None)
+        elif sub_status == "trialing":
+            plan = _plan_from_subscription(obj)
+            _upsert_customer(customer_id, sub_id, "trialing", plan=plan)
+        elif sub_status == "active":
+            plan = _plan_from_subscription(obj)
+            _upsert_customer(customer_id, sub_id, "active", plan=plan)
+        else:
+            app.logger.warning("[webhook] unhandled subscription status=%s", sub_status)
+
+    elif etype == "customer.subscription.deleted":
+        app.logger.info("[webhook] subscription deleted customer=%s", obj["customer"])
+        _upsert_customer(obj["customer"], obj["id"], "inactive", plan=None)
+
+    elif etype == "customer.subscription.trial_will_end":
+        # Fired 3 days before trial ends — log only, no DB change needed
+        app.logger.info(
+            "[webhook] trial_will_end customer=%s trial_end=%s",
+            obj["customer"], obj.get("trial_end"),
+        )
+
+    elif etype == "invoice.payment_succeeded":
+        # Fires when a trial converts to paid or a renewal succeeds
+        customer_id = obj.get("customer")
+        sub_id = obj.get("subscription")
+        app.logger.info(
+            "[webhook] payment_succeeded customer=%s sub=%s amount=%s",
+            customer_id, sub_id, obj.get("amount_paid"),
+        )
+        if sub_id:
+            try:
+                sub = stripe.Subscription.retrieve(sub_id)
+                plan = _plan_from_subscription(sub)
+                _upsert_customer(customer_id, sub_id, "active", plan=plan)
+            except Exception as e:
+                app.logger.error("[webhook] invoice.payment_succeeded sub retrieve error: %s", e)
+
     elif etype == "invoice.payment_failed":
-        _deactivate_customer(obj["customer"])
+        app.logger.warning("[webhook] payment_failed customer=%s", obj.get("customer"))
+        _upsert_customer(obj["customer"], obj.get("subscription"), "inactive", plan=None)
+
+    else:
+        app.logger.info("[webhook] ignored event type=%s", etype)
 
     return jsonify({"status": "ok"})
 
 
-def _set_customer_status(customer_id: str, status: str):
+def _plan_from_subscription(sub_obj) -> Optional[str]:
+    """Detect plan name from the price ID in subscription items."""
+    price_map = {
+        os.environ.get("STRIPE_PRICE_ID", ""):          "starter",
+        os.environ.get("STRIPE_PRICE_ID_ELITE", ""):    "elite",
+        os.environ.get("STRIPE_PRICE_ID_ULTIMATE", ""): "ultimate",
+    }
+    price_map.pop("", None)  # remove empty-key entries
+    try:
+        items = sub_obj.get("items", {}).get("data", [])
+        for item in items:
+            price_id = item.get("price", {}).get("id", "")
+            if price_id in price_map:
+                plan = price_map[price_id]
+                app.logger.info("[webhook] plan detected: price_id=%s → %s", price_id, plan)
+                return plan
+        app.logger.warning(
+            "[webhook] unknown price_ids in subscription: %s",
+            [item.get("price", {}).get("id") for item in items],
+        )
+    except Exception as e:
+        app.logger.error("[webhook] _plan_from_subscription error: %s", e)
+    return None
+
+
+def _upsert_customer(customer_id: str, sub_id: Optional[str], status: str, plan: Optional[str]):
     try:
         c = stripe.Customer.retrieve(customer_id)
-        if c.email:
-            print(f"[webhook] upsert email={c.email} status={status}", flush=True)
-            upsert_subscriber(c.email, status=status)
+        email = c.email
+        if not email:
+            app.logger.error("[webhook] customer %s has no email", customer_id)
+            return
+        app.logger.info(
+            "[webhook] upsert email=%s customer=%s sub=%s status=%s plan=%s",
+            email, customer_id, sub_id, status, plan,
+        )
+        upsert_subscriber(
+            email=email,
+            stripe_customer_id=customer_id,
+            stripe_subscription_id=sub_id,
+            status=status,
+            plan=plan,
+        )
     except Exception as e:
-        print(f"[webhook] _set_customer_status error: {e}", flush=True)
+        app.logger.error("[webhook] _upsert_customer error customer=%s: %s", customer_id, e)
 
 
 def _activate_customer(customer_id: str):
-    _set_customer_status(customer_id, "active")
+    _upsert_customer(customer_id, None, "active", plan=None)
 
 
 def _deactivate_customer(customer_id: str):
-    _set_customer_status(customer_id, "inactive")
+    _upsert_customer(customer_id, None, "inactive", plan=None)
 
 
 # ── Legit Check (Elite) ───────────────────────────────────
