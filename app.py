@@ -203,8 +203,14 @@ def index():
 
 # ── Stripe subscription ───────────────────────────────────
 
+_LOGIN_MSG = "Connectez-vous ou créez un compte pour vous abonner."
+
+
 @app.route("/subscribe", methods=["POST"])
 def subscribe():
+    email = session.get("email")
+    if not email:
+        return redirect(f"/login?info={_LOGIN_MSG}")
     try:
         meta = {"plan": "starter"}
         if _ref_cookie():
@@ -215,6 +221,7 @@ def subscribe():
             mode="subscription",
             allow_promotion_codes=True,
             subscription_data={"trial_period_days": 7},
+            customer_email=email,
             metadata=meta,
             success_url=request.url_root + "success?session_id={CHECKOUT_SESSION_ID}",
             cancel_url=request.url_root + "cancel",
@@ -227,6 +234,9 @@ def subscribe():
 
 @app.route("/subscribe-ultimate", methods=["POST"])
 def subscribe_ultimate():
+    email = session.get("email")
+    if not email:
+        return redirect(f"/login?info={_LOGIN_MSG}")
     try:
         meta = {"plan": "ultimate"}
         if _ref_cookie():
@@ -237,6 +247,7 @@ def subscribe_ultimate():
             mode="subscription",
             allow_promotion_codes=True,
             subscription_data={"trial_period_days": 7},
+            customer_email=email,
             metadata=meta,
             success_url=request.url_root + "success?session_id={CHECKOUT_SESSION_ID}",
             cancel_url=request.url_root + "cancel",
@@ -249,6 +260,9 @@ def subscribe_ultimate():
 
 @app.route("/subscribe-elite", methods=["POST"])
 def subscribe_elite():
+    email = session.get("email")
+    if not email:
+        return redirect(f"/login?info={_LOGIN_MSG}")
     try:
         meta = {"plan": "elite"}
         if _ref_cookie():
@@ -259,6 +273,7 @@ def subscribe_elite():
             mode="subscription",
             allow_promotion_codes=True,
             subscription_data={"trial_period_days": 7},
+            customer_email=email,
             metadata=meta,
             success_url=request.url_root + "success?session_id={CHECKOUT_SESSION_ID}",
             cancel_url=request.url_root + "cancel",
@@ -310,7 +325,8 @@ def demo():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
-        return render_template("login.html")
+        info = request.args.get("info", "")
+        return render_template("login.html", login_info=info)
     email = request.form.get("email", "").strip().lower()
     password = request.form.get("password", "")
     if not email:

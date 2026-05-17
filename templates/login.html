@@ -138,6 +138,13 @@
       padding: 8px 12px; border-radius: 8px;
       text-align: left;
     }
+    .info-msg {
+      align-self: stretch;
+      margin-bottom: 16px; font-size: 13px;
+      color: #92400E; background: #FEF3C7;
+      padding: 8px 12px; border-radius: 8px;
+      text-align: left;
+    }
 
     .back-link {
       display: inline-block; margin-top: 20px;
@@ -173,6 +180,9 @@
     <p class="card-title">Bon retour sur Prizzy</p>
     <p class="card-sub">Connectez-vous pour accéder à votre espace.</p>
 
+    {% if login_info %}
+    <p class="info-msg">{{ login_info }}</p>
+    {% endif %}
     {% if login_error %}
     <p class="error-msg">{{ login_error }}</p>
     {% endif %}
