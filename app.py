@@ -16,7 +16,7 @@ from PIL import Image
 from vinted_client import search_items
 from claude_client import analyze_clothing, legit_check
 import bcrypt
-from db import init_db, upsert_subscriber, has_active_subscription, has_elite_subscription, has_premium_subscription, get_subscriber, count_active_subscribers, increment_analyses_count, get_analyses_count, set_analyses_count, set_password, get_password_hash
+from db import init_db, upsert_subscriber, has_active_subscription, has_elite_subscription, has_premium_subscription, get_subscriber, count_active_subscribers, increment_analyses_count, get_analyses_count, set_analyses_count, set_password, get_password_hash, increment_user_analyses, get_user_analyses
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024  # 50 MB (up to 5 photos)
@@ -400,7 +400,7 @@ def account():
                            trial_end=trial_end,
                            next_renewal=next_renewal,
                            has_portal=bool(sub.get("stripe_customer_id")),
-                           analyses=get_analyses_count())
+                           analyses=get_user_analyses(email))
 
 
 @app.route("/portal", methods=["POST"])
@@ -490,6 +490,7 @@ def legit_check_route():
     except Exception as exc:
         return jsonify({"error": f"Erreur Legit Check IA : {exc}"}), 502
 
+    increment_user_analyses(email)
     return jsonify(result)
 
 
@@ -571,6 +572,9 @@ def photo_ia():
         return jsonify({"error": "Erreur lors de la sauvegarde de l'image."}), 500
 
     increment_analyses_count()
+    email = session.get("email")
+    if email:
+        increment_user_analyses(email)
     return jsonify({"image_url": local_url})
 
 
@@ -665,6 +669,7 @@ def analyze():
 
     total_entries = vinted_results.get("total_entries", 0)
     increment_analyses_count()
+    increment_user_analyses(email)
     return jsonify({
         "analysis":     analysis,
         "price_stats":  price_stats,

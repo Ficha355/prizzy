@@ -41,6 +41,7 @@ def init_db():
                 )
             """)
             cur.execute("ALTER TABLE subscribers ADD COLUMN IF NOT EXISTS password_hash TEXT")
+            cur.execute("ALTER TABLE subscribers ADD COLUMN IF NOT EXISTS analyses_count INTEGER NOT NULL DEFAULT 0")
             cur.execute("""
                 CREATE TABLE IF NOT EXISTS discord_users (
                     discord_id TEXT PRIMARY KEY,
@@ -81,6 +82,10 @@ def init_db():
             pass
         try:
             conn.execute("ALTER TABLE subscribers ADD COLUMN password_hash TEXT")
+        except Exception:
+            pass
+        try:
+            conn.execute("ALTER TABLE subscribers ADD COLUMN analyses_count INTEGER NOT NULL DEFAULT 0")
         except Exception:
             pass
         conn.execute("""
@@ -192,6 +197,28 @@ def set_password(email: str, password_hash: str) -> None:
 def get_password_hash(email: str) -> Optional[str]:
     sub = get_subscriber(email)
     return sub["password_hash"] if sub else None
+
+
+def increment_user_analyses(email: str) -> None:
+    conn = get_db()
+    if USE_PG:
+        with conn.cursor() as cur:
+            cur.execute(
+                "UPDATE subscribers SET analyses_count = analyses_count + 1 WHERE email = %s",
+                (email,),
+            )
+    else:
+        conn.execute(
+            "UPDATE subscribers SET analyses_count = analyses_count + 1 WHERE email = ?",
+            (email,),
+        )
+    conn.commit()
+    conn.close()
+
+
+def get_user_analyses(email: str) -> int:
+    sub = get_subscriber(email)
+    return int(sub.get("analyses_count") or 0) if sub else 0
 
 
 def count_active_subscribers() -> int:
