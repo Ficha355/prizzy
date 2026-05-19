@@ -1001,5 +1001,15 @@ def analyze():
     })
 
 
+@app.route("/mentions-legales")
+def mentions_legales():
+    return render_template("mentions-legales.html")
+
+
+@app.route("/cgv")
+def cgv():
+    return render_template("cgv.html")
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
