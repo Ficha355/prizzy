@@ -521,70 +521,74 @@ def webhook():
         app.logger.error("[webhook] invalid signature: %s", e)
         return jsonify({"error": "Invalid signature"}), 400
 
-    etype = event["type"]
-    obj   = event["data"]["object"]
-    app.logger.info(
-        "[webhook] received event=%s id=%s customer=%s status=%s",
-        etype, event.get("id"), obj.get("customer"), obj.get("status"),
-    )
-
-    if etype in ("customer.subscription.created", "customer.subscription.updated"):
-        sub_status = obj.get("status")
-        customer_id = obj["customer"]
-        sub_id = obj["id"]
-        is_new = etype == "customer.subscription.created"
+    try:
+        etype = event["type"]
+        obj   = event["data"]["object"]
         app.logger.info(
-            "[webhook] subscription event: sub_id=%s customer=%s status=%s new=%s",
-            sub_id, customer_id, sub_status, is_new,
-        )
-        if sub_status in ("canceled", "unpaid", "past_due", "incomplete_expired"):
-            _upsert_customer(customer_id, sub_id, "inactive", plan=None)
-        elif sub_status == "trialing":
-            plan = _plan_from_subscription(obj)
-            _upsert_customer(customer_id, sub_id, "trialing", plan=plan)
-            if is_new:
-                _send_welcome_email(customer_id, plan)
-        elif sub_status == "active":
-            plan = _plan_from_subscription(obj)
-            _upsert_customer(customer_id, sub_id, "active", plan=plan)
-            if is_new:
-                _send_welcome_email(customer_id, plan)
-        else:
-            app.logger.warning("[webhook] unhandled subscription status=%s", sub_status)
-
-    elif etype == "customer.subscription.deleted":
-        app.logger.info("[webhook] subscription deleted customer=%s", obj["customer"])
-        _upsert_customer(obj["customer"], obj["id"], "inactive", plan=None)
-
-    elif etype == "customer.subscription.trial_will_end":
-        # Fired 3 days before trial ends — log only, no DB change needed
-        app.logger.info(
-            "[webhook] trial_will_end customer=%s trial_end=%s",
-            obj["customer"], obj.get("trial_end"),
+            "[webhook] received event=%s id=%s customer=%s status=%s",
+            etype, event.get("id"), obj.get("customer"), obj.get("status"),
         )
 
-    elif etype == "invoice.payment_succeeded":
-        # Fires when a trial converts to paid or a renewal succeeds
-        customer_id = obj.get("customer")
-        sub_id = obj.get("subscription")
-        app.logger.info(
-            "[webhook] payment_succeeded customer=%s sub=%s amount=%s",
-            customer_id, sub_id, obj.get("amount_paid"),
-        )
-        if sub_id:
-            try:
-                sub = stripe.Subscription.retrieve(sub_id)
-                plan = _plan_from_subscription(sub)
+        if etype in ("customer.subscription.created", "customer.subscription.updated"):
+            sub_status = obj.get("status")
+            customer_id = obj["customer"]
+            sub_id = obj["id"]
+            is_new = etype == "customer.subscription.created"
+            app.logger.info(
+                "[webhook] subscription event: sub_id=%s customer=%s status=%s new=%s",
+                sub_id, customer_id, sub_status, is_new,
+            )
+            if sub_status in ("canceled", "unpaid", "past_due", "incomplete_expired"):
+                _upsert_customer(customer_id, sub_id, "inactive", plan=None)
+            elif sub_status == "trialing":
+                plan = _plan_from_subscription(obj)
+                _upsert_customer(customer_id, sub_id, "trialing", plan=plan)
+                if is_new:
+                    _send_welcome_email(customer_id, plan)
+            elif sub_status == "active":
+                plan = _plan_from_subscription(obj)
                 _upsert_customer(customer_id, sub_id, "active", plan=plan)
-            except Exception as e:
-                app.logger.error("[webhook] invoice.payment_succeeded sub retrieve error: %s", e)
+                if is_new:
+                    _send_welcome_email(customer_id, plan)
+            else:
+                app.logger.warning("[webhook] unhandled subscription status=%s", sub_status)
 
-    elif etype == "invoice.payment_failed":
-        app.logger.warning("[webhook] payment_failed customer=%s", obj.get("customer"))
-        _upsert_customer(obj["customer"], obj.get("subscription"), "inactive", plan=None)
+        elif etype == "customer.subscription.deleted":
+            app.logger.info("[webhook] subscription deleted customer=%s", obj["customer"])
+            _upsert_customer(obj["customer"], obj["id"], "inactive", plan=None)
 
-    else:
-        app.logger.info("[webhook] ignored event type=%s", etype)
+        elif etype == "customer.subscription.trial_will_end":
+            # Fired 3 days before trial ends — log only, no DB change needed
+            app.logger.info(
+                "[webhook] trial_will_end customer=%s trial_end=%s",
+                obj["customer"], obj.get("trial_end"),
+            )
+
+        elif etype == "invoice.payment_succeeded":
+            # Fires when a trial converts to paid or a renewal succeeds
+            customer_id = obj.get("customer")
+            sub_id = obj.get("subscription")
+            app.logger.info(
+                "[webhook] payment_succeeded customer=%s sub=%s amount=%s",
+                customer_id, sub_id, obj.get("amount_paid"),
+            )
+            if sub_id:
+                try:
+                    sub = stripe.Subscription.retrieve(sub_id)
+                    plan = _plan_from_subscription(sub)
+                    _upsert_customer(customer_id, sub_id, "active", plan=plan)
+                except Exception as e:
+                    app.logger.error("[webhook] invoice.payment_succeeded sub retrieve error: %s", e)
+
+        elif etype == "invoice.payment_failed":
+            app.logger.warning("[webhook] payment_failed customer=%s", obj.get("customer"))
+            _upsert_customer(obj["customer"], obj.get("subscription"), "inactive", plan=None)
+
+        else:
+            app.logger.info("[webhook] ignored event type=%s", etype)
+
+    except Exception:
+        app.logger.exception("[webhook] unhandled error processing event")
 
     return jsonify({"status": "ok"})
 
