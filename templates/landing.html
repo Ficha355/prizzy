@@ -4,7 +4,7 @@
   <!-- Google tag (gtag.js) --><script async src="https://www.googletagmanager.com/gtag/js?id=G-Y8HQ6LTQTH"></script><script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'G-Y8HQ6LTQTH');</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#3B82F6">
+  <meta name="theme-color" content="#ffffff">
   <meta name="description" content="Photographiez votre vêtement, Prizzy analyse le marché Vinted en temps réel et vous donne le prix idéal pour vendre en moins d'une semaine.">
   <link rel="manifest" href="/manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,626 +12,707 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <title>Prizzy — Vendez vos vêtements au juste prix sur Vinted</title>
   <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --teal:       #3B82F6;
-      --teal-hover: #2563EB;
-      --teal-dim:   rgba(59,130,246,.12);
-      --teal-faint: #EFF6FF;
-      --bg:         #ffffff;
-      --surface:    #ffffff;
-      --border:     #E5E7EB;
-      --text:       #1F2937;
+      --blue:       #3B82F6;
+      --blue-dark:  #2563EB;
+      --blue-faint: #EFF6FF;
+      --blue-dim:   rgba(59,130,246,.15);
+      --text:       #111827;
       --text-2:     #6B7280;
       --text-3:     #9CA3AF;
-      --shadow:     0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.07);
-      --shadow-lg:  0 2px 8px rgba(0,0,0,.06), 0 16px 48px rgba(0,0,0,.1);
-      --radius:     14px;
-      --radius-lg:  18px;
-      --transition: 150ms cubic-bezier(.4,0,.2,1);
-      --safe-b: env(safe-area-inset-bottom, 0px);
+      --border:     #E5E7EB;
+      --surface:    #ffffff;
+      --radius:     12px;
+      --radius-lg:  16px;
+      --transition: 140ms cubic-bezier(.4,0,.2,1);
     }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg); color: var(--text);
+      background: #ffffff;
+      color: var(--text);
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ── Nav ── */
+    /* ─── Nav ─── */
     nav {
       position: sticky; top: 0; z-index: 100;
-      background: rgba(255,255,255,.88);
-      backdrop-filter: blur(16px) saturate(180%);
-      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      background: rgba(255,255,255,.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
     }
     .nav-inner {
-      max-width: 960px; margin: 0 auto;
-      padding: 14px 24px;
+      max-width: 1080px; margin: 0 auto;
+      padding: 0 32px; height: 64px;
       display: flex; align-items: center; justify-content: space-between;
     }
-    .logo { display: flex; align-items: center; gap: 9px; text-decoration: none; color: var(--text); }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none; color: var(--text);
+    }
     .logo-mark {
-      width: 28px; height: 28px; border-radius: 7px;
-      background: var(--teal);
+      width: 30px; height: 30px; border-radius: 8px;
+      background: var(--blue);
       display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
     }
     .logo-mark svg { width: 15px; height: 15px; }
-    .logo-name { font-size: 15px; font-weight: 700; letter-spacing: -.2px; }
-    .btn-nav {
-      font-family: inherit; font-size: 13px; font-weight: 600;
+    .logo-name { font-size: 16px; font-weight: 700; letter-spacing: -.3px; }
+    .nav-right { display: flex; align-items: center; gap: 8px; }
+    .btn-ghost {
+      font-family: inherit; font-size: 14px; font-weight: 500;
       padding: 8px 16px; border-radius: 8px;
-      border: 1px solid var(--border);
-      background: var(--surface); color: var(--text-2);
+      border: none; background: none; color: var(--text-2);
       cursor: pointer; text-decoration: none;
-      transition: all var(--transition);
+      transition: color var(--transition);
     }
-    .btn-nav:hover { background: var(--bg); color: var(--text); }
-    .btn-nav-demo {
-      font-family: inherit; font-size: 13px; font-weight: 700;
-      padding: 8px 18px; border-radius: 8px;
-      border: 1.5px solid var(--teal);
-      background: var(--teal-faint); color: var(--teal-hover);
-      cursor: pointer; text-decoration: none;
-      transition: all var(--transition);
+    .btn-ghost:hover { color: var(--text); }
+    .btn-demo {
+      font-family: inherit; font-size: 14px; font-weight: 600;
+      padding: 8px 16px; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--surface);
+      color: var(--text); cursor: pointer; text-decoration: none;
       display: flex; align-items: center; gap: 6px;
+      transition: border-color var(--transition), background var(--transition);
     }
-    .btn-nav-demo:hover { background: var(--teal); color: #fff; }
+    .btn-demo:hover { border-color: #d1d5db; background: #fafafa; }
+    .btn-cta-nav {
+      font-family: inherit; font-size: 14px; font-weight: 600;
+      padding: 8px 18px; border-radius: 8px;
+      border: none; background: var(--blue); color: #fff;
+      cursor: pointer; text-decoration: none;
+      transition: background var(--transition), transform var(--transition);
+    }
+    .btn-cta-nav:hover { background: var(--blue-dark); }
 
-    /* ── Layout ── */
-    .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+    /* ─── Container ─── */
+    .container { max-width: 1080px; margin: 0 auto; padding: 0 32px; }
 
-    /* ── Hero ── */
+    /* ─── Hero ─── */
     .hero {
-      padding: 88px 0 72px;
+      padding: 96px 0 80px;
       text-align: center;
     }
-    .hero-pill {
+    .hero-badge {
       display: inline-flex; align-items: center; gap: 6px;
-      background: var(--teal-faint); border: 1px solid var(--teal-dim);
-      color: var(--teal-hover);
-      font-size: 12px; font-weight: 600; letter-spacing: .4px;
-      padding: 6px 14px; border-radius: 100px;
-      margin-bottom: 28px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-2);
+      font-size: 13px; font-weight: 500;
+      padding: 5px 14px; border-radius: 100px;
+      margin-bottom: 32px;
     }
+    .hero-badge span { color: var(--blue); font-weight: 600; }
     .hero h1 {
-      font-size: clamp(36px, 6vw, 58px);
-      font-weight: 800; letter-spacing: -2px; line-height: 1.08;
-      color: var(--text); margin-bottom: 22px;
+      font-size: clamp(40px, 7vw, 72px);
+      font-weight: 800;
+      letter-spacing: -2.5px;
+      line-height: 1.06;
+      color: var(--text);
+      margin-bottom: 24px;
     }
-    .hero h1 em { font-style: normal; color: var(--teal); }
-    .hero p {
-      font-size: 19px; color: var(--text-2); line-height: 1.7;
-      max-width: 540px; margin: 0 auto 40px;
+    .hero h1 em { font-style: normal; color: var(--blue); }
+    .hero-sub {
+      font-size: 20px;
+      color: var(--text-2);
+      line-height: 1.6;
+      max-width: 560px;
+      margin: 0 auto 44px;
     }
-    .hero-cta {
-      display: inline-flex; align-items: center; gap: 10px;
-      background: var(--teal); color: white;
+    .hero-actions {
+      display: flex; align-items: center; justify-content: center;
+      gap: 12px; flex-wrap: wrap;
+    }
+    .btn-hero {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--blue); color: #fff;
       font-family: inherit; font-size: 16px; font-weight: 700;
-      padding: 17px 30px; border-radius: var(--radius);
+      padding: 16px 28px; border-radius: var(--radius);
       border: none; cursor: pointer; text-decoration: none;
-      box-shadow: 0 4px 24px rgba(59,130,246,.35);
-      transition: all var(--transition);
+      box-shadow: 0 4px 20px rgba(59,130,246,.35);
+      transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
       -webkit-tap-highlight-color: transparent;
     }
-    .hero-cta:hover { background: var(--teal-hover); transform: translateY(-2px); box-shadow: 0 8px 36px rgba(59,130,246,.4); }
-    .hero-sub {
-      margin-top: 16px; font-size: 13px; color: var(--text-3);
-      display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap;
+    .btn-hero:hover { background: var(--blue-dark); transform: translateY(-1px); box-shadow: 0 6px 28px rgba(59,130,246,.4); }
+    .btn-hero-ghost {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: none; color: var(--text-2);
+      font-family: inherit; font-size: 15px; font-weight: 500;
+      padding: 16px 24px; border-radius: var(--radius);
+      border: 1px solid var(--border); cursor: pointer; text-decoration: none;
+      transition: border-color var(--transition), color var(--transition);
     }
-    .hero-sub span { display: flex; align-items: center; gap: 5px; }
+    .btn-hero-ghost:hover { border-color: #9ca3af; color: var(--text); }
+    .hero-trust {
+      margin-top: 20px;
+      font-size: 13px; color: var(--text-3);
+      display: flex; align-items: center; justify-content: center;
+      gap: 20px; flex-wrap: wrap;
+    }
+    .hero-trust span { display: flex; align-items: center; gap: 5px; }
 
-    /* ── Early adopters counter ── */
-    .early-counter {
-      max-width: 400px; margin: 28px auto 0;
-      background: var(--surface);
-      border: 1.5px solid var(--teal-dim);
+    /* ─── Founders counter ─── */
+    .founders-box {
+      display: none;
+      max-width: 440px; margin: 36px auto 0;
+      border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 18px 20px 16px;
-      box-shadow: 0 4px 24px rgba(59,130,246,.1);
+      padding: 20px 24px;
     }
-    .early-counter-headline {
-      font-size: 15px; font-weight: 800; color: var(--text);
-      margin-bottom: 6px; letter-spacing: -.2px;
+    .founders-top {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 4px;
     }
-    .early-counter-headline span { color: var(--teal); }
-    .early-counter-promise {
-      font-size: 12px; color: var(--text-2); line-height: 1.5;
-      margin-bottom: 12px;
+    .founders-label { font-size: 14px; font-weight: 600; color: var(--text); }
+    .founders-label span { color: var(--blue); }
+    .founders-promise { font-size: 13px; color: var(--text-2); margin-bottom: 12px; }
+    .founders-track {
+      height: 6px; background: #F3F4F6; border-radius: 100px;
+      overflow: hidden; margin-bottom: 8px;
     }
-    .early-progress-track {
-      height: 7px; background: var(--teal-dim);
-      border-radius: 100px; overflow: hidden;
-      margin-bottom: 8px;
-    }
-    .early-progress-fill {
-      height: 100%; background: var(--teal);
-      border-radius: 100px;
+    .founders-fill {
+      height: 100%; background: var(--blue); border-radius: 100px;
       transition: width .6s cubic-bezier(.4,0,.2,1);
     }
-    .early-counter-urgency {
-      font-size: 12px; font-weight: 700; color: var(--teal-hover);
+    .founders-urgency { font-size: 12px; font-weight: 600; color: var(--blue-dark); }
+
+    /* ─── Error ─── */
+    .error-banner {
+      margin-top: 16px;
+      background: #FEF2F2; border: 1px solid #FECACA;
+      border-radius: var(--radius); padding: 12px 16px;
+      font-size: 14px; color: #B91C1C; text-align: center;
     }
 
-    /* ── Steps ── */
-    .steps {
-      padding: 16px 0 64px;
+    /* ─── Social proof bar ─── */
+    .proof-bar {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 28px 0;
     }
-    .steps-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
+    .proof-inner {
+      display: flex; align-items: center; justify-content: center; gap: 48px;
+      flex-wrap: wrap;
     }
-    .step-card {
-      background: var(--surface);
-      border-radius: var(--radius-lg);
-      padding: 28px 24px;
-      box-shadow: var(--shadow);
-      text-align: center;
+    .proof-stat { text-align: center; }
+    .proof-num {
+      font-size: 32px; font-weight: 800; letter-spacing: -1.5px;
+      color: var(--text); line-height: 1;
     }
-    .step-icon {
-      width: 52px; height: 52px; border-radius: 14px;
-      background: var(--teal-faint);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 22px; margin: 0 auto 16px;
+    .proof-num span { color: var(--blue); }
+    .proof-desc { font-size: 13px; color: var(--text-3); margin-top: 2px; }
+    .proof-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #22C55E;
+      box-shadow: 0 0 0 3px rgba(34,197,94,.2);
+      animation: pulse 2s ease-in-out infinite;
+      flex-shrink: 0; align-self: center;
     }
-    .step-num {
-      font-size: 11px; font-weight: 700; color: var(--teal);
-      text-transform: uppercase; letter-spacing: .8px;
-      margin-bottom: 6px;
-    }
-    .step-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
-    .step-desc  { font-size: 13px; color: var(--text-2); line-height: 1.6; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
 
-    /* ── Pricing ── */
-    .pricing { padding: 32px 0 80px; }
-    .section-eyebrow {
-      text-align: center; font-size: 12px; font-weight: 700;
-      color: var(--teal); text-transform: uppercase; letter-spacing: .8px;
+    /* ─── Features ─── */
+    .features { padding: 100px 0; }
+    .section-label {
+      font-size: 13px; font-weight: 600; color: var(--blue);
+      letter-spacing: .5px; text-transform: uppercase;
       margin-bottom: 12px;
     }
-    .section-title {
-      text-align: center;
-      font-size: clamp(24px, 4vw, 36px); font-weight: 800;
-      letter-spacing: -.8px; margin-bottom: 40px; color: var(--text);
+    .section-heading {
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 800; letter-spacing: -1.5px;
+      color: var(--text); margin-bottom: 16px;
     }
+    .section-desc {
+      font-size: 18px; color: var(--text-2); line-height: 1.65;
+      max-width: 540px;
+    }
+    .features-header { margin-bottom: 64px; }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .feature-card {
+      background: #fff;
+      padding: 36px 32px;
+      border-right: 1px solid var(--border);
+    }
+    .feature-card:last-child { border-right: none; }
+    .feature-icon {
+      width: 44px; height: 44px;
+      border-radius: 10px;
+      background: var(--blue-faint);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 20px;
+    }
+    .feature-icon svg { width: 22px; height: 22px; }
+    .feature-num {
+      font-size: 11px; font-weight: 700; color: var(--blue);
+      text-transform: uppercase; letter-spacing: .6px;
+      margin-bottom: 8px;
+    }
+    .feature-title { font-size: 17px; font-weight: 700; margin-bottom: 10px; }
+    .feature-desc { font-size: 14px; color: var(--text-2); line-height: 1.65; }
+
+    /* ─── Counter ─── */
+    .counter-section {
+      padding: 0 0 100px;
+      text-align: center;
+    }
+    .counter-card {
+      display: inline-flex; align-items: center; gap: 24px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px 48px;
+    }
+    .counter-num {
+      font-size: 52px; font-weight: 800;
+      letter-spacing: -2px; line-height: 1;
+      color: var(--text);
+    }
+    .counter-num span { color: var(--blue); }
+    .counter-sep { width: 1px; height: 48px; background: var(--border); }
+    .counter-meta strong { display: block; font-size: 15px; font-weight: 700; }
+    .counter-meta small { font-size: 13px; color: var(--text-2); }
+
+    /* ─── Testimonials ─── */
+    .testimonials { padding: 0 0 100px; }
+    .testi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 56px;
+    }
+    .testi-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+    }
+    .testi-stars { color: #F59E0B; font-size: 14px; letter-spacing: 2px; margin-bottom: 16px; }
+    .testi-text {
+      font-size: 15px; color: var(--text); line-height: 1.7;
+      margin-bottom: 20px;
+    }
+    .testi-author { display: flex; align-items: center; gap: 10px; }
+    .testi-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--blue-faint);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700; color: var(--blue);
+      flex-shrink: 0;
+    }
+    .testi-name { font-size: 14px; font-weight: 600; color: var(--text); }
+    .testi-city { font-size: 12px; color: var(--text-3); margin-top: 1px; }
+
+    /* ─── Pricing ─── */
+    .pricing { padding: 0 0 100px; }
     .pricing-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 20px;
-      max-width: 1100px;
-      margin: 0 auto;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 56px;
     }
     .pricing-card {
-      background: var(--surface);
-      border-radius: 20px;
-      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
       overflow: hidden;
-      position: relative;
+      display: flex; flex-direction: column;
     }
-    .pricing-card::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0;
-      height: 4px; background: var(--teal);
+    .pricing-card.featured {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 1px var(--blue);
     }
-    .pricing-card.elite::before {
-      background: linear-gradient(90deg, #7C3AED, #A855F7);
-    }
-    .pricing-card.elite {
-      border: 2px solid rgba(124,58,237,.2);
-    }
-    .pricing-card.ultimate::before {
-      background: linear-gradient(90deg, #EA580C, #F97316);
-    }
-    .pricing-card.ultimate {
-      border: 2px solid rgba(234,88,12,.25);
-    }
-    .plan-badge {
-      display: inline-flex; align-items: center; gap: 5px;
-      color: white; font-size: 10px; font-weight: 700;
+    .plan-tag {
+      display: block;
+      background: var(--blue); color: #fff;
+      font-size: 11px; font-weight: 700;
       letter-spacing: .5px; text-transform: uppercase;
-      padding: 3px 10px; border-radius: 100px;
-      margin-bottom: 10px;
+      padding: 7px 0; text-align: center;
     }
-    .plan-badge.elite   { background: linear-gradient(135deg, #7C3AED, #A855F7); }
-    .plan-badge.ultimate { background: linear-gradient(135deg, #EA580C, #F97316); }
-    .plan-name.elite    { color: #7C3AED; }
-    .plan-name.ultimate { color: #EA580C; }
-    .btn-subscribe.elite {
-      background: linear-gradient(135deg, #7C3AED, #A855F7);
-      box-shadow: 0 4px 20px rgba(124,58,237,.3);
-    }
-    .btn-subscribe.elite:hover {
-      background: linear-gradient(135deg, #6D28D9, #9333EA);
-      box-shadow: 0 6px 28px rgba(124,58,237,.4);
-    }
-    .btn-subscribe.ultimate {
-      background: linear-gradient(135deg, #EA580C, #F97316);
-      box-shadow: 0 4px 20px rgba(234,88,12,.3);
-    }
-    .btn-subscribe.ultimate:hover {
-      background: linear-gradient(135deg, #C2410C, #EA580C);
-      box-shadow: 0 6px 28px rgba(234,88,12,.4);
-    }
-    .feature-divider {
-      font-size: 11px; font-weight: 700; color: var(--text-3);
-      text-transform: uppercase; letter-spacing: .6px;
-      padding: 8px 0 4px; margin-top: 4px;
-      border-top: 1px solid var(--border);
-    }
-    .pricing-head {
-      padding: 36px 36px 24px;
-      border-bottom: 1px solid var(--border);
-    }
-    .plan-name {
-      font-size: 13px; font-weight: 700; color: var(--teal);
-      text-transform: uppercase; letter-spacing: .7px;
-      margin-bottom: 12px;
+    .plan-tag.purple { background: #7C3AED; }
+    .plan-tag.orange { background: #EA580C; }
+    .pricing-head { padding: 28px 28px 20px; border-bottom: 1px solid var(--border); }
+    .plan-name-text {
+      font-size: 13px; font-weight: 700;
+      color: var(--text-3); text-transform: uppercase; letter-spacing: .5px;
+      margin-bottom: 16px;
     }
     .plan-price {
       display: flex; align-items: flex-end; gap: 4px;
       margin-bottom: 6px;
     }
-    .plan-amount { font-size: 52px; font-weight: 800; letter-spacing: -2px; line-height: 1; }
-    .plan-period { font-size: 16px; font-weight: 500; color: var(--text-2); padding-bottom: 6px; }
-    .plan-note   { font-size: 13px; color: var(--text-3); }
-    .pricing-body { padding: 24px 36px 32px; }
-    .feature-list { list-style: none; margin-bottom: 28px; }
+    .plan-amount {
+      font-size: 48px; font-weight: 800;
+      letter-spacing: -2px; line-height: 1;
+    }
+    .plan-period { font-size: 16px; font-weight: 500; color: var(--text-2); padding-bottom: 5px; }
+    .plan-note { font-size: 13px; color: var(--text-3); }
+    .pricing-body { padding: 24px 28px 28px; flex: 1; display: flex; flex-direction: column; }
+    .feature-list {
+      list-style: none;
+      flex: 1;
+      margin-bottom: 24px;
+    }
     .feature-list li {
-      display: flex; align-items: center; gap: 10px;
-      font-size: 14px; color: var(--text); padding: 7px 0;
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 14px; color: var(--text);
+      padding: 6px 0;
     }
-    .check {
-      width: 20px; height: 20px; border-radius: 50%;
-      background: var(--teal-faint);
+    .check-icon {
+      width: 18px; height: 18px; border-radius: 50%;
+      background: var(--blue-faint);
       display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
+      flex-shrink: 0; margin-top: 1px;
     }
-    .check svg { width: 11px; height: 11px; }
+    .check-icon svg { width: 10px; height: 10px; }
+    .check-icon.purple { background: rgba(124,58,237,.1); }
+    .check-icon.orange { background: rgba(234,88,12,.1); }
+    .feature-section-label {
+      font-size: 11px; font-weight: 700;
+      color: var(--text-3); text-transform: uppercase; letter-spacing: .5px;
+      padding: 10px 0 2px;
+      border-top: 1px solid var(--border);
+      margin-top: 6px;
+      display: block;
+    }
     .btn-subscribe {
       display: flex; align-items: center; justify-content: center; gap: 8px;
-      width: 100%; padding: 15px 20px;
-      background: var(--teal); color: white;
-      font-family: inherit; font-size: 15px; font-weight: 700;
+      width: 100%; padding: 14px 20px;
+      background: var(--text); color: #fff;
+      font-family: inherit; font-size: 14px; font-weight: 700;
       border: none; border-radius: var(--radius);
       cursor: pointer;
-      box-shadow: 0 4px 20px rgba(59,130,246,.25);
-      transition: all var(--transition);
+      transition: background var(--transition), transform var(--transition);
       -webkit-tap-highlight-color: transparent;
     }
-    .btn-subscribe:hover { background: var(--teal-hover); transform: translateY(-1px); box-shadow: 0 6px 28px rgba(59,130,246,.3); }
-    .stripe-badge {
-      display: flex; align-items: center; justify-content: center; gap: 6px;
-      margin-top: 14px; font-size: 12px; color: var(--text-3);
-    }
-    .trial-note {
-      text-align: center; margin-top: 10px;
-      font-size: 13px; font-weight: 600; color: var(--teal-hover);
-      display: flex; align-items: center; justify-content: center; gap: 5px;
-    }
-    .nav-actions { display: flex; align-items: center; gap: 8px; }
-
-    /* ── À la carte ── */
-    .acarte-section { padding: 0 0 72px; }
-    .acarte-eyebrow {
-      text-align: center; font-size: 12px; font-weight: 700;
-      color: var(--teal); text-transform: uppercase; letter-spacing: .8px;
-      margin-bottom: 12px;
-    }
-    .acarte-title {
-      text-align: center; font-size: clamp(20px,3vw,28px); font-weight: 800;
-      letter-spacing: -.5px; margin-bottom: 24px; color: var(--text);
-    }
-    .acarte-card {
-      max-width: 680px; margin: 0 auto;
-      background: var(--surface); border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-lg);
-      border: 1.5px solid var(--border);
-      padding: 28px 32px;
-      display: flex; align-items: center; gap: 28px;
-    }
-    .acarte-icon {
-      width: 56px; height: 56px; border-radius: 16px; flex-shrink: 0;
-      background: var(--teal-faint);
+    .btn-subscribe:hover { background: #374151; transform: translateY(-1px); }
+    .btn-subscribe.blue { background: var(--blue); }
+    .btn-subscribe.blue:hover { background: var(--blue-dark); }
+    .btn-subscribe.purple { background: #7C3AED; }
+    .btn-subscribe.purple:hover { background: #6D28D9; }
+    .btn-subscribe.orange { background: #EA580C; }
+    .btn-subscribe.orange:hover { background: #C2410C; }
+    .trial-badge {
       display: flex; align-items: center; justify-content: center;
-      font-size: 26px;
+      gap: 5px; margin-top: 12px;
+      font-size: 13px; font-weight: 600; color: #16A34A;
+    }
+    .stripe-note {
+      display: flex; align-items: center; justify-content: center;
+      gap: 5px; margin-top: 8px;
+      font-size: 12px; color: var(--text-3);
+    }
+
+    /* ─── À la carte ─── */
+    .acarte { padding: 0 0 100px; }
+    .acarte-card {
+      display: flex; align-items: center; gap: 28px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px 32px;
+      max-width: 700px; margin: 40px auto 0;
+    }
+    .acarte-icon-wrap {
+      width: 52px; height: 52px; border-radius: 12px;
+      background: var(--blue-faint);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; font-size: 24px;
     }
     .acarte-body { flex: 1; min-width: 0; }
-    .acarte-name { font-size: 17px; font-weight: 800; margin-bottom: 4px; }
-    .acarte-desc { font-size: 13px; color: var(--text-2); line-height: 1.6; margin-bottom: 0; }
+    .acarte-name { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+    .acarte-desc { font-size: 14px; color: var(--text-2); line-height: 1.6; }
     .acarte-right { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; flex-shrink: 0; }
-    .acarte-price { font-size: 24px; font-weight: 800; color: var(--teal); }
-    .acarte-price small { font-size: 13px; font-weight: 500; color: var(--text-3); }
+    .acarte-price { font-size: 24px; font-weight: 800; color: var(--blue); }
+    .acarte-price small { font-size: 13px; font-weight: 400; color: var(--text-3); }
     .acarte-btn {
       font-family: inherit; font-size: 13px; font-weight: 700;
       padding: 10px 20px; border-radius: var(--radius);
-      background: var(--teal); color: white; border: none;
-      cursor: pointer; text-decoration: none; white-space: nowrap;
-      box-shadow: 0 4px 16px rgba(59,130,246,.25);
-      transition: all var(--transition);
-    }
-    .acarte-btn:hover { background: var(--teal-hover); }
-    @media (max-width: 600px) {
-      .acarte-card { flex-direction: column; align-items: flex-start; gap: 16px; }
-      .acarte-right { flex-direction: row; align-items: center; width: 100%; justify-content: space-between; }
-    }
-
-    .success-msg {
-      margin-top: 10px; font-size: 13px;
-      color: #15803D; background: #DCFCE7;
-      padding: 8px 12px; border-radius: 8px;
-    }
-
-    /* ── Counter ── */
-    .counter-section {
-      padding: 48px 0;
-      text-align: center;
-    }
-    .counter-inner {
-      display: inline-flex; align-items: center; gap: 20px;
-      background: var(--surface);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow);
-      padding: 28px 48px;
-    }
-    .counter-num {
-      font-size: 48px; font-weight: 800; letter-spacing: -2px;
-      color: var(--text); line-height: 1;
-    }
-    .counter-num span { color: var(--teal); }
-    .counter-divider {
-      width: 1px; height: 48px; background: var(--border);
-    }
-    .counter-label {
-      text-align: left;
-    }
-    .counter-label strong {
-      display: block; font-size: 15px; font-weight: 700; color: var(--text);
-    }
-    .counter-label small {
-      font-size: 13px; color: var(--text-2);
-    }
-    .counter-dot {
-      width: 8px; height: 8px; border-radius: 50%;
-      background: #22C55E;
-      box-shadow: 0 0 0 3px rgba(34,197,94,.2);
-      animation: blink 2s ease-in-out infinite;
-      flex-shrink: 0;
-    }
-    @keyframes blink {
-      0%, 100% { opacity: 1; } 50% { opacity: .3; }
-    }
-
-    /* ── Testimonials ── */
-    .testimonials { padding: 16px 0 64px; }
-    .testi-grid {
-      display: grid; grid-template-columns: repeat(3,1fr); gap: 16px;
-    }
-    .testi-card {
-      background: var(--surface);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow);
-      padding: 24px;
-    }
-    .testi-stars { color: #F59E0B; font-size: 14px; letter-spacing: 1px; margin-bottom: 12px; }
-    .testi-text {
-      font-size: 14px; color: var(--text); line-height: 1.65;
-      margin-bottom: 18px; font-style: italic;
-    }
-    .testi-author { display: flex; align-items: center; gap: 10px; }
-    .testi-avatar {
-      width: 36px; height: 36px; border-radius: 50%;
-      background: var(--teal-faint);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 15px; font-weight: 700; color: var(--teal);
-      flex-shrink: 0;
-    }
-    .testi-name { font-size: 13px; font-weight: 700; color: var(--text); }
-    .testi-city { font-size: 12px; color: var(--text-3); }
-
-    /* ── FAQ ── */
-    .faq { padding: 0 0 64px; }
-    .faq-list { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
-    .faq-item {
-      background: var(--surface);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-    }
-    .faq-q {
-      width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px;
-      padding: 18px 20px;
-      background: none; border: none; cursor: pointer;
-      font-family: inherit; font-size: 15px; font-weight: 600; color: var(--text);
-      text-align: left;
+      background: var(--blue); color: #fff; border: none;
+      cursor: pointer; text-decoration: none;
       transition: background var(--transition);
     }
-    .faq-q:hover { background: var(--bg); }
-    .faq-icon {
-      width: 22px; height: 22px; border-radius: 50%;
-      background: var(--teal-faint); color: var(--teal);
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0; transition: transform var(--transition);
+    .acarte-btn:hover { background: var(--blue-dark); }
+
+    /* ─── FAQ ─── */
+    .faq { padding: 0 0 100px; }
+    .faq-list {
+      max-width: 640px; margin: 48px auto 0;
+      display: flex; flex-direction: column; gap: 2px;
+      border: 1px solid var(--border); border-radius: var(--radius-lg);
+      overflow: hidden;
     }
-    .faq-icon svg { width: 12px; height: 12px; }
-    .faq-item.open .faq-icon { transform: rotate(45deg); background: var(--teal); color: #fff; }
+    .faq-item { border-bottom: 1px solid var(--border); }
+    .faq-item:last-child { border-bottom: none; }
+    .faq-q {
+      width: 100%; display: flex; align-items: center;
+      justify-content: space-between; gap: 12px;
+      padding: 20px 24px;
+      background: none; border: none; cursor: pointer;
+      font-family: inherit; font-size: 15px; font-weight: 600;
+      color: var(--text); text-align: left;
+      transition: background var(--transition);
+    }
+    .faq-q:hover { background: #fafafa; }
+    .faq-chevron {
+      width: 20px; height: 20px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-3); flex-shrink: 0;
+      transition: transform var(--transition), color var(--transition);
+    }
+    .faq-chevron svg { width: 16px; height: 16px; }
+    .faq-item.open .faq-chevron { transform: rotate(180deg); color: var(--blue); }
     .faq-a {
       display: none;
-      padding: 0 20px 18px;
-      font-size: 14px; color: var(--text-2); line-height: 1.7;
-      border-top: 1px solid var(--border);
-      padding-top: 14px;
+      padding: 0 24px 20px;
+      font-size: 14px; color: var(--text-2); line-height: 1.75;
     }
     .faq-item.open .faq-a { display: block; }
 
-    /* ── Error banner (Stripe failure) ── */
-    .error-banner {
-      background: #FEE2E2; border: 1px solid #FECACA;
-      border-radius: var(--radius); padding: 12px 16px;
-      margin: 16px 0 0; font-size: 14px; color: #B91C1C;
-      text-align: center;
-    }
-
-    /* ── Footer ── */
+    /* ─── Footer ─── */
     footer {
       border-top: 1px solid var(--border);
-      padding: 24px;
-      text-align: center;
+      padding: 28px 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 12px;
       font-size: 13px; color: var(--text-3);
     }
+    .footer-links { display: flex; gap: 20px; }
+    .footer-links a { color: var(--text-3); text-decoration: none; }
+    .footer-links a:hover { color: var(--text-2); }
 
-    /* ── Responsive ── */
-    @media (max-width: 960px) {
-      .pricing-grid { grid-template-columns: 1fr 1fr; max-width: 720px; }
-      .testi-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+    /* ─── Responsive ─── */
+    @media (max-width: 900px) {
+      .features-grid { grid-template-columns: 1fr; gap: 0; }
+      .feature-card { border-right: none; border-bottom: 1px solid var(--border); }
+      .feature-card:last-child { border-bottom: none; }
+      .pricing-grid { grid-template-columns: 1fr; max-width: 420px; margin-left: auto; margin-right: auto; }
+      .testi-grid { grid-template-columns: 1fr; max-width: 420px; margin-left: auto; margin-right: auto; }
+      .counter-card { padding: 24px 28px; gap: 16px; }
+      .counter-num { font-size: 38px; }
     }
-    @media (max-width: 720px) {
-      .hero { padding: 48px 0 40px; }
-      .steps-grid { grid-template-columns: 1fr; }
-      .pricing-grid { grid-template-columns: 1fr; max-width: 420px; }
-      .pricing-head, .pricing-body { padding-left: 24px; padding-right: 24px; }
+    @media (max-width: 640px) {
+      .nav-inner { padding: 0 20px; }
+      .container { padding: 0 20px; }
+      .hero { padding: 64px 0 56px; }
+      .hero h1 { letter-spacing: -1.5px; }
+      .hero-sub { font-size: 17px; }
+      .proof-inner { gap: 28px; }
+      .features { padding: 72px 0; }
+      .feature-card { padding: 28px 24px; }
+      .testimonials, .pricing, .acarte, .faq, .counter-section { padding-bottom: 72px; }
+      .acarte-card { flex-direction: column; align-items: flex-start; gap: 16px; }
+      .acarte-right { flex-direction: row; align-items: center; width: 100%; justify-content: space-between; }
+      footer { flex-direction: column; align-items: center; text-align: center; }
+      .btn-ghost { display: none; }
     }
   </style>
 </head>
 <body>
 
+<!-- ─── Nav ─── -->
 <nav>
   <div class="nav-inner">
     <a class="logo" href="/">
       <div class="logo-mark">
         <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>
+          <path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/>
+          <line x1="7" y1="7" x2="7.01" y2="7"/>
         </svg>
       </div>
       <span class="logo-name">Prizzy</span>
     </a>
-    <div class="nav-actions">
-      <a href="/demo" class="btn-nav-demo">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+    <div class="nav-right">
+      <a href="/demo" class="btn-demo">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
         Voir la démo
       </a>
-      <a href="/login" class="btn-nav">Se connecter</a>
+      <a href="/login" class="btn-ghost">Se connecter</a>
+      <a href="#pricing" class="btn-cta-nav">Démarrer</a>
     </div>
   </div>
 </nav>
 
 
-<!-- ── Hero ── -->
+<!-- ─── Hero ─── -->
 <section class="hero">
   <div class="container">
-    <div class="hero-pill">
+
+    <div class="hero-badge">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-      3 outils IA · Vinted
+      <span>3 outils IA</span> · Pour les vendeurs Vinted
     </div>
-    <h1>Vendez mieux sur Vinted<br>grâce à <em>l'IA</em></h1>
-    <p>Estimation de prix en temps réel, retouche photo professionnelle et legit check — trois outils IA pour vendre plus vite et plus cher.</p>
-    <form method="POST" action="/subscribe" style="display:inline">
-      <button type="submit" class="hero-cta">
-        Essayer Prizzy — 7,99€/mois
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </button>
-    </form>
-    <div class="hero-sub">
+
+    <h1>Vendez mieux<br>grâce à <em>l'intelligence artificielle</em></h1>
+
+    <p class="hero-sub">Estimation de prix, retouche photo pro et legit check — tout ce dont vous avez besoin pour vendre plus vite et plus cher sur Vinted.</p>
+
+    <div class="hero-actions">
+      <form method="POST" action="/subscribe" style="display:contents">
+        <button type="submit" class="btn-hero">
+          Essayer gratuitement 7 jours
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+      </form>
+      <a href="/demo" class="btn-hero-ghost">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Voir la démo
+      </a>
+    </div>
+
+    <div class="hero-trust">
+      <span>✓ 7 jours gratuits, sans CB requise</span>
       <span>✓ Sans engagement</span>
-      <span>✓ Résiliable à tout moment</span>
       <span>✓ Paiement sécurisé Stripe</span>
     </div>
 
-    <div class="early-counter" id="early-counter" style="display:none">
-      <div class="early-counter-headline">🚀 <span id="early-count">—</span>/300 abonnés — offre limitée</div>
-      <div class="early-counter-promise">✅ Si tu t'abonnes maintenant, tu as <strong>1 mois gratuit</strong> quand l'app sort</div>
-      <div class="early-progress-track">
-        <div class="early-progress-fill" id="early-bar" style="width:0%"></div>
+    <div class="founders-box" id="early-counter">
+      <div class="founders-top">
+        <div class="founders-label">🚀 Offre fondateurs — <span id="early-count">—</span>/300</div>
       </div>
-      <div class="early-counter-urgency">⏳ Plus que <span id="early-remaining">—</span> places disponibles — l'offre disparaît à 300</div>
+      <div class="founders-promise">✅ Abonnez-vous maintenant et obtenez <strong>1 mois gratuit</strong> au lancement</div>
+      <div class="founders-track">
+        <div class="founders-fill" id="early-bar" style="width:0%"></div>
+      </div>
+      <div class="founders-urgency">⏳ Plus que <span id="early-remaining">—</span> places disponibles</div>
     </div>
 
     {% if error %}
     <div class="error-banner" style="max-width:520px;margin:20px auto 0">{{ error }}</div>
     {% endif %}
+
   </div>
 </section>
 
 
-<!-- ── Steps ── -->
-<section class="steps">
+<!-- ─── Social proof ─── -->
+<div class="proof-bar">
+  <div class="proof-inner">
+    <div class="proof-stat">
+      <div class="proof-num" id="analyses-count">—</div>
+      <div class="proof-desc">articles analysés</div>
+    </div>
+    <div class="proof-dot"></div>
+    <div class="proof-stat">
+      <div class="proof-num">5 <span>jours</span></div>
+      <div class="proof-desc">délai de vente moyen</div>
+    </div>
+    <div class="proof-dot"></div>
+    <div class="proof-stat">
+      <div class="proof-num">3</div>
+      <div class="proof-desc">outils IA inclus</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ─── Features ─── -->
+<section class="features">
   <div class="container">
-    <div class="steps-grid">
-      <div class="step-card">
-        <div class="step-icon">💰</div>
-        <p class="step-num">Outil 1</p>
-        <p class="step-title">Estimation de prix</p>
-        <p class="step-desc">Prizzy scanne 50 annonces similaires et vous donne le prix idéal, un score de vente /10 et le meilleur créneau pour publier.</p>
+    <div class="features-header">
+      <div class="section-label">Fonctionnalités</div>
+      <h2 class="section-heading">Trois outils, un seul objectif</h2>
+      <p class="section-desc">Prizzy combine vision IA et données marché Vinted en temps réel pour vous donner un avantage concret à chaque vente.</p>
+    </div>
+    <div class="features-grid">
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+          </svg>
+        </div>
+        <div class="feature-num">Outil 01</div>
+        <div class="feature-title">Estimation de prix</div>
+        <div class="feature-desc">Prizzy scanne 50 annonces similaires et vous donne le prix idéal, un score de vente /10 et le meilleur créneau pour publier.</div>
       </div>
-      <div class="step-card">
-        <div class="step-icon">✨</div>
-        <p class="step-num">Outil 2</p>
-        <p class="step-title">Retouche photo IA</p>
-        <p class="step-desc">Envoyez une photo brute, l'IA génère une image pro avec fond neutre, éclairage et cadrage style e-commerce en 1 clic.</p>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+          </svg>
+        </div>
+        <div class="feature-num">Outil 02</div>
+        <div class="feature-title">Retouche photo IA</div>
+        <div class="feature-desc">Envoyez une photo brute, l'IA génère une image pro avec fond neutre, éclairage et cadrage style e-commerce en 1 clic.</div>
       </div>
-      <div class="step-card">
-        <div class="step-icon">🔍</div>
-        <p class="step-num">Outil 3</p>
-        <p class="step-title">Legit Check IA</p>
-        <p class="step-desc">Verdict Authentique / Suspect / Contrefaçon avec score de confiance en %. Analyse logo, coutures, étiquettes et matière.</p>
+
+      <div class="feature-card">
+        <div class="feature-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
+          </svg>
+        </div>
+        <div class="feature-num">Outil 03</div>
+        <div class="feature-title">Legit Check IA</div>
+        <div class="feature-desc">Verdict Authentique / Suspect / Contrefaçon avec score de confiance en %. Analyse logo, coutures, étiquettes et matière.</div>
       </div>
+
     </div>
   </div>
 </section>
 
 
-<!-- ── Counter ── -->
+<!-- ─── Counter ─── -->
 <section class="counter-section">
-  <div class="counter-inner">
-    <span class="counter-dot"></span>
-    <p class="counter-num" id="analyses-count">—</p>
-    <div class="counter-divider"></div>
-    <div class="counter-label">
-      <strong>articles analysés</strong>
-      <small>par les bêta testeurs Prizzy</small>
+  <div class="container" style="text-align:center">
+    <div class="counter-card">
+      <div class="proof-dot"></div>
+      <div class="counter-num" id="analyses-count-2">—</div>
+      <div class="counter-sep"></div>
+      <div class="counter-meta">
+        <strong>articles analysés</strong>
+        <small>par les bêta testeurs Prizzy</small>
+      </div>
     </div>
   </div>
 </section>
 
 
-<!-- ── Testimonials ── -->
+<!-- ─── Testimonials ─── -->
 <section class="testimonials">
   <div class="container">
-    <p class="section-eyebrow">Témoignages</p>
-    <h2 class="section-title" style="margin-bottom:32px">Ils ont testé Prizzy</h2>
+    <div class="section-label">Témoignages</div>
+    <h2 class="section-heading">Ils ont testé Prizzy</h2>
     <div class="testi-grid">
 
       <div class="testi-card">
-        <p class="testi-stars">★★★★★</p>
+        <div class="testi-stars">★★★★★</div>
         <p class="testi-text">« J'ai vendu ma paire de Jordan en 2 jours. Le prix recommandé était pile dans la fourchette et la photo IA rendait vraiment pro. »</p>
         <div class="testi-author">
           <div class="testi-avatar">L</div>
           <div>
-            <p class="testi-name">Lucas M.</p>
-            <p class="testi-city">Lyon · bêta testeur</p>
+            <div class="testi-name">Lucas M.</div>
+            <div class="testi-city">Lyon · bêta testeur</div>
           </div>
         </div>
       </div>
 
       <div class="testi-card">
-        <p class="testi-stars">★★★★★</p>
+        <div class="testi-stars">★★★★★</div>
         <p class="testi-text">« Le legit check m'a sauvé : j'allais acheter un Supreme à 180€ qui était une contrefaçon. Prizzy l'a détecté en quelques secondes. »</p>
         <div class="testi-author">
           <div class="testi-avatar">S</div>
           <div>
-            <p class="testi-name">Sofia R.</p>
-            <p class="testi-city">Paris · bêta testrice</p>
+            <div class="testi-name">Sofia R.</div>
+            <div class="testi-city">Paris · bêta testrice</div>
           </div>
         </div>
       </div>
 
       <div class="testi-card">
-        <p class="testi-stars">★★★★★</p>
+        <div class="testi-stars">★★★★★</div>
         <p class="testi-text">« Avant je passais 30 min à chercher le bon prix. Maintenant c'est 10 secondes. J'ai liquidé toute ma penderie en un mois. »</p>
         <div class="testi-author">
           <div class="testi-avatar">T</div>
           <div>
-            <p class="testi-name">Thomas K.</p>
-            <p class="testi-city">Bordeaux · bêta testeur</p>
+            <div class="testi-name">Thomas K.</div>
+            <div class="testi-city">Bordeaux · bêta testeur</div>
           </div>
         </div>
       </div>
@@ -641,209 +722,115 @@
 </section>
 
 
-<!-- ── FAQ ── -->
-<section class="faq">
-  <div class="container">
-    <p class="section-eyebrow" style="text-align:center">FAQ</p>
-    <h2 class="section-title" style="margin-bottom:28px">Questions fréquentes</h2>
-    <div class="faq-list">
-
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
-          Est-ce vraiment précis ?
-          <span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
-        </button>
-        <p class="faq-a">Oui — Prizzy scanne en temps réel les 50 annonces les plus similaires sur Vinted (même marque, même taille, même état) et calcule un prix médian ajusté. Nos bêta testeurs rapportent en moyenne une vente dans les 5 jours au prix recommandé.</p>
-      </div>
-
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
-          Comment ça marche ?
-          <span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
-        </button>
-        <p class="faq-a">Prenez une photo de votre article depuis l'app Prizzy. L'IA identifie la marque, le type et l'état en quelques secondes, puis analyse le marché Vinted. Vous recevez un prix recommandé, un score de vente, et si vous avez le plan Ultimate, une photo retouchée prête à publier.</p>
-      </div>
-
-      <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)">
-          Puis-je résilier à tout moment ?
-          <span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
-        </button>
-        <p class="faq-a">Oui, sans conditions ni frais. Vous gérez votre abonnement depuis le portail Stripe en un clic. La résiliation prend effet à la fin de la période en cours — vous conservez l'accès jusqu'au dernier jour payé.</p>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-
-<!-- ── Pricing ── -->
+<!-- ─── Pricing ─── -->
 <section class="pricing" id="pricing">
   <div class="container">
-    <p class="section-eyebrow">Tarifs</p>
-    <h2 class="section-title">Simple et sans surprise</h2>
+    <div class="section-label">Tarifs</div>
+    <h2 class="section-heading">Simple et sans surprise</h2>
 
     <div class="pricing-grid">
 
-      <!-- Plan Starter -->
+      <!-- Starter -->
       <div class="pricing-card">
         <div class="pricing-head">
-          <p class="plan-name">Prizzy Starter</p>
+          <div class="plan-name-text">Starter</div>
           <div class="plan-price">
             <span class="plan-amount">7,99€</span>
             <span class="plan-period">/mois</span>
           </div>
-          <p class="plan-note">Sans engagement · Résiliable à tout moment</p>
+          <div class="plan-note">Sans engagement · Résiliable à tout moment</div>
         </div>
         <div class="pricing-body">
           <ul class="feature-list">
-            <li>
-              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-              Analyses illimitées
-            </li>
-            <li>
-              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-              Vision IA multi-photos (jusqu'à 5)
-            </li>
-            <li>
-              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-              Prix du marché sur 50 annonces Vinted
-            </li>
-            <li>
-              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-              Score de vente /10 avec explication
-            </li>
-            <li>
-              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-              Meilleur moment pour publier
-            </li>
-            <li>
-              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-              Description Vinted auto-générée + copie
-            </li>
+            <li><div class="check-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>Analyses illimitées</li>
+            <li><div class="check-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>Vision IA multi-photos (jusqu'à 5)</li>
+            <li><div class="check-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>Prix du marché sur 50 annonces Vinted</li>
+            <li><div class="check-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>Score de vente /10 avec explication</li>
+            <li><div class="check-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>Meilleur moment pour publier</li>
+            <li><div class="check-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>Description Vinted auto-générée</li>
           </ul>
           <form method="POST" action="/subscribe">
-            <button type="submit" class="btn-subscribe">
-              S'abonner — 7,99€/mois
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            <button type="submit" class="btn-subscribe blue">
+              Commencer — 7,99€/mois
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
             </button>
           </form>
-          <p class="trial-note">🎁 7 jours gratuits inclus</p>
-          <p class="stripe-badge">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          <div class="trial-badge">🎁 7 jours gratuits inclus</div>
+          <div class="stripe-note">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
             Paiement sécurisé par Stripe
-          </p>
+          </div>
         </div>
       </div>
 
-      <!-- Plan Elite -->
-      <div class="pricing-card elite">
+      <!-- Elite -->
+      <div class="pricing-card featured">
+        <div class="plan-tag purple">✦ Meilleure offre</div>
         <div class="pricing-head">
-          <div class="plan-badge elite">✦ Meilleure offre</div>
-          <p class="plan-name elite">Prizzy Elite</p>
+          <div class="plan-name-text">Elite</div>
           <div class="plan-price">
             <span class="plan-amount">21,99€</span>
             <span class="plan-period">/mois</span>
           </div>
-          <p class="plan-note">Sans engagement · Résiliable à tout moment</p>
+          <div class="plan-note">Sans engagement · Résiliable à tout moment</div>
         </div>
         <div class="pricing-body">
           <ul class="feature-list">
-            <li>
-              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-              Tout le plan Starter inclus
-            </li>
-            <li>
-              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-              Analyses illimitées
-            </li>
-            <li>
-              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-              Vision IA multi-photos (jusqu'à 5)
-            </li>
-            <p class="feature-divider">🔍 Legit Check IA exclusif</p>
-            <li>
-              <div class="check" style="background:rgba(124,58,237,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-              Verdict : Authentique / Suspect / Contrefaçon
-            </li>
-            <li>
-              <div class="check" style="background:rgba(124,58,237,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-              Score de confiance en %
-            </li>
-            <li>
-              <div class="check" style="background:rgba(124,58,237,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-              Analyse détaillée coutures, logos, étiquettes
-            </li>
-            <li>
-              <div class="check" style="background:rgba(124,58,237,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-              Nike, Jordan, Supreme, LV, Gucci, Balenciaga…
-            </li>
+            <li><div class="check-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>Tout le plan Starter inclus</li>
+            <li><div class="check-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>Analyses illimitées</li>
+            <span class="feature-section-label">🔍 Legit Check IA exclusif</span>
+            <li><div class="check-icon purple"><svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>Verdict : Authentique / Suspect / Contrefaçon</li>
+            <li><div class="check-icon purple"><svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>Score de confiance en %</li>
+            <li><div class="check-icon purple"><svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>Analyse coutures, logos, étiquettes</li>
+            <li><div class="check-icon purple"><svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>Nike, Jordan, Supreme, LV, Gucci…</li>
           </ul>
           <form method="POST" action="/subscribe-elite">
-            <button type="submit" class="btn-subscribe elite">
-              S'abonner — 21,99€/mois
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            <button type="submit" class="btn-subscribe purple">
+              Commencer — 21,99€/mois
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
             </button>
           </form>
-          <p class="trial-note">🎁 7 jours gratuits inclus</p>
-          <p class="stripe-badge">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          <div class="trial-badge">🎁 7 jours gratuits inclus</div>
+          <div class="stripe-note">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
             Paiement sécurisé par Stripe
-          </p>
+          </div>
         </div>
       </div>
 
-      <!-- Plan Ultimate -->
-      <div class="pricing-card ultimate">
+      <!-- Ultimate -->
+      <div class="pricing-card">
+        <div class="plan-tag orange">✦ Tout inclus</div>
         <div class="pricing-head">
-          <div class="plan-badge ultimate">✦ Tout inclus</div>
-          <p class="plan-name ultimate">Prizzy Ultimate</p>
+          <div class="plan-name-text">Ultimate</div>
           <div class="plan-price">
             <span class="plan-amount">34,99€</span>
             <span class="plan-period">/mois</span>
           </div>
-          <p class="plan-note">Sans engagement · Résiliable à tout moment</p>
+          <div class="plan-note">Sans engagement · Résiliable à tout moment</div>
         </div>
         <div class="pricing-body">
           <ul class="feature-list">
-            <li>
-              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-              Tout le plan Starter inclus
-            </li>
-            <p class="feature-divider">🔍 Legit Check IA</p>
-            <li>
-              <div class="check" style="background:rgba(124,58,237,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-              Verdict : Authentique / Suspect / Contrefaçon
-            </li>
-            <li>
-              <div class="check" style="background:rgba(124,58,237,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-              Analyse coutures, logos, étiquettes
-            </li>
-            <p class="feature-divider">✨ Photo IA</p>
-            <li>
-              <div class="check" style="background:rgba(234,88,12,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="#EA580C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-              Retouche photo par IA (GPT-4o)
-            </li>
-            <li>
-              <div class="check" style="background:rgba(234,88,12,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="#EA580C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-              Fond, éclairage, cadrage pro automatique
-            </li>
-            <li>
-              <div class="check" style="background:rgba(234,88,12,.1)"><svg viewBox="0 0 24 24" fill="none" stroke="#EA580C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-              Photo produit style e-commerce en 1 clic
-            </li>
+            <li><div class="check-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>Tout le plan Starter inclus</li>
+            <span class="feature-section-label">🔍 Legit Check IA</span>
+            <li><div class="check-icon purple"><svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>Verdict : Authentique / Suspect / Contrefaçon</li>
+            <li><div class="check-icon purple"><svg viewBox="0 0 24 24" fill="none" stroke="#7C3AED" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>Analyse coutures, logos, étiquettes</li>
+            <span class="feature-section-label">✨ Photo IA</span>
+            <li><div class="check-icon orange"><svg viewBox="0 0 24 24" fill="none" stroke="#EA580C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>Retouche photo par IA (GPT-4o)</li>
+            <li><div class="check-icon orange"><svg viewBox="0 0 24 24" fill="none" stroke="#EA580C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>Fond, éclairage, cadrage pro automatique</li>
+            <li><div class="check-icon orange"><svg viewBox="0 0 24 24" fill="none" stroke="#EA580C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>Photo produit style e-commerce en 1 clic</li>
           </ul>
           <form method="POST" action="/subscribe-ultimate">
-            <button type="submit" class="btn-subscribe ultimate">
-              S'abonner — 34,99€/mois
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            <button type="submit" class="btn-subscribe orange">
+              Commencer — 34,99€/mois
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
             </button>
           </form>
-          <p class="trial-note">🎁 7 jours gratuits inclus</p>
-          <p class="stripe-badge">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          <div class="trial-badge">🎁 7 jours gratuits inclus</div>
+          <div class="stripe-note">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
             Paiement sécurisé par Stripe
-          </p>
+          </div>
         </div>
       </div>
 
@@ -852,13 +839,13 @@
 </section>
 
 
-<!-- ── À la carte ── -->
-<section class="acarte-section">
+<!-- ─── À la carte ─── -->
+<section class="acarte">
   <div class="container">
-    <p class="acarte-eyebrow">À la carte</p>
-    <h2 class="acarte-title">Un outil, un usage, un prix unique</h2>
+    <div class="section-label">À la carte</div>
+    <h2 class="section-heading">Un outil, un usage, un prix</h2>
     <div class="acarte-card">
-      <div class="acarte-icon">🔍</div>
+      <div class="acarte-icon-wrap">🔍</div>
       <div class="acarte-body">
         <div class="acarte-name">Analyse de profil Vinted</div>
         <div class="acarte-desc">Collez l'URL de votre profil et obtenez un audit complet : annonces sous-évaluées, sur-évaluées, score vendeur et 3 actions prioritaires pour vendre plus vite. Sans abonnement.</div>
@@ -871,11 +858,53 @@
   </div>
 </section>
 
-<footer>
+
+<!-- ─── FAQ ─── -->
+<section class="faq">
   <div class="container">
-    © 2025 Prizzy · Paiement sécurisé Stripe · <a href="/mentions-legales" style="color:inherit">Mentions légales</a> · <a href="/cgv" style="color:inherit">CGV</a>
+    <div class="section-label">FAQ</div>
+    <h2 class="section-heading">Questions fréquentes</h2>
+    <div class="faq-list">
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Est-ce vraiment précis ?
+          <span class="faq-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <p class="faq-a">Oui — Prizzy scanne en temps réel les 50 annonces les plus similaires sur Vinted (même marque, même taille, même état) et calcule un prix médian ajusté. Nos bêta testeurs rapportent en moyenne une vente dans les 5 jours au prix recommandé.</p>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Comment ça marche ?
+          <span class="faq-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <p class="faq-a">Prenez une photo de votre article depuis l'app Prizzy. L'IA identifie la marque, le type et l'état en quelques secondes, puis analyse le marché Vinted. Vous recevez un prix recommandé, un score de vente, et si vous avez le plan Ultimate, une photo retouchée prête à publier.</p>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Puis-je résilier à tout moment ?
+          <span class="faq-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+        </button>
+        <p class="faq-a">Oui, sans conditions ni frais. Vous gérez votre abonnement depuis le portail Stripe en un clic. La résiliation prend effet à la fin de la période en cours — vous conservez l'accès jusqu'au dernier jour payé.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ─── Footer ─── -->
+<footer>
+  <span>© 2025 Prizzy</span>
+  <div class="footer-links">
+    <a href="/mentions-legales">Mentions légales</a>
+    <a href="/cgv">CGV</a>
+    <a href="mailto:support@prizzy.fr">Contact</a>
   </div>
 </footer>
+
 
 <script>
 function toggleFaq(btn) {
@@ -887,11 +916,12 @@ function toggleFaq(btn) {
 
 (function earlyCounter() {
   const GOAL = 300;
-  const elCount = document.getElementById('early-count');
-  const elBar = document.getElementById('early-bar');
+  const elCount     = document.getElementById('early-count');
+  const elBar       = document.getElementById('early-bar');
   const elRemaining = document.getElementById('early-remaining');
-  const elBox = document.getElementById('early-counter');
-  const elAnalyses = document.getElementById('analyses-count');
+  const elBox       = document.getElementById('early-counter');
+  const elAnalyses  = document.getElementById('analyses-count');
+  const elAnalyses2 = document.getElementById('analyses-count-2');
 
   function fmt(n) {
     return n >= 1000
@@ -900,13 +930,15 @@ function toggleFaq(btn) {
   }
 
   function update(data) {
-    const n = data.subscribers || 0;
+    const n   = data.subscribers || 0;
     const pct = Math.min(100, Math.round(n / GOAL * 100));
-    elCount.textContent = n;
-    elBar.style.width = pct + '%';
+    elCount.textContent     = n;
+    elBar.style.width       = pct + '%';
     elRemaining.textContent = Math.max(0, GOAL - n);
-    elBox.style.display = 'block';
-    if (elAnalyses) elAnalyses.textContent = fmt(data.analyses || 0);
+    elBox.style.display     = 'block';
+    const a = fmt(data.analyses || 0);
+    if (elAnalyses)  elAnalyses.textContent  = a;
+    if (elAnalyses2) elAnalyses2.textContent = a;
   }
 
   async function fetchStats() {
