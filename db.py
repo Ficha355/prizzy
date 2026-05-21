@@ -96,6 +96,28 @@ def init_db():
             )
         """)
         conn.commit()
+    # password_reset_tokens table
+    conn2 = get_db()
+    if USE_PG:
+        with conn2.cursor() as cur:
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS password_reset_tokens (
+                    token      TEXT PRIMARY KEY,
+                    email      TEXT NOT NULL,
+                    expires_at TIMESTAMPTZ NOT NULL
+                )
+            """)
+        conn2.commit()
+    else:
+        conn2.execute("""
+            CREATE TABLE IF NOT EXISTS password_reset_tokens (
+                token      TEXT PRIMARY KEY,
+                email      TEXT NOT NULL,
+                expires_at TEXT NOT NULL
+            )
+        """)
+        conn2.commit()
+    conn2.close()
     conn.close()
 
 
@@ -219,6 +241,59 @@ def increment_user_analyses(email: str) -> None:
 def get_user_analyses(email: str) -> int:
     sub = get_subscriber(email)
     return int(sub.get("analyses_count") or 0) if sub else 0
+
+
+# ── Password reset tokens ──────────────────────────────────
+
+def create_reset_token(email: str, token: str, expires_at) -> None:
+    conn = get_db()
+    if USE_PG:
+        with conn.cursor() as cur:
+            cur.execute(
+                "DELETE FROM password_reset_tokens WHERE email = %s", (email,)
+            )
+            cur.execute(
+                "INSERT INTO password_reset_tokens (token, email, expires_at) VALUES (%s, %s, %s)",
+                (token, email, expires_at),
+            )
+    else:
+        conn.execute("DELETE FROM password_reset_tokens WHERE email = ?", (email,))
+        conn.execute(
+            "INSERT INTO password_reset_tokens (token, email, expires_at) VALUES (?, ?, ?)",
+            (token, email, expires_at.isoformat()),
+        )
+    conn.commit()
+    conn.close()
+
+
+def get_reset_token(token: str) -> Optional[dict]:
+    conn = get_db()
+    if USE_PG:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT email, expires_at FROM password_reset_tokens WHERE token = %s",
+                (token,),
+            )
+            row = cur.fetchone()
+    else:
+        cur = conn.execute(
+            "SELECT email, expires_at FROM password_reset_tokens WHERE token = ?",
+            (token,),
+        )
+        row = cur.fetchone()
+    conn.close()
+    return dict(row) if row else None
+
+
+def delete_reset_token(token: str) -> None:
+    conn = get_db()
+    if USE_PG:
+        with conn.cursor() as cur:
+            cur.execute("DELETE FROM password_reset_tokens WHERE token = %s", (token,))
+    else:
+        conn.execute("DELETE FROM password_reset_tokens WHERE token = ?", (token,))
+    conn.commit()
+    conn.close()
 
 
 def count_active_subscribers() -> int:

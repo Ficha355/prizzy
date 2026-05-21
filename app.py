@@ -13,7 +13,9 @@ from flask import (Flask, request, jsonify, render_template,
 from werkzeug.utils import secure_filename
 import os
 import uuid
+import secrets
 import statistics
+from datetime import datetime, timedelta, timezone
 
 import base64
 import io
@@ -22,7 +24,7 @@ from PIL import Image
 from vinted_client import search_items, get_seller_items
 from claude_client import analyze_clothing, legit_check, audit_seller_profile
 import bcrypt
-from db import init_db, upsert_subscriber, has_active_subscription, has_elite_subscription, has_premium_subscription, get_subscriber, count_active_subscribers, increment_analyses_count, get_analyses_count, set_analyses_count, set_password, get_password_hash, increment_user_analyses, get_user_analyses
+from db import init_db, upsert_subscriber, has_active_subscription, has_elite_subscription, has_premium_subscription, get_subscriber, count_active_subscribers, increment_analyses_count, get_analyses_count, set_analyses_count, set_password, get_password_hash, increment_user_analyses, get_user_analyses, create_reset_token, get_reset_token, delete_reset_token
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024  # 50 MB (up to 5 photos)
@@ -367,6 +369,59 @@ def set_password_route():
     return redirect("/")
 
 
+@app.route("/forgot-password", methods=["GET", "POST"])
+def forgot_password():
+    if request.method == "GET":
+        return render_template("forgot_password.html")
+    email = request.form.get("email", "").strip().lower()
+    if not email:
+        return render_template("forgot_password.html", error="Entrez votre adresse email.")
+    if not has_active_subscription(email):
+        # Don't reveal whether email exists — show generic success
+        return render_template("forgot_password.html", success=True)
+    token = secrets.token_urlsafe(32)
+    expires_at = datetime.now(timezone.utc) + timedelta(hours=1)
+    create_reset_token(email, token, expires_at)
+    _send_reset_email(email, token)
+    return render_template("forgot_password.html", success=True)
+
+
+@app.route("/reset-password", methods=["GET", "POST"])
+def reset_password():
+    token = request.args.get("token", "") or request.form.get("token", "")
+    if not token:
+        return redirect("/forgot-password")
+
+    row = get_reset_token(token)
+    if not row:
+        return render_template("reset_password.html", error="Lien invalide ou déjà utilisé.", token=token, expired=True)
+
+    # Check expiry
+    expires_at = row["expires_at"]
+    if isinstance(expires_at, str):
+        expires_at = datetime.fromisoformat(expires_at).replace(tzinfo=timezone.utc)
+    if expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=timezone.utc)
+    if datetime.now(timezone.utc) > expires_at:
+        delete_reset_token(token)
+        return render_template("reset_password.html", error="Ce lien a expiré. Faites une nouvelle demande.", token=token, expired=True)
+
+    if request.method == "GET":
+        return render_template("reset_password.html", token=token)
+
+    password = request.form.get("password", "")
+    confirm = request.form.get("confirm", "")
+    if len(password) < 8:
+        return render_template("reset_password.html", token=token, error="Le mot de passe doit faire au moins 8 caractères.")
+    if password != confirm:
+        return render_template("reset_password.html", token=token, error="Les mots de passe ne correspondent pas.")
+
+    hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+    set_password(row["email"], hashed)
+    delete_reset_token(token)
+    return redirect("/login?info=Mot de passe mis à jour — connectez-vous.")
+
+
 @app.route("/logout")
 def logout():
     session.pop("email", None)
@@ -646,6 +701,73 @@ def _activate_customer(customer_id: str):
 
 def _deactivate_customer(customer_id: str):
     _upsert_customer(customer_id, None, "inactive", plan=None)
+
+
+def _send_reset_email(to_email: str, token: str):
+    import smtplib
+    from email.mime.multipart import MIMEMultipart
+    from email.mime.text import MIMEText
+
+    mail_user = os.environ.get("MAIL_USERNAME", "").strip()
+    mail_pass = os.environ.get("MAIL_PASSWORD", "").strip()
+    if not mail_user or not mail_pass:
+        app.logger.warning("[reset-mail] MAIL_USERNAME ou MAIL_PASSWORD manquant, email non envoyé")
+        return
+
+    base_url = os.environ.get("BASE_URL", "https://prizzy.fr").rstrip("/")
+    reset_link = f"{base_url}/reset-password?token={token}"
+
+    subject = "Réinitialisation de votre mot de passe Prizzy"
+    html = f"""\
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#ffffff;font-family:Inter,Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f9fafb;padding:40px 0;">
+    <tr><td align="center">
+      <table width="520" cellpadding="0" cellspacing="0"
+             style="background:#fff;border-radius:16px;border:1px solid #E5E7EB;padding:40px 36px;">
+        <tr><td>
+          <p style="margin:0 0 28px;font-size:20px;font-weight:700;color:#0070B8;letter-spacing:-0.3px;">
+            Prizzy
+          </p>
+          <h1 style="margin:0 0 12px;font-size:20px;font-weight:700;color:#111827;">
+            Réinitialisation du mot de passe
+          </h1>
+          <p style="margin:0 0 24px;font-size:15px;color:#6B7280;line-height:1.6;">
+            Vous avez demandé à réinitialiser votre mot de passe. Cliquez sur le bouton ci-dessous.
+            Ce lien est valable <strong>1 heure</strong>.
+          </p>
+          <a href="{reset_link}"
+             style="display:inline-block;background:#0070B8;color:#fff;font-size:15px;font-weight:700;
+                    padding:14px 28px;border-radius:10px;text-decoration:none;margin-bottom:24px;">
+            Réinitialiser mon mot de passe →
+          </a>
+          <p style="margin:0;font-size:13px;color:#9CA3AF;line-height:1.6;">
+            Si vous n'avez pas fait cette demande, ignorez cet email.
+            Votre mot de passe restera inchangé.<br>
+            <br>Lien : <a href="{reset_link}" style="color:#0070B8;">{reset_link}</a>
+          </p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>"""
+
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = subject
+    msg["From"] = mail_user
+    msg["To"] = to_email
+    msg.attach(MIMEText(html, "html", "utf-8"))
+
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
+            smtp.login(mail_user, mail_pass)
+            smtp.sendmail(mail_user, to_email, msg.as_string())
+        app.logger.info("[reset-mail] envoyé à %s", to_email)
+    except Exception as e:
+        app.logger.error("[reset-mail] erreur envoi à %s: %s", to_email, e)
 
 
 def _send_welcome_email(customer_id: str, plan: Optional[str]):
