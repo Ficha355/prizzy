@@ -4,7 +4,7 @@
   <!-- Google tag (gtag.js) --><script async src="https://www.googletagmanager.com/gtag/js?id=G-Y8HQ6LTQTH"></script><script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'G-Y8HQ6LTQTH');</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#09B1BA">
+  <meta name="theme-color" content="#3B82F6">
   <meta name="description" content="Photographiez votre vêtement, Prizzy analyse le marché Vinted en temps réel et vous donne le prix idéal pour vendre en moins d'une semaine.">
   <link rel="manifest" href="/manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,20 +13,20 @@
   <title>Prizzy — Vendez vos vêtements au juste prix sur Vinted</title>
   <style>
     :root {
-      --teal:       #09B1BA;
-      --teal-hover: #0a9ea6;
-      --teal-dim:   rgba(9,177,186,.14);
-      --teal-faint: #f0fbfc;
-      --bg:         #F7F8F9;
+      --teal:       #3B82F6;
+      --teal-hover: #2563EB;
+      --teal-dim:   rgba(59,130,246,.12);
+      --teal-faint: #EFF6FF;
+      --bg:         #ffffff;
       --surface:    #ffffff;
       --border:     #E5E7EB;
-      --text:       #111827;
+      --text:       #1F2937;
       --text-2:     #6B7280;
       --text-3:     #9CA3AF;
-      --shadow:     0 0 0 1px rgba(0,0,0,.06), 0 4px 24px rgba(0,0,0,.08);
-      --shadow-lg:  0 0 0 1px rgba(0,0,0,.06), 0 16px 64px rgba(0,0,0,.12);
-      --radius:     12px;
-      --radius-lg:  16px;
+      --shadow:     0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.07);
+      --shadow-lg:  0 2px 8px rgba(0,0,0,.06), 0 16px 48px rgba(0,0,0,.1);
+      --radius:     14px;
+      --radius-lg:  18px;
       --transition: 150ms cubic-bezier(.4,0,.2,1);
       --safe-b: env(safe-area-inset-bottom, 0px);
     }
@@ -84,41 +84,41 @@
 
     /* ── Hero ── */
     .hero {
-      padding: 72px 0 64px;
+      padding: 88px 0 72px;
       text-align: center;
     }
     .hero-pill {
       display: inline-flex; align-items: center; gap: 6px;
       background: var(--teal-faint); border: 1px solid var(--teal-dim);
       color: var(--teal-hover);
-      font-size: 12px; font-weight: 600; letter-spacing: .3px;
-      padding: 5px 12px; border-radius: 100px;
-      margin-bottom: 24px;
+      font-size: 12px; font-weight: 600; letter-spacing: .4px;
+      padding: 6px 14px; border-radius: 100px;
+      margin-bottom: 28px;
     }
     .hero h1 {
-      font-size: clamp(32px, 6vw, 52px);
-      font-weight: 800; letter-spacing: -1.5px; line-height: 1.1;
-      color: var(--text); margin-bottom: 18px;
+      font-size: clamp(36px, 6vw, 58px);
+      font-weight: 800; letter-spacing: -2px; line-height: 1.08;
+      color: var(--text); margin-bottom: 22px;
     }
     .hero h1 em { font-style: normal; color: var(--teal); }
     .hero p {
-      font-size: 18px; color: var(--text-2); line-height: 1.65;
-      max-width: 520px; margin: 0 auto 36px;
+      font-size: 19px; color: var(--text-2); line-height: 1.7;
+      max-width: 540px; margin: 0 auto 40px;
     }
     .hero-cta {
       display: inline-flex; align-items: center; gap: 10px;
       background: var(--teal); color: white;
       font-family: inherit; font-size: 16px; font-weight: 700;
-      padding: 16px 28px; border-radius: var(--radius);
+      padding: 17px 30px; border-radius: var(--radius);
       border: none; cursor: pointer; text-decoration: none;
-      box-shadow: 0 6px 32px rgba(9,177,186,.3);
+      box-shadow: 0 4px 24px rgba(59,130,246,.35);
       transition: all var(--transition);
       -webkit-tap-highlight-color: transparent;
     }
-    .hero-cta:hover { background: var(--teal-hover); transform: translateY(-1px); box-shadow: 0 8px 40px rgba(9,177,186,.35); }
+    .hero-cta:hover { background: var(--teal-hover); transform: translateY(-2px); box-shadow: 0 8px 36px rgba(59,130,246,.4); }
     .hero-sub {
-      margin-top: 14px; font-size: 13px; color: var(--text-3);
-      display: flex; align-items: center; justify-content: center; gap: 16px;
+      margin-top: 16px; font-size: 13px; color: var(--text-3);
+      display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap;
     }
     .hero-sub span { display: flex; align-items: center; gap: 5px; }
 
@@ -129,7 +129,7 @@
       border: 1.5px solid var(--teal-dim);
       border-radius: var(--radius-lg);
       padding: 18px 20px 16px;
-      box-shadow: 0 4px 24px rgba(9,177,186,.1);
+      box-shadow: 0 4px 24px rgba(59,130,246,.1);
     }
     .early-counter-headline {
       font-size: 15px; font-weight: 800; color: var(--text);
@@ -294,11 +294,11 @@
       font-family: inherit; font-size: 15px; font-weight: 700;
       border: none; border-radius: var(--radius);
       cursor: pointer;
-      box-shadow: 0 4px 20px rgba(9,177,186,.25);
+      box-shadow: 0 4px 20px rgba(59,130,246,.25);
       transition: all var(--transition);
       -webkit-tap-highlight-color: transparent;
     }
-    .btn-subscribe:hover { background: var(--teal-hover); transform: translateY(-1px); box-shadow: 0 6px 28px rgba(9,177,186,.3); }
+    .btn-subscribe:hover { background: var(--teal-hover); transform: translateY(-1px); box-shadow: 0 6px 28px rgba(59,130,246,.3); }
     .stripe-badge {
       display: flex; align-items: center; justify-content: center; gap: 6px;
       margin-top: 14px; font-size: 12px; color: var(--text-3);
@@ -346,7 +346,7 @@
       padding: 10px 20px; border-radius: var(--radius);
       background: var(--teal); color: white; border: none;
       cursor: pointer; text-decoration: none; white-space: nowrap;
-      box-shadow: 0 4px 16px rgba(9,177,186,.25);
+      box-shadow: 0 4px 16px rgba(59,130,246,.25);
       transition: all var(--transition);
     }
     .acarte-btn:hover { background: var(--teal-hover); }
@@ -698,27 +698,27 @@
         <div class="pricing-body">
           <ul class="feature-list">
             <li>
-              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#09B1BA" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
               Analyses illimitées
             </li>
             <li>
-              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#09B1BA" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
               Vision IA multi-photos (jusqu'à 5)
             </li>
             <li>
-              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#09B1BA" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
               Prix du marché sur 50 annonces Vinted
             </li>
             <li>
-              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#09B1BA" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
               Score de vente /10 avec explication
             </li>
             <li>
-              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#09B1BA" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
               Meilleur moment pour publier
             </li>
             <li>
-              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#09B1BA" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
               Description Vinted auto-générée + copie
             </li>
           </ul>
@@ -750,15 +750,15 @@
         <div class="pricing-body">
           <ul class="feature-list">
             <li>
-              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#09B1BA" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
               Tout le plan Starter inclus
             </li>
             <li>
-              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#09B1BA" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
               Analyses illimitées
             </li>
             <li>
-              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#09B1BA" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
               Vision IA multi-photos (jusqu'à 5)
             </li>
             <p class="feature-divider">🔍 Legit Check IA exclusif</p>
@@ -807,7 +807,7 @@
         <div class="pricing-body">
           <ul class="feature-list">
             <li>
-              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#09B1BA" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div class="check"><svg viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
               Tout le plan Starter inclus
             </li>
             <p class="feature-divider">🔍 Legit Check IA</p>
