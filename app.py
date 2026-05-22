@@ -166,7 +166,8 @@ def admin_add_elite():
     plan = (request.form.get("plan") or "elite").strip().lower()
     if plan not in ("elite", "ultimate", "starter"):
         plan = "elite"
-    upsert_subscriber(email=email, status="active", plan=plan)
+    stripe_customer_id = (request.form.get("stripe_customer_id") or "").strip() or None
+    upsert_subscriber(email=email, status="active", plan=plan, stripe_customer_id=stripe_customer_id)
     sub = get_subscriber(email)
     return jsonify({"ok": True, "subscriber": dict(sub)})
 
