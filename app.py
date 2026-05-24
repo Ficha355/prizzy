@@ -1138,5 +1138,32 @@ def cgv():
     return render_template("cgv.html")
 
 
+# ── SEO guides ────────────────────────────────────────────────────────────────
+
+from seo_pages import PAGES as SEO_PAGES
+
+@app.route("/guide/<slug>")
+def seo_guide(slug):
+    page = SEO_PAGES.get(slug)
+    if page is None:
+        return redirect("/"), 302
+    return render_template("seo/guide.html", page=page)
+
+
+@app.route("/sitemap.xml")
+def sitemap():
+    base = "https://prizzy.onrender.com"
+    static_urls = ["/", "/mentions-legales", "/cgv"]
+    guide_urls = [f"/guide/{slug}" for slug in SEO_PAGES]
+    all_urls = static_urls + guide_urls
+    lines = ['<?xml version="1.0" encoding="UTF-8"?>',
+             '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+    for url in all_urls:
+        lines.append(f"  <url><loc>{base}{url}</loc></url>")
+    lines.append("</urlset>")
+    xml = "\n".join(lines)
+    return app.response_class(xml, mimetype="application/xml")
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
